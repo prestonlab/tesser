@@ -112,10 +112,12 @@ def load_struct(data_dir, subjects=None):
 
     # community info
     nodes = network.node_info()
+    raw_nodes = nodes.loc[raw['objnum'], :].reset_index()
 
     # convert to BIDS format
     orientation = {'cor': 'canonical', 'rot': 'rotated'}
     response = {'c': 'canonical', 'n': 'rotated'}
+    object_type = {0: 'central', 1: 'boundary'}
     df = pd.DataFrame(
         {
             'subject': raw['SubjNum'],
@@ -123,9 +125,9 @@ def load_struct(data_dir, subjects=None):
             'run': raw['run'],
             'trial': raw['trial'],
             'trial_type': raw['seqtype'].astype('Int64'),
-            'community': nodes.loc[raw['objnum'], 'community'].to_numpy(),
+            'community': raw_nodes['community'],
             'object': raw['objnum'],
-            'object_type': nodes.loc[raw['objnum'], 'node_type'].to_numpy(),
+            'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
             'orientation': raw['orientnam'].map(orientation).astype('category'),
             'response': raw['resp'].map(response).astype('category'),
             'response_time': raw['rt'],
