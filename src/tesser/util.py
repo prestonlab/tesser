@@ -163,7 +163,7 @@ def load_induct(data_dir, subjects=None):
 
     # add node information
     nodes = network.node_info()
-    raw['community'] = nodes.loc[raw['cue'] + 1, 'comm'].to_numpy()
+    raw['community'] = nodes.loc[raw['CueNum'], 'community'].to_numpy()
 
     # convert to BIDS format
     trial_type = {'Prim': 'primary', 'Bound1': 'boundary1', 'Bound2': 'boundary2'}
