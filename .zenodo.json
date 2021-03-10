@@ -1,0 +1,38 @@
+{
+    "language": "eng",
+    "license": "GPL-3.0+",
+    "title": "Tesser: Behavioral and neural analysis of statistical learning",
+    "upload_type": "software",
+    "creators": [
+        {
+            "name": "Neal W Morton",
+            "orcid": "0000-0002-2631-2710",
+            "affiliation": "The University of Texas at Austin"
+        },
+        {
+            "name": "Athula Pudhiyidath",
+            "affiliation": "The University of Texas at Austin"
+        },
+        {
+            "name": "Rodrigo Viveros Duran",
+            "affiliation": "The University of Texas at Austin"
+        },
+        {
+            "name": "Demetrius Manuel Hinojosa-Rowland",
+            "affiliation": "The University of Texas at Austin"
+        },
+        {
+            "name": "Ida Momennejad",
+            "orcid": "0000-0003-0830-3973",
+            "affiliation": "Microsoft Research"
+        }
+    ],
+    "keywords": [
+        "psychology",
+        "neuroscience",
+        "Python",
+        "neuroimaging",
+        "fMRI"
+    ],
+    "access_right": "open"
+}
