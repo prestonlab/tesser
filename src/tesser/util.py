@@ -63,22 +63,11 @@ def load_phase_subject(data_dir, subject_num, file_pattern):
 
 def load_struct_run(data_dir, subject_num, part_num, run_num):
     """Load dataframe for one structured learning run."""
-    # subject directory
-    subj_dir = get_subj_dir(data_dir, subject_num)
-
-    # search for a file with the correct name formatting
+    # load structure learning run
     file_pattern = (
         f'tesserScan_{subject_num}_*_StructLearn_Part{part_num}_Run_{run_num}.txt'
     )
-    file_search = glob(os.path.join(subj_dir, file_pattern))
-    if len(file_search) != 1:
-        raise IOError(
-            f'Problem finding data for {subject_num}, part {part_num}, run {run_num}.'
-        )
-    run_file = file_search[0]
-
-    # read log, fixing problem with spaces in column names
-    df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+    df = load_phase_subject(data_dir, subject_num, file_pattern)
 
     # add a field indicating the experiment part
     df['part'] = part_num
@@ -148,18 +137,8 @@ def load_struct(data_dir, subjects=None):
 
 def load_induct_subject(data_dir, subject_num):
     """Load dataframe of inductive generalization task for one subject."""
-    # subject directory
-    subj_dir = get_subj_dir(data_dir, subject_num)
-
-    # search for a file with the correct name formatting
     file_pattern = f'tesserScan_{subject_num}_*_InductGen.txt'
-    file_search = glob(os.path.join(subj_dir, file_pattern))
-    if len(file_search) != 1:
-        raise IOError(f'Problem finding data for {subject_num}.')
-    run_file = file_search[0]
-
-    # read log, fixing problem with spaces in column names
-    df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+    df = load_phase_subject(data_dir, subject_num, file_pattern)
     return df
 
 
