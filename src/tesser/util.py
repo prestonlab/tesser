@@ -91,7 +91,7 @@ def load_struct_subject(data_dir, subject_num):
             df_list.append(run_df)
 
     # concatenate into one data frame
-    df = pd.concat(df_list, sort=False)
+    df = pd.concat(df_list, sort=False, ignore_index=True)
     return df
 
 
