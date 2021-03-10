@@ -201,3 +201,39 @@ def load_group_subject(data_dir, subject_num):
     # read log, fixing problem with spaces in column names
     mat = np.loadtxt(file_search[0]).astype(int)
     return mat
+
+
+def load_parse(data_dir, subjects=None):
+    """Load induction data in BIDs format."""
+    if subjects is None:
+        subjects = get_subj_list()
+
+    # load subject data
+    df_all = []
+    for subject in subjects:
+        df_subj = load_parse_subject(data_dir, subject)
+        df_all.append(df_subj)
+    raw = pd.concat(df_all, axis=0, ignore_index=True)
+
+    # add node information
+    nodes = network.node_info()
+    raw_nodes = nodes.loc[raw['objnum'], :].reset_index()
+
+    # convert to BIDS format
+    trial_type = {1: 'random', 2: 'forward', 3: 'backward'}
+    response_type = {'PARSED': 1, 'NONE': 0}
+    object_type = {0: 'central', 1: 'boundary'}
+    df = pd.DataFrame(
+        {
+            'subject': raw['SubjNum'],
+            'run': raw['run'],
+            'trial': raw['trial'],
+            'trial_type': raw['objseq'].map(trial_type).astype('category'),
+            'community': raw_nodes['community'],
+            'object': raw['objnum'],
+            'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
+            'response': raw['resp'].map(response_type).astype('Int64'),
+            'response_time': raw['rt'],
+        }
+    )
+    return df
