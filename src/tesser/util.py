@@ -195,9 +195,8 @@ def load_group_subject(data_dir, subject_num):
     file_pattern = f'{subject_num}_FinalGraph.txt'
     file_search = glob(os.path.join(subj_dir, file_pattern))
     if len(file_search) != 1:
-        raise IOError(f'Problem finding data for {subject_num}.')
-    run_file = file_search[0]
+        raise IOError(f'Problem finding log: {file_pattern}')
 
     # read log, fixing problem with spaces in column names
-    mat = np.loadtxt(run_file).astype(int)
+    mat = np.loadtxt(file_search[0]).astype(int)
     return mat
