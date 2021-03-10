@@ -109,7 +109,7 @@ def load_struct(data_dir, subjects=None):
 
     # add community info
     nodes = network.node_info()
-    raw['community'] = nodes.loc[raw['objnum'], 'comm'].to_numpy()
+    raw['community'] = nodes.loc[raw['objnum'], 'community'].to_numpy()
 
     # convert to BIDS format
     orientation = {'cor': 'canonical', 'rot': 'rotated'}
