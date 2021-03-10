@@ -110,9 +110,8 @@ def load_struct(data_dir, subjects=None):
         df_all.append(df_subj)
     raw = pd.concat(df_all, axis=0, ignore_index=True)
 
-    # add community info
+    # community info
     nodes = network.node_info()
-    raw['community'] = nodes.loc[raw['objnum'], 'community'].to_numpy()
 
     # convert to BIDS format
     orientation = {'cor': 'canonical', 'rot': 'rotated'}
@@ -124,7 +123,7 @@ def load_struct(data_dir, subjects=None):
             'run': raw['run'],
             'trial': raw['trial'],
             'trial_type': raw['seqtype'].astype('Int64'),
-            'community': raw['community'],
+            'community': nodes.loc[raw['objnum'], 'community'].to_numpy(),
             'object': raw['objnum'],
             'orientation': raw['orientnam'].map(orientation).astype('category'),
             'response': raw['resp'].map(response).astype('category'),
@@ -156,7 +155,6 @@ def load_induct(data_dir, subjects=None):
 
     # add node information
     nodes = network.node_info()
-    raw['community'] = nodes.loc[raw['CueNum'], 'community'].to_numpy()
 
     # convert to BIDS format
     trial_type = {'Prim': 'primary', 'Bound1': 'boundary1', 'Bound2': 'boundary2'}
@@ -166,7 +164,7 @@ def load_induct(data_dir, subjects=None):
             'trial': raw['TrialNum'],
             'trial_type': raw['QuestType'].map(trial_type).astype('category'),
             'environment': raw['Environment'],
-            'community': raw['community'],
+            'community': nodes.loc[raw['CueNum'], 'community'].to_numpy(),
             'cue': raw['CueNum'],
             'opt1': raw['Opt1Num'],
             'opt2': raw['Opt2Num'],
