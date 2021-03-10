@@ -125,6 +125,7 @@ def load_struct(data_dir, subjects=None):
             'trial_type': raw['seqtype'].astype('Int64'),
             'community': nodes.loc[raw['objnum'], 'community'].to_numpy(),
             'object': raw['objnum'],
+            'object_type': nodes.loc[raw['objnum'], 'node_type'].to_numpy(),
             'orientation': raw['orientnam'].map(orientation).astype('category'),
             'response': raw['resp'].map(response).astype('category'),
             'response_time': raw['rt'],
