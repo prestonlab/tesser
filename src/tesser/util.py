@@ -178,6 +178,14 @@ def load_induct(data_dir, subjects=None):
     return df
 
 
+def load_parse_subject(data_dir, subject_num):
+    """Load parsing data for one subject."""
+    # search for a file with the correct name formatting
+    file_pattern = f'tesserScan_{subject_num}_*_StructParse.txt'
+    df = load_phase_subject(data_dir, subject_num, file_pattern)
+    return df
+
+
 def load_group_subject(data_dir, subject_num):
     """Load matrix of grouping data."""
     # subject directory
