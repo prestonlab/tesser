@@ -47,6 +47,20 @@ def get_subj_dir(data_dir, subject_num):
     return dir_search[0]
 
 
+def load_phase_subject(data_dir, subject_num, file_pattern):
+    """Load log as a DataFrame."""
+    # get the first file matching the log file pattern
+    subj_dir = get_subj_dir(data_dir, subject_num)
+    file_search = glob(os.path.join(subj_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding log: {file_pattern}')
+    run_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+    return df
+
+
 def load_struct_run(data_dir, subject_num, part_num, run_num):
     """Load dataframe for one structured learning run."""
     # subject directory
