@@ -160,7 +160,7 @@ def load_induct(data_dir, subjects=None):
     nodes = network.node_info()
 
     # convert to BIDS format
-    trial_type = {'Prim': 'primary', 'Bound1': 'boundary1', 'Bound2': 'boundary2'}
+    trial_type = {'Prim': 'central', 'Bound1': 'boundary1', 'Bound2': 'boundary2'}
     df = pd.DataFrame(
         {
             'subject': raw['SubjNum'],
@@ -175,6 +175,9 @@ def load_induct(data_dir, subjects=None):
             'response_time': raw['RT'],
             'correct': raw['Acc'].astype('Int64'),
         }
+    )
+    df['trial_type'].cat.reorder_categories(
+        ['central', 'boundary1', 'boundary2'], inplace=True
     )
     return df
 
