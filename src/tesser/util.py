@@ -228,6 +228,21 @@ def load_parse(data_dir, subjects=None):
     n_block = int((len(raw) / n_subject) / n_node)
     block = np.tile(np.repeat(np.arange(1, n_block + 1), n_node), n_subject)
 
+    # label transitions between communities
+    raw['community'] = raw_nodes['community']
+    raw['transition'] = raw.groupby(['SubjNum', 'run'])['community'].transform(
+        lambda data: data.diff().fillna(0).abs().astype(bool)
+    )
+    raw['walk'] = raw['transition'].cumsum().astype('Int64') + 1
+    walk_lengths = raw.groupby(['SubjNum', 'walk'])['walk'].count()
+
+    # length of the previous walk
+    raw['prev_walk'] = 0
+    for (subject, walk), walk_length in walk_lengths.iteritems():
+        include = (raw['SubjNum'] == subject) & (raw['walk'] == (walk + 1))
+        if any(include):
+            raw.loc[include.to_numpy(), 'prev_walk'] = walk_length
+
     # convert to BIDS format
     trial_type = {1: 'random', 2: 'forward', 3: 'backward'}
     response_type = {'PARSED': 1, 'NONE': 0}
@@ -240,6 +255,8 @@ def load_parse(data_dir, subjects=None):
             'trial': raw['trial'],
             'trial_type': raw['objseq'].map(trial_type).astype('category'),
             'community': raw_nodes['community'],
+            'transition': raw['transition'],
+            'prev_walk': raw['prev_walk'],
             'object': raw['objnum'],
             'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
             'response': raw['resp'].map(response_type).astype('Int64'),
