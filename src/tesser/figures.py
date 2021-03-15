@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot_swarm_error(data, x=None, y=None, hue=None, dark=None, light=None, ax=None):
+def plot_swarm_error(
+    data, x=None, y=None, hue=None, dark=None, light=None, ax=None, dodge=False,
+    capsize=.425
+):
     """Make a bar plot with individual points and error bars."""
     if dark is None:
         dark = 'ch:rot=-.5, light=.7, dark=.3, gamma=.6'
@@ -14,26 +17,17 @@ def plot_swarm_error(data, x=None, y=None, hue=None, dark=None, light=None, ax=N
     if ax is None:
         ax = plt.gca()
 
-    # plot means as bars with light colors (Seaborn's bar plot gives bars that don't
-    # line up with the other plots)
-    n_bin = len(data.groupby(x))
-    light_pal = sns.color_palette(light, n_colors=n_bin)
-    for i, (name, bins) in enumerate(data.groupby(x)):
-        ax.bar(
-            i, bins.mean(), color=light_pal[i], edgecolor='k', linewidth=.75, width=.6,
-            zorder=0
-        )
-
     # plot individual points
     sns.swarmplot(
         data=data.reset_index(), x=x, y=y, hue=hue, palette=dark, size=3,
-        linewidth=0.1, edgecolor='k', ax=ax, zorder=3
+        linewidth=0.1, edgecolor='k', ax=ax, zorder=3, dodge=dodge
     )
 
     # plot error bars for the mean
-    sns.pointplot(
-        data=data.reset_index(), x=x, y=y, hue=hue, ax=ax, join=False, color='k',
-        markers='.', errwidth=1, capsize=.425, scale=.1
+    sns.barplot(
+        data=data.reset_index(), x=x, y=y, hue=hue, ax=ax, dodge=dodge, color='k',
+        palette=light, errwidth=.8, capsize=capsize, edgecolor='k', linewidth=.75,
+        errcolor='k'
     )
 
     # remove overall xlabel and increase size of x-tick labels
