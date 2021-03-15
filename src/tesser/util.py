@@ -222,6 +222,12 @@ def load_parse(data_dir, subjects=None):
     nodes = network.node_info()
     raw_nodes = nodes.loc[raw['objnum'], :].reset_index()
 
+    # set block labels
+    n_node = len(nodes)
+    n_subject = len(subjects)
+    n_block = int((len(raw) / n_subject) / n_node)
+    block = np.tile(np.repeat(np.arange(1, n_block + 1), n_node), n_subject)
+
     # convert to BIDS format
     trial_type = {1: 'random', 2: 'forward', 3: 'backward'}
     response_type = {'PARSED': 1, 'NONE': 0}
@@ -230,6 +236,7 @@ def load_parse(data_dir, subjects=None):
         {
             'subject': raw['SubjNum'],
             'run': raw['run'],
+            'block': block,
             'trial': raw['trial'],
             'trial_type': raw['objseq'].map(trial_type).astype('category'),
             'community': raw_nodes['community'],
