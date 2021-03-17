@@ -49,20 +49,21 @@ def main(
     sl_map = sl(ds)
 
     # save included voxels map
-    if not os.path.exists(res_dir):
-        os.makedirs(res_dir)
+    subj_res_dir = os.path.join(subject_dir, res_dir)
+    if not os.path.exists(subj_res_dir):
+        os.makedirs(subj_res_dir)
     nifti_include = map2nifti(ds, sl_map[-1])
-    include_file = os.path.join(res_dir, 'included.nii.gz')
+    include_file = os.path.join(subj_res_dir, 'included.nii.gz')
     nifti_include.to_filename(include_file)
 
     # save pairwise correlations as a timeseries
-    filepath = os.path.join(res_dir, 'stat.nii.gz')
+    filepath = os.path.join(subj_res_dir, 'stat.nii.gz')
     nifti = map2nifti(ds, sl_map[:-1])
     nifti.to_filename(filepath)
 
     # copy masks to the results directory
-    shutil.copy2(mask_file, res_dir)
-    shutil.copy2(feature_file, res_dir)
+    shutil.copy2(mask_file, subj_res_dir)
+    shutil.copy2(feature_file, subj_res_dir)
 
 
 if __name__ == '__main__':
@@ -70,7 +71,9 @@ if __name__ == '__main__':
     parser.add_argument('subject', help="ID of subject to process.")
     parser.add_argument('mask', help="name of mask for searchlight centers")
     parser.add_argument('feature_mask', help="name of mask for included voxels")
-    parser.add_argument('res_dir', help="path to directory to save results.")
+    parser.add_argument(
+        'res_dir', help="subdirectory of the subject directory to save results."
+    )
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument(
         '--radius', '-r', type=int, default=3, help="searchlight radius"
