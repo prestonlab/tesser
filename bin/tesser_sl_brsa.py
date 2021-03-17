@@ -17,8 +17,14 @@ def main(
 
     # load functional data
     subject_dir = os.path.join(study_dir, f'tesser_{subject}')
+    mask_dir = os.path.join(
+        subject_dir, 'anatomy', 'antsreg', 'data', 'funcunwarpspace', 'rois', 'mni'
+    )
+    mask_file = os.path.join(mask_dir, f'{mask}.nii.gz')
+    feature_file = os.path.join(mask_dir, f'{feature_mask}.nii.gz')
     ds = mvpa.load_struct_timeseries(
-        study_dir, subject, mask, feature_mask=feature_mask, verbose=1, zscore_run=True
+        study_dir, subject, mask_file, feature_mask=feature_file, verbose=1,
+        zscore_run=True
     )
 
     # load events data, split by object within structure learning block
