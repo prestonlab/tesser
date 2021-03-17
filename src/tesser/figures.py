@@ -34,11 +34,14 @@ def plot_swarm_error(
     ax.set_xlabel('')
     ax.tick_params(axis='x', labelsize='large')
 
+    # fix ordering of plot elements
+    plt.setp(ax.lines, zorder=100, linewidth=1.25, label=None)
+    plt.setp(ax.collections, zorder=100, label=None)
+
     # delete legend (redundant with the x-tick labels)
     legend = ax.get_legend()
     if legend is not None:
         legend.remove()
-
-    # fix ordering of plot elements
-    plt.setp(ax.lines, zorder=100, linewidth=1.25)
-    plt.setp(ax.collections, zorder=100)
+        if hue is not None:
+            # refresh the legend to remove the swarm points
+            ax.legend()
