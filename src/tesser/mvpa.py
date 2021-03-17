@@ -73,7 +73,7 @@ class ItemBRSA(Measure):
 
     def __init__(self, model, n_ev, mat, nuisance, scan_onsets, min_voxels=None):
         if min_voxels is None:
-            min_voxels = n_ev
+            min_voxels = n_ev + 1
         Measure.__init__(self)
         self.model = model
         self.n_ev = n_ev
