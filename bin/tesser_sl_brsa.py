@@ -9,7 +9,9 @@ from tesser import mvpa
 from tesser import rsa
 
 
-def main(subject, study_dir, mask, feature_mask, res_dir, radius=3, n_proc=None):
+def main(
+    subject, study_dir, mask, feature_mask, res_dir, radius=3, n_proc=None, tol=0.0001
+):
     from mvpa2.measures.searchlight import sphere_searchlight
     from mvpa2.datasets.mri import map2nifti
 
@@ -28,7 +30,8 @@ def main(subject, study_dir, mask, feature_mask, res_dir, radius=3, n_proc=None)
     )
 
     # set up BRSA model
-    model = brsa.GBRSA()
+    minimize_options = {'disp': False, 'gtol': tol, 'maxiter': 6}
+    model = brsa.GBRSA(tol=tol, minimize_options=minimize_options)
     n_ev = 21 * 2
     n_vol = ds.shape[0]
     mat, nuisance, scan_onsets = rsa.create_brsa_matrix(subject_dir, events, n_vol)
@@ -64,6 +67,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--n-proc', '-n', type=int, default=None, help="processes for searchlight"
     )
+    parser.add_argument('--tol', '-t', default=0.0001, help="fitting tolerance")
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -74,5 +78,5 @@ if __name__ == '__main__':
         env_study_dir = args.study_dir
     main(
         args.subject, env_study_dir, args.mask, args.feature_mask, args.res_dir,
-        radius=args.radius, n_proc=args.n_proc
+        radius=args.radius, n_proc=args.n_proc, tol=args.tol
     )
