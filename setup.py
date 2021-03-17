@@ -1,5 +1,5 @@
 import setuptools
 import glob
 
-scripts = glob.glob('scripts/*')
+scripts = glob.glob('bin/*')
 setuptools.setup(scripts=scripts)
