@@ -62,8 +62,8 @@ def main(
     nifti.to_filename(filepath)
 
     # copy masks to the results directory
-    shutil.copy2(mask_file, subj_res_dir)
-    shutil.copy2(feature_file, subj_res_dir)
+    shutil.copy2(mask_file, os.path.join(subj_res_dir, 'mask.nii.gz'))
+    shutil.copy2(feature_file, os.path.join(subj_res_dir, 'feature_mask.nii.gz'))
 
 
 if __name__ == '__main__':
