@@ -3,6 +3,7 @@
 # Run Bayesian representational similarity analysis in a searchlight.
 
 import os
+import shutil
 import argparse
 from brainiak.reprsimil import brsa
 from tesser import mvpa
@@ -58,6 +59,10 @@ def main(
     filepath = os.path.join(res_dir, 'stat.nii.gz')
     nifti = map2nifti(ds, sl_map[:-1])
     nifti.to_filename(filepath)
+
+    # copy masks to the results directory
+    shutil.copy2(mask_file, res_dir)
+    shutil.copy2(feature_file, res_dir)
 
 
 if __name__ == '__main__':
