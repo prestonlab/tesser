@@ -81,7 +81,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--n-proc', '-n', type=int, default=None, help="processes for searchlight"
     )
-    parser.add_argument('--tol', '-t', default=0.0001, help="fitting tolerance")
+    parser.add_argument(
+        '--tol', '-t', type=float, default=0.0001, help="fitting tolerance"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
