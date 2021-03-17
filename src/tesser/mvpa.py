@@ -28,30 +28,25 @@ def load_struct_timeseries(
         bold_images.append(bold)
 
     # mask image to select voxels to load
-    mask_dir = os.path.join(
-        subject_dir, 'anatomy', 'antsreg', 'data', 'funcunwarpspace', 'rois', 'mni'
-    )
-    mask_file = os.path.join(mask_dir, f'{mask}.nii.gz')
-    if not os.path.exists(mask_file):
-        raise IOError(f'Mask file does not exist: {mask_file}')
+    if not os.path.exists(mask):
+        raise IOError(f'Mask file does not exist: {mask}')
     if verbose:
-        print(f'Masking with: {mask_file}')
+        print(f'Masking with: {mask}')
 
     # feature mask, if specified
     if feature_mask is not None:
-        feature_file = os.path.join(mask_dir, f'{feature_mask}.nii.gz')
-        if not os.path.exists(feature_file):
-            raise IOError(f'Feature mask does not exist: {feature_file}')
+        if not os.path.exists(feature_mask):
+            raise IOError(f'Feature mask does not exist: {feature_mask}')
         if verbose:
-            print(f'Using features within: {feature_file}')
-        add_fa = {'include': feature_file}
+            print(f'Using features within: {feature_mask}')
+        add_fa = {'include': feature_mask}
     else:
         add_fa = None
 
     # load images and concatenate
     ds_list = []
     for run, bold_image in zip(runs, bold_images):
-        ds_run = fmri_dataset(bold_image, mask=mask_file, add_fa=add_fa)
+        ds_run = fmri_dataset(bold_image, mask=mask, add_fa=add_fa)
         ds_run.sa['run'] = np.tile(run, ds_run.shape[0])
         ds_list.append(ds_run)
     ds = vstack(ds_list)
