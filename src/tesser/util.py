@@ -244,7 +244,8 @@ def load_parse(data_dir, subjects=None):
             raw.loc[include.to_numpy(), 'prev_walk'] = walk_length
 
     # convert to BIDS format
-    trial_type = {1: 'random', 2: 'forward', 3: 'backward'}
+    trial_type = {1: 'random', 2: 'hamiltonian', 3: 'hamiltonian'}
+    path_type = {1: 'random', 2: 'forward', 3: 'backward'}
     response_type = {'PARSED': 1, 'NONE': 0}
     object_type = {0: 'central', 1: 'boundary'}
     df = pd.DataFrame(
@@ -254,6 +255,7 @@ def load_parse(data_dir, subjects=None):
             'block': block,
             'trial': raw['trial'],
             'trial_type': raw['objseq'].map(trial_type).astype('category'),
+            'path_type': raw['objseq'].map(path_type).astype('category'),
             'community': raw_nodes['community'],
             'transition': raw['transition'],
             'prev_walk': raw['prev_walk'],
