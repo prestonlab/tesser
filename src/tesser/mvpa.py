@@ -73,7 +73,7 @@ class ItemBRSA(Measure):
 
     def __init__(self, model, n_ev, mat, nuisance, scan_onsets, min_voxels=None):
         if min_voxels is None:
-            min_voxels = n_ev + 1
+            min_voxels = n_ev
         Measure.__init__(self)
         self.model = model
         self.n_ev = n_ev
@@ -85,7 +85,7 @@ class ItemBRSA(Measure):
 
     def __call__(self, dataset):
         corr = np.zeros(self.n)
-        if np.count_nonzero(dataset.fa.include) < 10:
+        if np.count_nonzero(dataset.fa.include) < self.min_voxels:
             return (*corr, 0)
         dataset = dataset[:, dataset.fa.include]
 
