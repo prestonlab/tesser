@@ -4,9 +4,12 @@
 
 import os
 import argparse
+import warnings
 import numpy as np
 from nilearn import input_data
 from brainiak.reprsimil import brsa
+
+warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
