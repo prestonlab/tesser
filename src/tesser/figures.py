@@ -56,7 +56,8 @@ def plot_group_mat(
     if ax is None:
         ax = plt.gca()
 
-    data['label'] = data['community'] * 2 - data['node_type']
+    data = data.copy()
+    data['label'] = data['community'] * 2 - 1 + data['node_type']
     mat_shape = (11, 19)
     mat = np.zeros(mat_shape, dtype=int)
     row = data[x].to_numpy()
