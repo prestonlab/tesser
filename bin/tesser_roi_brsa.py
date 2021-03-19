@@ -47,8 +47,8 @@ def main(study_dir, subject, roi, res_dir):
     mat, nuisance, scan_onsets = rsa.create_brsa_matrix(subject_dir, events, n_vol)
 
     # run Bayesian RSA
-    scan_onsets = np.arange(0, image.shape[0], image.shape[0] / len(runs))
-    model = brsa.GBRSA()
+    n_ev = mat.shape[1]
+    model = brsa.GBRSA(rank=n_ev)
     model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
 
     # save results
