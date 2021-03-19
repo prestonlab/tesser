@@ -206,6 +206,17 @@ def load_group_mat(data_dir, subject_num):
     return mat
 
 
+def extract_group_coords(mat, subject=None):
+    """Extract coordinates from a grouping data matrix."""
+    ind = np.where(mat)
+    nodes = network.node_info()
+    df_ind = pd.DataFrame(
+        {'subject': subject, 'row': ind[0], 'col': ind[1]}, index=mat[ind]
+    )
+    df = pd.concat((df_ind, nodes), axis=1)
+    return df
+
+
 def load_parse(data_dir, subjects=None):
     """Load induction data in BIDs format."""
     if subjects is None:
