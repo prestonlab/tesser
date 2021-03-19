@@ -150,27 +150,41 @@ def create_brsa_matrix(subject_dir, events, n_vol):
     evs = np.arange(1, n_ev + 1)
 
     # create full design matrix
-    df_list = []
+    signal_list = []
+    confound_list = []
     frame_times = np.arange(n_vol / n_run) * 2
+    scan_onsets = np.arange(0, n_vol, n_vol / n_run, dtype=int)
     for run in runs:
         # create a design matrix with one column per trial type and confounds
         df_run = first_level.make_first_level_design_matrix(
             frame_times, events=events.query(f'run == {run}'), add_regs=confound[run]
         )
 
-        # reorder columns for consistency across runs; confounds go last
+        # separate out parts of the matrix
         regs = df_run.filter(like='reg', axis=1).columns
         drifts = df_run.filter(like='drift', axis=1).columns
-        columns = np.hstack((evs, drifts, ['constant'], regs))
-        df_list.append(df_run.reindex(columns=columns))
-    df_mat = pd.concat(df_list, axis=0)
 
-    # with confounds included, the number of regressors varies by run.
-    # Columns missing between runs are set to NaN
-    df_mat.fillna(0, inplace=True)
+        # signals by themselves
+        signal_df = df_run.reindex(columns=evs)
+        signal_list.append(signal_df.to_numpy())
+
+        # confounds (will be separated by runs)
+        confound_df = df_run.reindex(columns=np.hstack((drifts, regs)))
+        confound_list.append(confound_df.to_numpy())
+
+    # make larger confound matrix
+    n_confound = np.sum(c.shape[1] for c in confound_list)
+    nuisance = np.zeros((n_vol, n_confound))
+    reg = 0
+    for i, run_mat in enumerate(confound_list):
+        start = scan_onsets[i]
+        if i < (len(scan_onsets) - 1):
+            finish = scan_onsets[i + 1]
+        else:
+            finish = None
+        nuisance[start:finish, reg:(reg + run_mat.shape[1])] = run_mat
+        reg += run_mat.shape[1]
 
     # package for use with BRSA
-    mat = df_mat.to_numpy()[:, :n_ev]
-    nuisance = df_mat.to_numpy()[:, n_ev:]
-    scan_onsets = np.arange(0, n_vol, n_vol / n_run)
+    mat = np.vstack(signal_list)
     return mat, nuisance, scan_onsets
