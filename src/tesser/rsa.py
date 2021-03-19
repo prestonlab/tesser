@@ -165,8 +165,9 @@ def create_brsa_matrix(subject_dir, events, n_vol):
         regs = df_run.filter(like='reg', axis=1).columns
         drifts = df_run.filter(like='drift', axis=1).columns
 
-        # signals by themselves
+        # signals by themselves (set any missing evs to zero)
         signal_df = df_run.reindex(columns=evs)
+        signal_df.fillna(0, inplace=True)
         signal_list.append(signal_df.to_numpy())
 
         # confounds (will be separated by runs)
