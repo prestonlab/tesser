@@ -190,50 +190,8 @@ def load_parse_subject(data_dir, subject_num):
     return df
 
 
-def load_group_mat(data_dir, subject_num):
-    """Load matrix of grouping data."""
-    # subject directory
-    subj_dir = get_subj_dir(data_dir, subject_num)
-
-    # search for a file with the correct name formatting
-    file_pattern = f'{subject_num}_FinalGraph.txt'
-    file_search = glob(os.path.join(subj_dir, file_pattern))
-    if len(file_search) != 1:
-        raise IOError(f'Problem finding log: {file_pattern}')
-
-    # read log, fixing problem with spaces in column names
-    mat = np.loadtxt(file_search[0]).astype(int)
-    return mat
-
-
-def extract_group_coords(mat, subject=None):
-    """Extract coordinates from a grouping data matrix."""
-    ind = np.where(mat)
-    nodes = network.node_info()
-    df_ind = pd.DataFrame(
-        {'subject': subject, 'row': ind[0], 'col': ind[1]}, index=mat[ind]
-    )
-    df = pd.concat((df_ind, nodes), axis=1)
-    return df
-
-
-def load_group(data_dir, subjects=None):
-    """Load grouping task data as a DataFrame."""
-    if subjects is None:
-        subjects = get_subj_list()
-
-    # load subject data
-    df_all = []
-    for subject in subjects:
-        mat_subj = load_group_mat(data_dir, subject)
-        df_subj = extract_group_coords(mat_subj, subject)
-        df_all.append(df_subj)
-    df = pd.concat(df_all, axis=0, ignore_index=True)
-    return df
-
-
 def load_parse(data_dir, subjects=None):
-    """Load induction data in BIDs format."""
+    """Load parsing data in BIDs format."""
     if subjects is None:
         subjects = get_subj_list()
 
@@ -291,4 +249,46 @@ def load_parse(data_dir, subjects=None):
             'response_time': raw['rt'],
         }
     )
+    return df
+
+
+def load_group_mat(data_dir, subject_num):
+    """Load matrix of grouping data."""
+    # subject directory
+    subj_dir = get_subj_dir(data_dir, subject_num)
+
+    # search for a file with the correct name formatting
+    file_pattern = f'{subject_num}_FinalGraph.txt'
+    file_search = glob(os.path.join(subj_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding log: {file_pattern}')
+
+    # read log, fixing problem with spaces in column names
+    mat = np.loadtxt(file_search[0]).astype(int)
+    return mat
+
+
+def extract_group_coords(mat, subject=None):
+    """Extract coordinates from a grouping data matrix."""
+    ind = np.where(mat)
+    nodes = network.node_info()
+    df_ind = pd.DataFrame(
+        {'subject': subject, 'row': ind[0], 'col': ind[1]}, index=mat[ind]
+    )
+    df = pd.concat((df_ind, nodes), axis=1)
+    return df
+
+
+def load_group(data_dir, subjects=None):
+    """Load grouping task data as a DataFrame."""
+    if subjects is None:
+        subjects = get_subj_list()
+
+    # load subject data
+    df_all = []
+    for subject in subjects:
+        mat_subj = load_group_mat(data_dir, subject)
+        df_subj = extract_group_coords(mat_subj, subject)
+        df_all.append(df_subj)
+    df = pd.concat(df_all, axis=0, ignore_index=True)
     return df
