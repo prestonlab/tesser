@@ -190,7 +190,7 @@ def load_parse_subject(data_dir, subject_num):
     return df
 
 
-def load_group_subject(data_dir, subject_num):
+def load_group_mat(data_dir, subject_num):
     """Load matrix of grouping data."""
     # subject directory
     subj_dir = get_subj_dir(data_dir, subject_num)
