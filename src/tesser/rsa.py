@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 import scipy.spatial.distance as sd
+from scipy import linalg
 from nilearn.glm import first_level
 from mindstorm import prsa
 from tesser import util
@@ -174,18 +175,8 @@ def create_brsa_matrix(subject_dir, events, n_vol):
         confound_df = df_run.reindex(columns=np.hstack((drifts, regs)))
         confound_list.append(confound_df.to_numpy())
 
-    # make larger confound matrix
-    n_confound = np.sum(c.shape[1] for c in confound_list)
-    nuisance = np.zeros((n_vol, n_confound))
-    reg = 0
-    for i, run_mat in enumerate(confound_list):
-        start = scan_onsets[i]
-        if i < (len(scan_onsets) - 1):
-            finish = scan_onsets[i + 1]
-        else:
-            finish = None
-        nuisance[start:finish, reg:(reg + run_mat.shape[1])] = run_mat
-        reg += run_mat.shape[1]
+    # make block diagonal confound matrix
+    nuisance = linalg.block_diag(*confound_list)
 
     # package for use with BRSA
     mat = np.vstack(signal_list)
