@@ -218,6 +218,7 @@ def extract_group_coords(mat, subject=None):
 
 
 def load_group(data_dir, subjects=None):
+    """Load grouping task data as a DataFrame."""
     if subjects is None:
         subjects = get_subj_list()
 
