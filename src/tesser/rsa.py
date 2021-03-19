@@ -152,8 +152,9 @@ def create_brsa_matrix(subject_dir, events, n_vol):
     # create full design matrix
     signal_list = []
     confound_list = []
-    frame_times = np.arange(n_vol / n_run) * 2
-    scan_onsets = np.arange(0, n_vol, n_vol / n_run, dtype=int)
+    n_run_vol = n_vol // n_run
+    frame_times = np.arange(n_run_vol) * 2
+    scan_onsets = np.arange(0, n_vol, n_run_vol, dtype=int)
     for run in runs:
         # create a design matrix with one column per trial type and confounds
         df_run = first_level.make_first_level_design_matrix(
