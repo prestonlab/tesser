@@ -160,7 +160,8 @@ def create_brsa_matrix(subject_dir, events, n_vol):
     for run in runs:
         # create a design matrix with one column per trial type and confounds
         df_run = first_level.make_first_level_design_matrix(
-            frame_times, events=events.query(f'run == {run}'), add_regs=confound[run]
+            frame_times, events=events.query(f'run == {run}'), add_regs=confound[run],
+            high_pass=0.008
         )
 
         # separate out parts of the matrix
