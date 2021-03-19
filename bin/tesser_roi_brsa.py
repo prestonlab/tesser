@@ -6,6 +6,7 @@ import os
 import argparse
 import warnings
 import numpy as np
+from scipy import stats
 from nilearn import input_data
 from brainiak.reprsimil import brsa
 
@@ -44,6 +45,9 @@ def main(study_dir, subject, roi, res_dir):
     image = np.vstack(
         [masker.fit_transform(bold_image) for bold_image in bold_images]
     )
+
+    # zscore voxels (seems to help avoid problems in GBRSA)
+    image = stats.zscore(image, axis=0)
 
     # create design matrix
     n_vol = image.shape[0]
