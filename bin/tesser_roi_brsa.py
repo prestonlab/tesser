@@ -5,9 +5,7 @@
 import os
 import argparse
 import numpy as np
-import pandas as pd
 from nilearn import input_data
-import nilearn.glm.first_level as fl
 from brainiak.reprsimil import brsa
 from tesser import rsa
 
@@ -47,36 +45,9 @@ def main(study_dir, subject, roi, res_dir, blocks='combined'):
         [masker.fit_transform(bold_image) for bold_image in bold_images]
     )
 
-    # load confound files
-    confound = {}
-    for run in runs:
-        confound_file = os.path.join(
-            subject_dir, 'BOLD', f'functional_run_{run}', 'QA', 'confound.txt'
-        )
-        confound[run] = np.loadtxt(confound_file)
-
-    # create full design matrix
-    frame_times = np.arange(image.shape[0] / len(runs)) * 2
-    n_ev = events['trial_type'].nunique()
-    evs = np.arange(1, n_ev + 1)
-    df_list = []
-    for run in runs:
-        df_run = fl.make_first_level_design_matrix(
-            frame_times, events=events.query(f'run == {run}'),
-            add_regs=confound[run]
-        )
-        regs = df_run.filter(like='reg', axis=1).columns
-        drifts = df_run.filter(like='drift', axis=1).columns
-        columns = np.hstack((evs, drifts, ['constant'], regs))
-        df_list.append(df_run.reindex(columns=columns))
-    df_mat = pd.concat(df_list, axis=0)
-
-    # with confounds included, the number of regressors varies by run.
-    # Columns missing between runs are set to NaN
-    df_mat.fillna(0, inplace=True)
-
-    mat = df_mat.to_numpy()[:, :n_ev]
-    nuisance = df_mat.to_numpy()[:, n_ev:]
+    # create design matrix
+    n_vol = image.shape[0]
+    mat, nuisance, scan_onsets = rsa.create_brsa_matrix(subject_dir, events, n_vol)
 
     # run Bayesian RSA
     scan_onsets = np.arange(0, image.shape[0], image.shape[0] / len(runs))
