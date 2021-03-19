@@ -217,6 +217,20 @@ def extract_group_coords(mat, subject=None):
     return df
 
 
+def load_group(data_dir, subjects=None):
+    if subjects is None:
+        subjects = get_subj_list()
+
+    # load subject data
+    df_all = []
+    for subject in subjects:
+        mat_subj = load_group_mat(data_dir, subject)
+        df_subj = extract_group_coords(mat_subj, subject)
+        df_all.append(df_subj)
+    df = pd.concat(df_all, axis=0, ignore_index=True)
+    return df
+
+
 def load_parse(data_dir, subjects=None):
     """Load induction data in BIDs format."""
     if subjects is None:
