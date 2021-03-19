@@ -16,7 +16,7 @@ def submit_brsa(subjects, rois, study_dir, res_dir):
     for roi in rois:
         roi_dir = os.path.join(res_dir, roi)
         for subject in subjects:
-            print(f'tesser_brsa.py {subject} {roi} {roi_dir} {options}')
+            print(f'tesser_roi_brsa.py {subject} {roi} {roi_dir} {options}')
 
 
 if __name__ == '__main__':
