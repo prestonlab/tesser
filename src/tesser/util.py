@@ -273,7 +273,7 @@ def extract_group_coords(mat, subject=None):
     ind = np.where(mat)
     nodes = network.node_info()
     df_ind = pd.DataFrame(
-        {'subject': subject, 'row': ind[0], 'col': ind[1]}, index=mat[ind]
+        {'subject': subject, 'dim1': ind[0], 'dim2': ind[1]}, index=mat[ind]
     )
     df = pd.concat((df_ind, nodes), axis=1)
     return df
