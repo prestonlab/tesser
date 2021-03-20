@@ -50,7 +50,7 @@ def plot_swarm_error(
 
 
 def plot_group_mat(
-    data, x='row', y='col', hue=None, palette=None, color=None, ax=None
+    data, x='dim1', y='dim2', hue=None, palette=None, color=None, ax=None
 ):
     """Plot grouping task object locations."""
     if ax is None:
