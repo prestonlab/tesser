@@ -109,12 +109,14 @@ def load_struct(data_dir, subjects=None):
         df_subj = load_struct_subject(data_dir, subject)
         df_all.append(df_subj)
     raw = pd.concat(df_all, axis=0, ignore_index=True)
+    raw['seqtype'].fillna(0, inplace=True)
 
     # community info
     nodes = network.node_info()
     raw_nodes = nodes.loc[raw['objnum'], :].reset_index()
 
     # convert to BIDS format
+    trial_type = {0: 'learning', 1: 'structured', 2: 'scrambled'}
     orientation = {'cor': 'canonical', 'rot': 'rotated'}
     response = {'c': 'canonical', 'n': 'rotated'}
     object_type = {0: 'central', 1: 'boundary'}
@@ -124,7 +126,7 @@ def load_struct(data_dir, subjects=None):
             'part': raw['part'],
             'run': raw['run'],
             'trial': raw['trial'],
-            'trial_type': raw['seqtype'].astype('Int64'),
+            'trial_type': raw['seqtype'].map(trial_type).astype('category'),
             'community': raw_nodes['community'],
             'object': raw['objnum'],
             'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
