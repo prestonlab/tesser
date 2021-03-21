@@ -6,7 +6,6 @@ import os
 import argparse
 import warnings
 import numpy as np
-from scipy import signal
 from nilearn import input_data
 from brainiak.reprsimil import brsa
 
@@ -44,14 +43,15 @@ def main(study_dir, subject, roi, res_dir):
     masker = input_data.NiftiMasker(mask_img=mask_image)
     image = np.vstack(
         [
-            signal.detrend(masker.fit_transform(bold_image), 0)
-            for bold_image in bold_images
+            masker.fit_transform(bold_image) for bold_image in bold_images
         ]
     )
 
     # create design matrix
     n_vol = image.shape[0]
-    mat, nuisance, scan_onsets = rsa.create_brsa_matrix(subject_dir, events, n_vol)
+    mat, nuisance, scan_onsets = rsa.create_brsa_matrix(
+        subject_dir, events, n_vol, high_pass=0.003
+    )
 
     # run Bayesian RSA
     n_ev = mat.shape[1]
