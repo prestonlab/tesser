@@ -173,7 +173,7 @@ def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0):
         regs = df_run.filter(like='reg', axis=1).columns
         if high_pass > 0:
             drifts = df_run.filter(like='drift', axis=1).columns
-            confound_cols = np.hstack(drifts, regs)
+            confound_cols = np.hstack((drifts, regs))
         else:
             confound_cols = regs
         confound_df = df_run.reindex(columns=confound_cols)
