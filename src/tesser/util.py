@@ -91,6 +91,10 @@ def load_struct_subject(data_dir, subject_num):
     for part in parts:
         for run in part_runs[part]:
             run_df = load_struct_run(data_dir, subject_num, part, run)
+            if part == 1:
+                run_df['block'] = 1
+            else:
+                run_df['block'] = np.repeat(np.arange(1, 8), 21)
             df_list.append(run_df)
 
     # concatenate into one data frame
@@ -125,6 +129,7 @@ def load_struct(data_dir, subjects=None):
             'subject': raw['SubjNum'],
             'part': raw['part'],
             'run': raw['run'],
+            'block': raw['block'],
             'trial': raw['trial'],
             'trial_type': raw['seqtype'].map(trial_type).astype('category'),
             'community': raw_nodes['community'],
