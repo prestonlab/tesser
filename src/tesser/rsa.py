@@ -135,7 +135,7 @@ def net_prsa_perm(df, model, n_perm=1000, beta=0.05):
     return results
 
 
-def create_brsa_matrix(subject_dir, events, n_vol):
+def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0):
     """Create a design matrix for Bayesian RSA."""
     # load confound files
     runs = events['run'].unique()
@@ -161,12 +161,8 @@ def create_brsa_matrix(subject_dir, events, n_vol):
         # create a design matrix with one column per trial type and confounds
         df_run = first_level.make_first_level_design_matrix(
             frame_times, events=events.query(f'run == {run}'), add_regs=confound[run],
-            high_pass=0.008
+            high_pass=high_pass
         )
-
-        # separate out parts of the matrix
-        regs = df_run.filter(like='reg', axis=1).columns
-        drifts = df_run.filter(like='drift', axis=1).columns
 
         # signals by themselves (set any missing evs to zero)
         signal_df = df_run.reindex(columns=evs)
@@ -174,7 +170,13 @@ def create_brsa_matrix(subject_dir, events, n_vol):
         signal_list.append(signal_df.to_numpy())
 
         # confounds (will be separated by runs)
-        confound_df = df_run.reindex(columns=np.hstack((drifts, regs)))
+        regs = df_run.filter(like='reg', axis=1).columns
+        if high_pass > 0:
+            drifts = df_run.filter(like='drift', axis=1).columns
+            confound_cols = np.hstack(drifts, regs)
+        else:
+            confound_cols = regs
+        confound_df = df_run.reindex(columns=confound_cols)
         confound_list.append(stats.zscore(confound_df.to_numpy(), axis=0))
 
     # make block diagonal confound matrix
