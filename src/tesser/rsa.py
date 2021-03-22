@@ -135,7 +135,7 @@ def net_prsa_perm(df, model, n_perm=1000, beta=0.05):
     return results
 
 
-def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0):
+def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0, censor=False):
     """Create a design matrix for Bayesian RSA."""
     # load confound files
     runs = events['run'].unique()
@@ -145,7 +145,14 @@ def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0):
         confound_file = os.path.join(
             subject_dir, 'BOLD', f'functional_run_{run}', 'QA', 'confound.txt'
         )
-        confound[run] = np.loadtxt(confound_file)
+        full_confound = np.loadtxt(confound_file)
+
+        if censor:
+            # all confounds, including time point censoring
+            confound[run] = full_confound
+        else:
+            # include 6 motion parameters, their derivatives, FD, and DVARS
+            confound[run] = full_confound[:, :14]
 
     # explanatory variables of interest
     n_ev = events['trial_type'].nunique()
