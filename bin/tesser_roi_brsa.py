@@ -52,7 +52,7 @@ def main(study_dir, subject, roi, res_dir):
     # create design matrix
     n_vol = image.shape[0]
     mat, nuisance, scan_onsets = rsa.create_brsa_matrix(
-        subject_dir, events, n_vol, high_pass=0.003
+        subject_dir, events, n_vol, high_pass=0.003, censor=False
     )
 
     # run Bayesian RSA
