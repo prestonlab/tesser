@@ -145,14 +145,7 @@ def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0, censor=False):
         confound_file = os.path.join(
             subject_dir, 'BOLD', f'functional_run_{run}', 'QA', 'confound.txt'
         )
-        full_confound = np.loadtxt(confound_file)
-
-        if censor:
-            # all confounds, including time point censoring
-            confound[run] = full_confound
-        else:
-            # include 6 motion parameters, their derivatives, FD, and DVARS
-            confound[run] = full_confound[:, :14]
+        confound[run] = np.loadtxt(confound_file)
 
     # explanatory variables of interest
     n_ev = events['trial_type'].nunique()
@@ -167,8 +160,7 @@ def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0, censor=False):
     for run in runs:
         # create a design matrix with one column per trial type and confounds
         df_run = first_level.make_first_level_design_matrix(
-            frame_times, events=events.query(f'run == {run}'), add_regs=confound[run],
-            high_pass=high_pass
+            frame_times, events=events.query(f'run == {run}'), high_pass=high_pass
         )
 
         # signals by themselves (set any missing evs to zero)
@@ -176,17 +168,22 @@ def create_brsa_matrix(subject_dir, events, n_vol, high_pass=0, censor=False):
         signal_df.fillna(0, inplace=True)
         signal_list.append(signal_df.to_numpy())
 
-        # confounds (will be separated by runs)
-        regs = df_run.filter(like='reg', axis=1).columns
-        if high_pass > 0:
-            drifts = df_run.filter(like='drift', axis=1).columns
-            confound_cols = np.hstack((drifts, regs))
-        else:
-            confound_cols = regs
-        confound_df = df_run.reindex(columns=confound_cols)
-        confound_list.append(stats.zscore(confound_df.to_numpy(), axis=0))
+        # assuming 6 motion + 6 derivatives + FD and DVARS
+        n_nuisance = 14
 
-    # make block diagonal confound matrix
+        # nuisance regressors for this run
+        run_confounds = [confound[run][:, :n_nuisance]]
+        if high_pass > 0:
+            drifts = df_run.filter(like='drift', axis=1).to_numpy()
+            run_confounds.append(drifts)
+
+        if censor:
+            run_confounds.append(confound[run][:, n_nuisance:])
+
+        confound_mat = stats.zscore(np.hstack(run_confounds), 0)
+        confound_list.append(confound_mat)
+
+    # make full confound matrix
     nuisance = linalg.block_diag(*confound_list)
 
     # package for use with BRSA
