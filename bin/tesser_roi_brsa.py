@@ -5,6 +5,7 @@
 import os
 import argparse
 import warnings
+import logging
 import numpy as np
 from scipy import stats
 from nilearn import input_data
@@ -15,6 +16,14 @@ from tesser import rsa
 
 
 def main(study_dir, subject, roi, res_dir):
+    # set up log
+    if not os.path.exists(res_dir):
+        os.makedirs(res_dir)
+    log_dir = os.path.join(res_dir, 'logs')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    logging.basicConfig(filename=os.path.join(log_dir, f'log_sub-{subject}.txt'))
+
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
 
@@ -58,11 +67,12 @@ def main(study_dir, subject, roi, res_dir):
     # run Bayesian RSA
     n_ev = mat.shape[1]
     model = brsa.GBRSA(rank=n_ev)
-    model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
+    try:
+        model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
+    except ValueError:
+        logging.exception('Exception during model fitting')
 
     # save results
-    if not os.path.exists(res_dir):
-        os.makedirs(res_dir)
     var_names = [
         'U', 'L', 'C', 'nSNR', 'sigma', 'rho', 'beta', 'beta0',
         'X0', 'beta0_null', 'X0_null', 'n_nureg'
