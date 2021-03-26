@@ -8,6 +8,7 @@ import warnings
 import logging
 import numpy as np
 from scipy import stats
+from sklearn import linear_model
 from nilearn import input_data
 from brainiak.reprsimil import brsa
 
@@ -56,7 +57,6 @@ def main(study_dir, subject, roi, res_dir):
             masker.fit_transform(bold_image) for bold_image in bold_images
         ]
     )
-    image = stats.zscore(image, 0)
 
     # create design matrix
     n_vol = image.shape[0]
@@ -64,11 +64,17 @@ def main(study_dir, subject, roi, res_dir):
         subject_dir, events, n_vol, high_pass=0.003, censor=True
     )
 
+    # regress out nuisance
+    model = linear_model.LinearRegression()
+    model.fit(nuisance, image)
+    yhat = model.predict(nuisance)
+    image = stats.zscore(image - yhat, 0)
+
     # run Bayesian RSA
     n_ev = mat.shape[1]
     model = brsa.GBRSA(rank=n_ev)
     try:
-        model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
+        model.fit([image], [mat], scan_onsets=scan_onsets)
     except ValueError:
         logging.exception('Exception during model fitting')
 
