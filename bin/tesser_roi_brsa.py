@@ -18,11 +18,8 @@ from tesser import rsa
 
 def main(study_dir, subject, roi, res_dir):
     # set up log
-    if not os.path.exists(res_dir):
-        os.makedirs(res_dir)
     log_dir = os.path.join(res_dir, 'logs')
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+    os.makedirs(log_dir, exist_ok=True)
     logging.basicConfig(filename=os.path.join(log_dir, f'log_sub-{subject}.txt'))
 
     # load task information
