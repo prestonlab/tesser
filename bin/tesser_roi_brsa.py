@@ -20,7 +20,10 @@ def main(study_dir, subject, roi, res_dir, blocks):
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
-    logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)
+    logging.basicConfig(
+        filename=log_file, filemode='w', level=logging.INFO,
+        format='%(asctime)s %(levelname)s:%(message)s'
+    )
     logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
     # load task information
