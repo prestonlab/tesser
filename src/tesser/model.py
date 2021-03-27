@@ -2,7 +2,6 @@
 
 import numpy as np
 from tesser import sr
-import os
 
 
 def learn_sr(struct, gamma, alpha, n_state):
