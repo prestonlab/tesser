@@ -3,6 +3,7 @@
 # Run partial representational similarity analysis on a region.
 
 import os
+import warnings
 import numpy as np
 import scipy.spatial.distance as sd
 import pandas as pd
@@ -11,6 +12,8 @@ from mindstorm import subjutil
 from mindstorm import prsa
 from tesser import util
 from tesser import model
+
+warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
