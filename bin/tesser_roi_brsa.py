@@ -19,7 +19,8 @@ def main(study_dir, subject, roi, res_dir):
     # set up log
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
-    logging.basicConfig(filename=os.path.join(log_dir, f'log_sub-{subject}.txt'))
+    log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
+    logging.basicConfig(filename=log_file, filemode='w')
 
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
