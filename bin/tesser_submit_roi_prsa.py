@@ -18,7 +18,7 @@ def submit_brsa(subjects, rois, blocks, study_dir, rsa_name):
         inputs = f'{beh_dir} {rsa_name} {roi}'
         for block in blocks:
             options = f'--study-dir={study_dir} -b {block} -p 100000'
-            res_name = f'prsa_{block_name[block]}_com-sr0-sr90'
+            res_name = f'{rsa_name}_{block_name[block]}_com-sr0-sr90'
             for subject in subjects:
                 print(f'tesser_roi_prsa.py {subject} {inputs} {res_name} {options}')
 
