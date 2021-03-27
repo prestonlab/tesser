@@ -4,6 +4,7 @@
 
 import os
 import warnings
+import logging
 import numpy as np
 import scipy.spatial.distance as sd
 import pandas as pd
@@ -20,6 +21,12 @@ from tesser import rsa
 def main(
     subject, study_dir, beh_dir, rsa_name, roi, res_name, block=None, n_perm=1000
 ):
+    # set up log
+    res_dir = os.path.join(study_dir, 'batch', 'prsa', res_name, roi)
+    log_dir = os.path.join(res_dir, 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    logging.basicConfig(filename=os.path.join(log_dir, f'log_sub-{subject}.txt'))
+
     # load dissimilarity matrix
     rsa_dir = os.path.join(study_dir, 'batch', 'rsa', rsa_name, roi)
     roi_rdm = 1 - np.load(os.path.join(rsa_dir, f'sub-{subject}_brsa.npz'))['C']
@@ -69,9 +76,6 @@ def main(
         zstat[i] = prsa.perm_z(stat)
 
     # save results
-    res_dir = os.path.join(study_dir, 'batch', 'prsa', res_name, roi)
-    if not os.path.exists(res_dir):
-        os.makedirs(res_dir, exist_ok=True)
     df = pd.DataFrame({'rho': rho, 'zstat': zstat}, index=model_names)
     res_file = os.path.join(res_dir, f'zstat_{subject}.csv')
     df.to_csv(res_file)
