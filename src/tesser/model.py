@@ -33,5 +33,5 @@ def learn_sr(struct, gamma, alpha, n_state):
     for (part, run), df in struct.groupby(['part', 'run']):
         envstep = df['object'].to_numpy() - 1
         envstep = envstep.astype(np.dtype('i'))
-        csr.learn_sr(envstep, gamma, alpha, M, n_state, onehot)
+        sr.learn_sr(envstep, gamma, alpha, M, n_state, onehot)
     return M
