@@ -36,7 +36,7 @@ def main(
 
     # get trial pairs to test
     n_state = 21
-    if block is not None:
+    if block is not None and roi_rdm.shape[0] > n_state:
         if block == 'walk':
             roi_rdm = roi_rdm[:n_state, :n_state]
         elif block == 'random':
