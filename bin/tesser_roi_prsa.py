@@ -26,9 +26,11 @@ def main(
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     logging.basicConfig(filename=os.path.join(log_dir, f'log_sub-{subject}.txt'))
+    logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
     # load dissimilarity matrix
     rsa_dir = os.path.join(study_dir, 'batch', 'rsa', rsa_name, roi)
+    logging.info(f'Loading BRSA correlations from {rsa_dir}.')
     roi_rdm = 1 - np.load(os.path.join(rsa_dir, f'sub-{subject}_brsa.npz'))['C']
 
     # get trial pairs to test
@@ -40,8 +42,10 @@ def main(
             roi_rdm = roi_rdm[n_state:, n_state:]
         else:
             raise ValueError(f'Invalid block type: {block}')
+        logging.info(f'Analyzing the {block} blocks only.')
 
     # load structure learning data
+    logging.info(f'Loading behavioral data from {beh_dir}.')
     struct = util.load_struct(beh_dir, [subject])
 
     # simple model: items in different communities are less similar
@@ -61,11 +65,13 @@ def main(
     model_names = ['community', 'sr0', 'sr90']
 
     # initialize the permutation test
+    logging.info('Initializing PRSA test.')
     perm = prsa.init_pRSA(n_perm, model_rdms, rank=False)
     data_vec = sd.pdist(roi_rdm)
     n_model = len(model_rdms)
 
     # calculate permutation correlations
+    logging.info('Testing significance of partial correlations.')
     rho = np.zeros(n_model)
     zstat = np.zeros(n_model)
     for i in range(n_model):
@@ -78,6 +84,7 @@ def main(
     # save results
     df = pd.DataFrame({'rho': rho, 'zstat': zstat}, index=model_names)
     res_file = os.path.join(res_dir, f'zstat_{subject}.csv')
+    logging.info(f'Saving results to {res_file}.')
     df.to_csv(res_file)
 
 
