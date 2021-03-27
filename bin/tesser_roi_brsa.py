@@ -20,7 +20,8 @@ def main(study_dir, subject, roi, res_dir, blocks):
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
-    logging.basicConfig(filename=log_file, filemode='w')
+    logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)
+    logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
@@ -38,6 +39,7 @@ def main(study_dir, subject, roi, res_dir, blocks):
         subject_dir, 'anatomy', 'antsreg', 'data', 'funcunwarpspace',
         'rois', 'mni', f'{roi}.nii.gz'
     )
+    logging.info(f'Masking with {mask_image}.')
 
     # load masked functional images
     runs = list(range(1, 7))
@@ -49,6 +51,7 @@ def main(study_dir, subject, roi, res_dir, blocks):
         ) for run in runs
     ]
     masker = input_data.NiftiMasker(mask_img=mask_image)
+    logging.info(f'Loading functional data for runs starting with {bold_images[0]}.')
     image = np.vstack(
         [
             masker.fit_transform(bold_image) for bold_image in bold_images
@@ -76,6 +79,7 @@ def main(study_dir, subject, roi, res_dir, blocks):
         raise ValueError(f'Invalid blocks: {blocks}')
 
     # trim mat to get blocks of interest, add excluded blocks to nuisance
+    logging.info(f'Modeling covariance of {blocks} blocks.')
     if exclude is not None:
         mat_include = mat[:, include].copy()
         mat_exclude = mat[:, exclude].copy()
@@ -85,10 +89,11 @@ def main(study_dir, subject, roi, res_dir, blocks):
     # run Bayesian RSA
     n_ev = mat.shape[1]
     model = brsa.GBRSA(rank=n_ev)
+    logging.info(f'Fitting GBRSA model with rank {n_ev}.')
     try:
         model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
     except ValueError:
-        logging.exception('Exception during model fitting')
+        logging.exception('Exception during model fitting.')
 
     # save results
     var_names = [
@@ -97,6 +102,7 @@ def main(study_dir, subject, roi, res_dir, blocks):
     ]
     results = {var: getattr(model, var + '_') for var in var_names}
     out_file = os.path.join(res_dir, f'sub-{subject}_brsa.npz')
+    logging.info(f'Saving results to {out_file}.')
     np.savez(out_file, **results)
 
 
