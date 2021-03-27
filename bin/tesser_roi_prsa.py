@@ -25,7 +25,8 @@ def main(
     res_dir = os.path.join(study_dir, 'batch', 'prsa', res_name, roi)
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
-    logging.basicConfig(filename=os.path.join(log_dir, f'log_sub-{subject}.txt'))
+    log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
+    logging.basicConfig(filename=log_file, level=logging.INFO)
     logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
     # load dissimilarity matrix
