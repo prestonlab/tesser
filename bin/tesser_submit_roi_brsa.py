@@ -22,10 +22,10 @@ def submit_brsa(subjects, rois, study_dir, res_dir, blocks):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('rois', help="name of mask to use.")
-    parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument(
         'blocks', help="blocks to include ['both','walk','random']", default='both'
     )
+    parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument('--subjects', '-s', help="ID of subjects to process.")
     args = parser.parse_args()
