@@ -22,7 +22,7 @@ def main(study_dir, subject, roi, res_dir, blocks):
     log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
     logging.basicConfig(
         filename=log_file, filemode='w', level=logging.INFO,
-        format='%(asctime)s %(levelname)s:%(message)s'
+        format='%(asctime)s %(levelname)s:%(name)s:%(message)s'
     )
     logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
