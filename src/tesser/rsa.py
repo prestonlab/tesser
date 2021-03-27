@@ -137,7 +137,7 @@ def net_prsa_perm(df, model, n_perm=1000, beta=0.05):
 
 
 def create_brsa_matrix(
-    subject_dir, events, n_vol, high_pass=0, censor=False, baseline=True
+    subject_dir, events, n_vol, high_pass=0, censor=False, baseline=False
 ):
     """Create a design matrix for Bayesian RSA."""
     # load confound files
