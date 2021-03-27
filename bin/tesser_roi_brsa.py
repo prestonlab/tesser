@@ -15,7 +15,7 @@ warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir):
+def main(study_dir, subject, roi, res_dir, blocks):
     # set up log
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
@@ -62,6 +62,26 @@ def main(study_dir, subject, roi, res_dir):
         subject_dir, events, n_vol, high_pass=0.003, censor=True, baseline=False
     )
 
+    # split design to get blocks of interest
+    if blocks == 'walk':
+        include = slice(None, n_item)
+        exclude = slice(n_item, None)
+    elif blocks == 'random':
+        include = slice(n_item, None)
+        exclude = slice(None, n_item)
+    elif blocks == 'both':
+        include = None
+        exclude = None
+    else:
+        raise ValueError(f'Invalid blocks: {blocks}')
+
+    # trim mat to get blocks of interest, add excluded blocks to nuisance
+    if exclude is not None:
+        mat_include = mat[:, include].copy()
+        mat_exclude = mat[:, exclude].copy()
+        mat = mat_include
+        nuisance = np.hstack((mat_exclude, nuisance))
+
     # run Bayesian RSA
     n_ev = mat.shape[1]
     model = brsa.GBRSA(rank=n_ev)
@@ -85,6 +105,9 @@ if __name__ == '__main__':
     parser.add_argument('subject', help="ID of subject to process.")
     parser.add_argument('roi', help="name of mask to use.")
     parser.add_argument('res_dir', help="path to directory to save results.")
+    parser.add_argument(
+        'blocks', help="blocks to include ['both','walk','random']", default='both'
+    )
     parser.add_argument('--study-dir', help="path to main study data directory.")
     args = parser.parse_args()
 
@@ -95,4 +118,4 @@ if __name__ == '__main__':
     else:
         env_study_dir = args.study_dir
 
-    main(env_study_dir, args.subject, args.roi, args.res_dir)
+    main(env_study_dir, args.subject, args.roi, args.res_dir, args.blocks)
