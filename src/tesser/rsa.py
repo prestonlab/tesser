@@ -104,10 +104,12 @@ def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
     return df
 
 
-def load_net_prsa(rsa_dir, block, model_set, rois, subjects=None, stat='zstat'):
+def load_net_prsa(
+    rsa_dir, brsa_name, block, model_set, rois, subjects=None, stat='zstat'
+):
     """Load z-statistics for a model for a set of ROIs."""
     # get the directory with results for this model set and block
-    res_dir = os.path.join(rsa_dir, f'prsa_{block}_{model_set}')
+    res_dir = os.path.join(rsa_dir, f'{brsa_name}_{block}_{model_set}')
     if not os.path.exists(res_dir):
         raise IOError(f'Results directory not found: {res_dir}')
 
