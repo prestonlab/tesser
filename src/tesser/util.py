@@ -178,9 +178,9 @@ def load_induct(data_dir, subjects=None):
             'cue': raw['CueNum'],
             'opt1': raw['Opt1Num'],
             'opt2': raw['Opt2Num'],
-            'response': raw['Resp'].astype('Int64'),
+            'response': raw['Resp'],
             'response_time': raw['RT'],
-            'correct': raw['Acc'].astype('Int64'),
+            'correct': raw['Acc'],
         }
     )
     df['trial_type'].cat.reorder_categories(
