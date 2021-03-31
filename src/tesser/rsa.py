@@ -111,7 +111,7 @@ def load_roi_brsa_vec(res_dir, roi, blocks=None, subjects=None):
         if blocks is not None:
             if blocks == 'walk':
                 rdm = rdm[:21, :21]
-            elif blocks == 'random':
+            elif blocks in ['rand', 'random']:
                 rdm = rdm[21:, 21:]
             else:
                 raise ValueError(f'Invalid blocks setting: {blocks}')
