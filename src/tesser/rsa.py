@@ -86,11 +86,11 @@ def load_roi_brsa(res_dir, rois, blocks=None, subjects=None):
     return rdms
 
 
-def load_roi_mean_brsa(res_dir, rois, subjects=None):
+def load_roi_mean_brsa(res_dir, rois, blocks=None, subjects=None):
     """Load mean correlation matrices from BRSA results."""
     if subjects is None:
         subjects = util.get_subj_list()
-    rdms = load_roi_brsa(res_dir, rois, subjects)
+    rdms = load_roi_brsa(res_dir, rois, blocks, subjects)
     n_subj = len(subjects)
     mrdm = {
         roi: np.mean(
