@@ -88,6 +88,27 @@ def load_roi_mean_brsa(res_dir, rois, subjects=None):
     return mrdm
 
 
+def load_roi_brsa_vec(res_dir, roi, blocks=None, subjects=None):
+    """Load correlation matrices from BRSA results."""
+    if subjects is None:
+        subjects = util.get_subj_list()
+
+    rdv_list = []
+    for subject in subjects:
+        rdm = np.load(os.path.join(res_dir, roi, f'sub-{subject}_brsa.npz'))['C']
+        if blocks is not None:
+            if blocks == 'walk':
+                rdm = rdm[:21, :21]
+            elif blocks == 'random':
+                rdm = rdm[21:, 21:]
+            else:
+                raise ValueError(f'Invalid blocks setting: {blocks}')
+        rdv = sd.squareform(rdm, checks=False)
+        rdv_list.append(rdv)
+    rdvs = np.vstack(rdv_list)
+    return rdvs
+
+
 def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
     """Load z-statistic from permutation test results."""
     if subjects is None:
