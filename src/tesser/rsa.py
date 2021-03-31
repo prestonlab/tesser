@@ -61,13 +61,25 @@ def make_sym_matrix(asym_mat):
     return sym_mat
 
 
-def load_roi_brsa(res_dir, rois, subjects=None):
+def load_roi_brsa(res_dir, rois, blocks=None, subjects=None):
     """Load correlation matrices from BRSA results."""
     if subjects is None:
         subjects = util.get_subj_list()
+
+    if blocks is None:
+        ind = slice(None, None)
+    elif blocks == 'walk':
+        ind = slice(None, 21)
+    elif blocks in ['rand', 'random']:
+        ind = slice(21, None)
+    else:
+        raise ValueError(f'Invalid blocks setting: {blocks}')
+
     rdms = {
         roi: [
-            np.load(os.path.join(res_dir, roi, f'sub-{subject}_brsa.npz'))['C']
+            np.load(
+                os.path.join(res_dir, roi, f'sub-{subject}_brsa.npz')
+            )['C'][ind, ind]
             for subject in subjects
         ] for roi in rois
     }
