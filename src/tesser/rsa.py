@@ -16,6 +16,10 @@ def get_roi_sets():
     """Get a list of rois included in a set."""
     rois = {
         'hpc3': ['b_hip_ant', 'b_hip_body', 'b_hip_tail'],
+        'hpc3b': [
+            'r_hip_ant', 'r_hip_body', 'r_hip_tail',
+            'l_hip_ant', 'l_hip_body', 'l_hip_tail',
+        ],
         'mpfc9': ['10m', '10p', '10r', '11m', '14c', '14r', '24', '25', '32pl'],
         'mpfc3': ['ampfc', 'mmpfc', 'pmpfc'],
     }
