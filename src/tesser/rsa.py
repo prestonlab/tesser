@@ -9,6 +9,7 @@ from scipy import stats
 from nilearn.glm import first_level
 from mindstorm import prsa
 from tesser import util
+from tesser import network
 
 
 def get_roi_sets():
@@ -119,6 +120,24 @@ def load_roi_brsa_vec(res_dir, roi, blocks=None, subjects=None):
         rdv_list.append(rdv)
     rdvs = np.vstack(rdv_list)
     return rdvs
+
+
+def mean_corr_community(rdvs, subjects):
+    """Calculate mean correlations for within and across community."""
+    nodes = network.node_info()
+    comm = nodes['community'].to_numpy()
+    within_mat = comm == comm[:, None]
+    within_vec = sd.squareform(within_mat, checks=False)
+
+    df_list = []
+    for roi, vectors in rdvs.items():
+        m_within = np.mean(vectors[:, within_vec == 1], 1)
+        m_across = np.mean(vectors[:, within_vec == 0], 1)
+        df = pd.DataFrame({'within': m_within, 'across': m_across}, index=subjects)
+        df_list.append(df)
+    results = pd.concat(df_list, keys=rdvs.keys())
+    results.index.rename(['roi', 'subject'], inplace=True)
+    return results
 
 
 def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
