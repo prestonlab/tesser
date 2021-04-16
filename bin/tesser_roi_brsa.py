@@ -8,7 +8,7 @@ import warnings
 import logging
 import numpy as np
 from scipy import stats
-from nilearn import input_data
+import nibabel as nib
 from brainiak.reprsimil import brsa
 
 warnings.simplefilter('ignore', FutureWarning)
@@ -44,7 +44,13 @@ def main(study_dir, subject, roi, res_dir, blocks):
     )
     logging.info(f'Masking with {mask_image}.')
 
-    # load masked functional images
+    # load mask and get coordinates
+    mask_img = nib.load(mask_image)
+    mask_data = mask_img.get_fdata()
+    mask_ind = np.nonzero(mask_data)
+    mask_coords = np.vstack(mask_ind).T
+
+    # get functional image files
     runs = list(range(1, 7))
     bold_images = [
         os.path.join(
@@ -53,13 +59,17 @@ def main(study_dir, subject, roi, res_dir, blocks):
             'filtered_func_data.nii.gz'
         ) for run in runs
     ]
-    masker = input_data.NiftiMasker(mask_img=mask_image)
-    logging.info(f'Loading functional data for runs starting with {bold_images[0]}.')
-    image = np.vstack(
-        [
-            masker.fit_transform(bold_image) for bold_image in bold_images
-        ]
-    )
+
+    # load functional data
+    image_list = []
+    for bold_image in bold_images:
+        logging.info(f'Loading functional data for {bold_image}.')
+        bold_img = nib.load(bold_image)
+        bold_data = bold_img.get_fdata()
+        bold_mat = bold_data[mask_ind].T
+        image_list.append(bold_mat)
+    image = np.vstack(image_list)
+    inten = np.mean(image, 0)
     image = stats.zscore(image, axis=0)
 
     # create design matrix
