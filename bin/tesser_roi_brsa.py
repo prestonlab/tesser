@@ -24,7 +24,7 @@ def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA'):
         filename=log_file, filemode='w', level=logging.INFO,
         format='%(asctime)s %(levelname)s:%(name)s:%(message)s'
     )
-    logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
+    logging.info(f'Analyzing data from subject {subject} and ROI {roi} using {method}.')
 
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
@@ -114,7 +114,7 @@ def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA'):
     else:
         raise ValueError(f'Invalid method: {method}.')
 
-    logging.info(f'Fitting GBRSA model with rank {n_ev}.')
+    logging.info(f'Fitting {method} model with rank {n_ev}.')
     try:
         model.fit(images, mats, nuisance=nuisance, scan_onsets=scan_onsets, **kwargs)
     except ValueError:
