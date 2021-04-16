@@ -15,7 +15,7 @@ warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir, blocks):
+def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA'):
     # set up log
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
@@ -101,10 +101,22 @@ def main(study_dir, subject, roi, res_dir, blocks):
 
     # run Bayesian RSA
     n_ev = mat.shape[1]
-    model = brsa.GBRSA(rank=n_ev)
+    if method == 'GBRSA':
+        model = brsa.GBRSA(rank=n_ev)
+        images = [image]
+        mats = [mat]
+        kwargs = {}
+    elif method == 'BRSA':
+        model = brsa.BRSA(rank=n_ev, GP_space=True, GP_inten=True)
+        images = image
+        mats = mat
+        kwargs = {'coords': mask_coords, 'inten': inten}
+    else:
+        raise ValueError(f'Invalid method: {method}.')
+
     logging.info(f'Fitting GBRSA model with rank {n_ev}.')
     try:
-        model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
+        model.fit(images, mats, nuisance=nuisance, scan_onsets=scan_onsets, **kwargs)
     except ValueError:
         logging.exception('Exception during model fitting.')
 
@@ -128,6 +140,9 @@ if __name__ == '__main__':
     )
     parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
+    parser.add_argument(
+        '--method', '-m', default='GBRSA', help="modeling method ('BRSA', ['GBRSA'])"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -137,4 +152,7 @@ if __name__ == '__main__':
     else:
         env_study_dir = args.study_dir
 
-    main(env_study_dir, args.subject, args.roi, args.res_dir, args.blocks)
+    main(
+        env_study_dir, args.subject, args.roi, args.res_dir, args.blocks,
+        method=args.method
+    )
