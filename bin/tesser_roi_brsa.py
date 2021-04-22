@@ -15,7 +15,7 @@ warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA'):
+def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA', gp=False):
     # set up log
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
@@ -107,10 +107,16 @@ def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA'):
         mats = [mat]
         kwargs = {}
     elif method == 'BRSA':
-        model = brsa.BRSA(rank=n_ev, GP_space=True, GP_inten=True)
+        if gp:
+            model = brsa.BRSA(rank=n_ev, GP_space=True, GP_inten=True)
+            kwargs = {'coords': mask_coords, 'inten': inten}
+            logging.info('Using BRSA with gaussian process prior for SNR.')
+        else:
+            model = brsa.BRSA(rank=n_ev)
+            kwargs = {}
+            logging.info('Using BRSA without gaussian process prior for SNR.')
         images = image
         mats = mat
-        kwargs = {'coords': mask_coords, 'inten': inten}
     else:
         raise ValueError(f'Invalid method: {method}.')
 
@@ -143,6 +149,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--method', '-m', default='GBRSA', help="modeling method ('BRSA', ['GBRSA'])"
     )
+    parser.add_argument(
+        '--gaussian-process', '-g', action='store_true',
+        help="use GP as a prior for SNR (BRSA only)"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -154,5 +164,5 @@ if __name__ == '__main__':
 
     main(
         env_study_dir, args.subject, args.roi, args.res_dir, args.blocks,
-        method=args.method
+        method=args.method, gp=args.gaussian_process
     )
