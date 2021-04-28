@@ -178,11 +178,23 @@ def load_induct(data_dir, subjects=None):
             'cue': raw['CueNum'],
             'opt1': raw['Opt1Num'],
             'opt2': raw['Opt2Num'],
+            'within': 0,
             'response': raw['Resp'],
             'response_time': raw['RT'],
             'correct': raw['Acc'],
         }
     )
+
+    # label the "correct" (within-community) response
+    opt1_comm = nodes.loc[df['opt1'], 'community'].to_numpy()
+    opt2_comm = nodes.loc[df['opt2'], 'community'].to_numpy()
+    opt_comm = np.vstack((opt1_comm, opt2_comm))
+    i, j = np.nonzero(opt_comm == df['community'].to_numpy())
+    within = np.zeros(opt1_comm.shape, dtype=int)
+    within[j[i == 0]] = 1
+    within[j[i == 1]] = 2
+    df['within'] = within
+
     df['trial_type'].cat.reorder_categories(
         ['central', 'boundary1', 'boundary2'], inplace=True
     )
