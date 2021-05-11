@@ -4,13 +4,13 @@
 
 import os
 import argparse
-from tesser import util
+from tesser import tasks
 from tesser import rsa
 
 
 def submit_brsa(subjects, rois, study_dir, res_name, blocks):
     if subjects is None:
-        subjects = util.get_subj_list()
+        subjects = tasks.get_subj_list()
 
     res_dir = os.path.join(study_dir, 'batch', 'rsa', res_name)
     options = f'--study-dir={study_dir}'

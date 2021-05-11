@@ -8,7 +8,7 @@ from scipy import linalg
 from scipy import stats
 from nilearn.glm import first_level
 from mindstorm import prsa
-from tesser import util
+from tesser import tasks
 from tesser import network
 
 
@@ -69,7 +69,7 @@ def make_sym_matrix(asym_mat):
 def load_roi_brsa(res_dir, rois, blocks=None, subjects=None):
     """Load correlation matrices from BRSA results."""
     if subjects is None:
-        subjects = util.get_subj_list()
+        subjects = tasks.get_subj_list()
 
     if blocks is None:
         ind = slice(None, None)
@@ -94,7 +94,7 @@ def load_roi_brsa(res_dir, rois, blocks=None, subjects=None):
 def load_roi_mean_brsa(res_dir, rois, blocks=None, subjects=None):
     """Load mean correlation matrices from BRSA results."""
     if subjects is None:
-        subjects = util.get_subj_list()
+        subjects = tasks.get_subj_list()
     rdms = load_roi_brsa(res_dir, rois, blocks, subjects)
     n_subj = len(subjects)
     mrdm = {
@@ -108,7 +108,7 @@ def load_roi_mean_brsa(res_dir, rois, blocks=None, subjects=None):
 def load_roi_brsa_vec(res_dir, roi, blocks=None, subjects=None):
     """Load correlation matrices from BRSA results."""
     if subjects is None:
-        subjects = util.get_subj_list()
+        subjects = tasks.get_subj_list()
 
     rdv_list = []
     for subject in subjects:
@@ -147,7 +147,7 @@ def mean_corr_community(rdvs, subjects):
 def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
     """Load z-statistic from permutation test results."""
     if subjects is None:
-        subjects = util.get_subj_list()
+        subjects = tasks.get_subj_list()
 
     z = []
     for subject in subjects:
