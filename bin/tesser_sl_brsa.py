@@ -4,9 +4,12 @@
 
 import os
 import shutil
+import warnings
 import argparse
 from brainiak.reprsimil import brsa
+
 from tesser import mvpa
+warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
