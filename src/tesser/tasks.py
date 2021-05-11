@@ -1,6 +1,7 @@
 """Utilities for loading Tesser behavioral data."""
 
 import numpy as np
+from scipy.spatial import distance
 import pandas as pd
 import os
 from glob import glob
@@ -311,3 +312,29 @@ def load_group(data_dir, subjects=None):
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
     return df
+
+
+def group_distance(data):
+    """Calculate within and across group distance."""
+    # calculate pairwise distances (stored as vectors)
+    rdv_list = []
+    for _, df in data.groupby('subject'):
+        coords = df.filter(like='dim').to_numpy()
+        subj_rdv = distance.pdist(coords, 'euclidean')
+        rdv_list.append(subj_rdv)
+    rdv = np.vstack(rdv_list)
+
+    # get a vector that is ones for within-community pairs
+    nodes = network.node_info()
+    comm = nodes['community'].to_numpy()
+    within = comm == comm[:, None]
+    within_vec = distance.squareform(within, checks=False)
+
+    # calculate distance stats
+    subject = data['subject'].unique()
+    m_within = np.mean(rdv[:, within_vec == 1], axis=1)
+    m_across = np.mean(rdv[:, within_vec == 0], axis=1)
+    res = pd.DataFrame(
+        {'subject': subject, 'within': m_within, 'across': m_across}
+    )
+    return res
