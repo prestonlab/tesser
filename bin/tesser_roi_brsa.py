@@ -8,14 +8,14 @@ import warnings
 import logging
 import numpy as np
 from scipy import stats
-from nilearn import input_data
+import nibabel as nib
 from brainiak.reprsimil import brsa
 
 warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir, blocks):
+def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA', gp=False):
     # set up log
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
@@ -24,7 +24,7 @@ def main(study_dir, subject, roi, res_dir, blocks):
         filename=log_file, filemode='w', level=logging.INFO,
         format='%(asctime)s %(levelname)s:%(name)s:%(message)s'
     )
-    logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
+    logging.info(f'Analyzing data from subject {subject} and ROI {roi} using {method}.')
 
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
@@ -44,7 +44,13 @@ def main(study_dir, subject, roi, res_dir, blocks):
     )
     logging.info(f'Masking with {mask_image}.')
 
-    # load masked functional images
+    # load mask and get coordinates
+    mask_img = nib.load(mask_image)
+    mask_data = mask_img.get_fdata()
+    mask_ind = np.nonzero(mask_data)
+    mask_coords = np.vstack(mask_ind).T
+
+    # get functional image files
     runs = list(range(1, 7))
     bold_images = [
         os.path.join(
@@ -53,13 +59,17 @@ def main(study_dir, subject, roi, res_dir, blocks):
             'filtered_func_data.nii.gz'
         ) for run in runs
     ]
-    masker = input_data.NiftiMasker(mask_img=mask_image)
-    logging.info(f'Loading functional data for runs starting with {bold_images[0]}.')
-    image = np.vstack(
-        [
-            masker.fit_transform(bold_image) for bold_image in bold_images
-        ]
-    )
+
+    # load functional data
+    image_list = []
+    for bold_image in bold_images:
+        logging.info(f'Loading functional data for {bold_image}.')
+        bold_img = nib.load(bold_image)
+        bold_data = bold_img.get_fdata()
+        bold_mat = bold_data[mask_ind].T
+        image_list.append(bold_mat)
+    image = np.vstack(image_list)
+    inten = np.mean(image, 0)
     image = stats.zscore(image, axis=0)
 
     # create design matrix
@@ -91,10 +101,28 @@ def main(study_dir, subject, roi, res_dir, blocks):
 
     # run Bayesian RSA
     n_ev = mat.shape[1]
-    model = brsa.GBRSA(rank=n_ev)
-    logging.info(f'Fitting GBRSA model with rank {n_ev}.')
+    if method == 'GBRSA':
+        model = brsa.GBRSA(rank=n_ev)
+        images = [image]
+        mats = [mat]
+        kwargs = {}
+    elif method == 'BRSA':
+        if gp:
+            model = brsa.BRSA(rank=n_ev, GP_space=True, GP_inten=True)
+            kwargs = {'coords': mask_coords, 'inten': inten}
+            logging.info('Using BRSA with gaussian process prior for SNR.')
+        else:
+            model = brsa.BRSA(rank=n_ev)
+            kwargs = {}
+            logging.info('Using BRSA without gaussian process prior for SNR.')
+        images = image
+        mats = mat
+    else:
+        raise ValueError(f'Invalid method: {method}.')
+
+    logging.info(f'Fitting {method} model with rank {n_ev}.')
     try:
-        model.fit([image], [mat], nuisance=nuisance, scan_onsets=scan_onsets)
+        model.fit(images, mats, nuisance=nuisance, scan_onsets=scan_onsets, **kwargs)
     except ValueError:
         logging.exception('Exception during model fitting.')
 
@@ -114,10 +142,17 @@ if __name__ == '__main__':
     parser.add_argument('subject', help="ID of subject to process.")
     parser.add_argument('roi', help="name of mask to use.")
     parser.add_argument(
-        'blocks', help="blocks to include ['both','walk','random']", default='both'
+        'blocks', help="blocks to include ('both','walk','random')",
     )
     parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
+    parser.add_argument(
+        '--method', '-m', default='GBRSA', help="modeling method ('BRSA', ['GBRSA'])"
+    )
+    parser.add_argument(
+        '--gaussian-process', '-g', action='store_true',
+        help="use GP as a prior for SNR (BRSA only)"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -127,4 +162,7 @@ if __name__ == '__main__':
     else:
         env_study_dir = args.study_dir
 
-    main(env_study_dir, args.subject, args.roi, args.res_dir, args.blocks)
+    main(
+        env_study_dir, args.subject, args.roi, args.res_dir, args.blocks,
+        method=args.method, gp=args.gaussian_process
+    )

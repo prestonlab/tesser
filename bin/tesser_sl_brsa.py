@@ -4,9 +4,12 @@
 
 import os
 import shutil
+import warnings
 import argparse
 from brainiak.reprsimil import brsa
+
 from tesser import mvpa
+warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
@@ -38,10 +41,10 @@ def main(
 
     # set up BRSA model
     minimize_options = {'disp': False, 'gtol': tol, 'maxiter': 6}
-    model = brsa.GBRSA(tol=tol, minimize_options=minimize_options)
-    n_ev = 21 * 2
     n_vol = ds.shape[0]
     mat, nuisance, scan_onsets = rsa.create_brsa_matrix(subject_dir, events, n_vol)
+    n_ev = mat.shape[1]
+    model = brsa.GBRSA(rank=n_ev, tol=tol, minimize_options=minimize_options)
     m = mvpa.ItemBRSA(model, n_ev, mat, nuisance, scan_onsets)
 
     # run searchlight

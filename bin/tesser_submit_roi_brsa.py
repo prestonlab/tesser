@@ -8,12 +8,12 @@ from tesser import tasks
 from tesser import rsa
 
 
-def submit_brsa(subjects, rois, study_dir, res_name, blocks):
+def submit_brsa(subjects, rois, study_dir, res_name, blocks, method):
     if subjects is None:
         subjects = tasks.get_subj_list()
 
     res_dir = os.path.join(study_dir, 'batch', 'rsa', res_name)
-    options = f'--study-dir={study_dir}'
+    options = f'-m {method} --study-dir={study_dir}'
     for roi in rois:
         roi_dir = os.path.join(res_dir, roi)
         for subject in subjects:
@@ -29,6 +29,9 @@ if __name__ == '__main__':
     parser.add_argument('res_name', help="name for results directory.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument('--subjects', '-s', help="ID of subjects to process.")
+    parser.add_argument(
+        '--method', '-m', default='GBRSA', help="modeling method ('BRSA', ['GBRSA'])"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -44,4 +47,6 @@ if __name__ == '__main__':
         inc_subjects = None
 
     inc_rois = rsa.parse_rois(args.rois)
-    submit_brsa(inc_subjects, inc_rois, env_study_dir, args.res_name, args.blocks)
+    submit_brsa(
+        inc_subjects, inc_rois, env_study_dir, args.res_name, args.blocks, args.method
+    )
