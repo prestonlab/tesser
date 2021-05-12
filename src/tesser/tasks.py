@@ -221,6 +221,9 @@ def load_induct(data_dir, subjects=None):
         }
     )
 
+    # relabel trials with no response as having NaN accuracy
+    df.loc[df['response'].isna(), 'correct'] = np.nan
+
     # label the "correct" (within-community) response
     opt1_comm = nodes.loc[df['opt1'], 'community'].to_numpy()
     opt2_comm = nodes.loc[df['opt2'], 'community'].to_numpy()
