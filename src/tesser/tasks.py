@@ -225,13 +225,14 @@ def rotation_perf(data):
     n_fa = np.count_nonzero(
         (data['orientation'] == 'canonical') & (data['response'] == 'rotated')
     )
+    rr = np.count_nonzero(response) / len(data)
     hr = n_hit / n_rot
     far = n_fa / n_can
     zhr = response_zscore(n_hit, n_rot)
     zfar = response_zscore(n_fa, n_can)
     dprime = zhr - zfar
     res = pd.Series(
-        {'hr': hr, 'far': far, 'zhr': zhr, 'zfar': zfar, 'dprime': dprime}
+        {'rr': rr, 'hr': hr, 'far': far, 'zhr': zhr, 'zfar': zfar, 'dprime': dprime}
     )
     return res
 
