@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.spatial import distance
+from scipy import stats
 import pandas as pd
 import os
 from glob import glob
@@ -200,6 +201,39 @@ def load_induct(data_dir, subjects=None):
         ['central', 'boundary1', 'boundary2'], inplace=True
     )
     return df
+
+
+def response_zscore(n, m):
+    """Z-score of response rate."""
+    rate = n / m
+    if rate == 0:
+        rate = 0.5 / m
+    elif rate == 1:
+        rate = (m - 0.5) / m
+    z = stats.norm.ppf(rate)
+    return z
+
+
+def rotation_perf(data):
+    """Calculate performance for rotation task data."""
+    response = data['response'].notna()
+    n_can = np.count_nonzero(response & (data['orientation'] == 'canonical'))
+    n_rot = np.count_nonzero(response & (data['orientation'] == 'rotated'))
+    n_hit = np.count_nonzero(
+        (data['orientation'] == 'rotated') & (data['response'] == 'rotated')
+    )
+    n_fa = np.count_nonzero(
+        (data['orientation'] == 'canonical') & (data['response'] == 'rotated')
+    )
+    hr = n_hit / n_rot
+    far = n_fa / n_can
+    zhr = response_zscore(n_hit, n_rot)
+    zfar = response_zscore(n_fa, n_can)
+    dprime = zhr - zfar
+    res = pd.Series(
+        {'hr': hr, 'far': far, 'zhr': zhr, 'zfar': zfar, 'dprime': dprime}
+    )
+    return res
 
 
 def load_parse_subject(data_dir, subject_num):
