@@ -149,10 +149,14 @@ def load_struct(data_dir, subjects=None):
 def response_zscore(n, m):
     """Z-score of response rate."""
     rate = n / m
-    if rate == 0:
-        rate = 0.5 / m
-    elif rate == 1:
-        rate = (m - 0.5) / m
+    if isinstance(n, np.ndarray):
+        rate[rate == 0] = 0.5 / m
+        rate[rate == 1] = (m - 0.5) / m
+    else:
+        if rate == 0:
+            rate = 0.5 / m
+        elif rate == 1:
+            rate = (m - 0.5) / m
     z = stats.norm.ppf(rate)
     return z
 
