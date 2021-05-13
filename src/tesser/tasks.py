@@ -184,6 +184,57 @@ def rotation_perf(data):
     return res
 
 
+def test_rotation_perf(data, n_perm):
+    """Test whether rotation task peformance is above chance."""
+    # trial types and responses
+    made_response = data['response'].notna()
+    response = data.loc[made_response, 'response'].to_numpy()
+    orientation = data.loc[made_response, 'orientation'].to_numpy()
+
+    # scramble trial responses
+    n_item = len(response)
+    rand_ind = [
+        np.random.choice(np.arange(n_item), n_item, False) for i in
+        range(n_perm - 1)
+    ]
+    rand_ind.insert(0, np.arange(n_item))
+    rand_ind = np.array(rand_ind)
+    response_perm = response[rand_ind]
+
+    # hit rate and false alarm rate
+    n_can = np.count_nonzero(orientation == 'canonical')
+    n_rot = np.count_nonzero(orientation == 'rotated')
+    n_hit = np.count_nonzero(
+        (orientation == 'rotated') & (response_perm == 'rotated'), axis=1
+    )
+    n_fa = np.count_nonzero(
+        (orientation == 'canonical') & (response_perm == 'rotated'), axis=1
+    )
+    rr = np.count_nonzero(response) / len(data)
+    hr = n_hit / n_rot
+    far = n_fa / n_can
+
+    # calculate dprime
+    zhr = response_zscore(n_hit, n_rot)
+    zfar = response_zscore(n_fa, n_can)
+    dprime = zhr - zfar
+
+    # significance based on permutation test
+    p = np.mean(dprime >= dprime[0])
+    res = pd.Series(
+        {
+            'rr': rr,
+            'hr': hr[0],
+            'far': far[0],
+            'zhr': zhr[0],
+            'zfar': zfar[0],
+            'dprime': dprime[0],
+            'p': p,
+        }
+    )
+    return res
+
+
 def load_induct_subject(data_dir, subject_num):
     """Load dataframe of inductive generalization task for one subject."""
     file_pattern = f'tesserScan_{subject_num}_*_InductGen.txt'
