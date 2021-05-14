@@ -358,7 +358,7 @@ def load_parse(data_dir, subjects=None):
             'prev_walk': raw['prev_walk'],
             'object': raw['objnum'],
             'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
-            'response': raw['resp'].map(response_type).astype('Int64'),
+            'response': raw['resp'].map(response_type),
             'response_time': raw['rt'],
         }
     )
