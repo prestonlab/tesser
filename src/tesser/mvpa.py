@@ -19,9 +19,12 @@ def load_struct_timeseries(
     bold_images = []
     for run in runs:
         bold = os.path.join(
-            subject_dir, 'BOLD', 'antsreg', 'data',
+            subject_dir,
+            'BOLD',
+            'antsreg',
+            'data',
             f'functional_run_{run}_bold_mcf_brain_corr_notemp.feat',
-            'filtered_func_data.nii.gz'
+            'filtered_func_data.nii.gz',
         )
         if not os.path.exists(bold):
             raise IOError(f'BOLD file does not exist: {bold}')
@@ -68,6 +71,7 @@ def load_struct_timeseries(
 
 class ItemBRSA(Measure):
     """Bayesian RSA of item patterns."""
+
     def _call(self, ds):
         pass
 

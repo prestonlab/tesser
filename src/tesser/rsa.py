@@ -17,8 +17,12 @@ def get_roi_sets():
     rois = {
         'hpc3': ['b_hip_ant', 'b_hip_body', 'b_hip_tail'],
         'hpc3b': [
-            'r_hip_ant', 'r_hip_body', 'r_hip_tail',
-            'l_hip_ant', 'l_hip_body', 'l_hip_tail',
+            'r_hip_ant',
+            'r_hip_body',
+            'r_hip_tail',
+            'l_hip_ant',
+            'l_hip_body',
+            'l_hip_tail',
         ],
         'mpfc9': ['10m', '10p', '10r', '11m', '14c', '14r', '24', '25', '32pl'],
         'mpfc3': ['ampfc', 'mmpfc', 'pmpfc'],
@@ -46,8 +50,12 @@ def load_vol_info(study_dir, subject):
     runs = list(range(1, 7))
     for i, run in enumerate(runs):
         vol_file = os.path.join(
-            study_dir, 'batch', 'analysis', 'rsa_beta', 'rsa_event_textfiles',
-            f'tesser_{subject}_run{run}_info.txt'
+            study_dir,
+            'batch',
+            'analysis',
+            'rsa_beta',
+            'rsa_event_textfiles',
+            f'tesser_{subject}_run{run}_info.txt',
         )
         run_data = pd.read_csv(vol_file, names=columns)
         run_data['duration'] = 1
@@ -82,11 +90,12 @@ def load_roi_brsa(res_dir, rois, blocks=None, subjects=None):
 
     rdms = {
         roi: [
-            np.load(
-                os.path.join(res_dir, roi, f'sub-{subject}_brsa.npz')
-            )['C'][ind, ind]
+            np.load(os.path.join(res_dir, roi, f'sub-{subject}_brsa.npz'))['C'][
+                ind, ind
+            ]
             for subject in subjects
-        ] for roi in rois
+        ]
+        for roi in rois
     }
     return rdms
 
@@ -100,7 +109,8 @@ def load_roi_mean_brsa(res_dir, rois, blocks=None, subjects=None):
     mrdm = {
         roi: np.mean(
             np.dstack([rdms[roi][subject] for subject in range(n_subj)]), axis=2
-        ) for roi in rois
+        )
+        for roi in rois
     }
     return mrdm
 

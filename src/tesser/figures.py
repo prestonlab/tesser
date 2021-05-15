@@ -3,7 +3,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
-import seaborn as sns
 
 
 def plot_group_mat(
@@ -31,13 +30,21 @@ def plot_group_mat(
         "grey": (0.95, 0.95, 0.95),
     }
     color_order = [
-        'grey', 'd_purple', 'l_purple', 'd_red', 'l_red', 'd_green', 'l_green'
+        'grey',
+        'd_purple',
+        'l_purple',
+        'd_red',
+        'l_red',
+        'd_green',
+        'l_green',
     ]
     cmap = colors.ListedColormap([node_colors[color] for color in color_order])
     ax.imshow(mat, cmap=cmap)
     ax.set(
-        xticks=np.arange(0.5, 18.5), yticks=np.arange(0.5, 10.5), xticklabels=[],
-        yticklabels=[]
+        xticks=np.arange(0.5, 18.5),
+        yticks=np.arange(0.5, 10.5),
+        xticklabels=[],
+        yticklabels=[],
     )
     ax.grid(True)
     ax.tick_params('both', bottom=False, left=False)

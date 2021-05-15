@@ -27,9 +27,11 @@ def node_info():
 
     # communities
     df['community'] = 0
-    comm = {1: [1, 2, 3, 18, 19, 20, 21],
-            2: [4, 5, 6, 7, 8, 9, 10],
-            3: [11, 12, 13, 14, 15, 16, 17]}
+    comm = {
+        1: [1, 2, 3, 18, 19, 20, 21],
+        2: [4, 5, 6, 7, 8, 9, 10],
+        3: [11, 12, 13, 14, 15, 16, 17],
+    }
     for n, items in comm.items():
         df.loc[items, 'community'] = n
 

@@ -194,8 +194,7 @@ def test_rotation_perf(data, n_perm):
     # scramble trial responses
     n_item = len(response)
     rand_ind = [
-        np.random.choice(np.arange(n_item), n_item, False) for i in
-        range(n_perm - 1)
+        np.random.choice(np.arange(n_item), n_item, False) for i in range(n_perm - 1)
     ]
     rand_ind.insert(0, np.arange(n_item))
     rand_ind = np.array(rand_ind)
@@ -427,7 +426,5 @@ def group_distance(data):
     subject = data['subject'].unique()
     m_within = np.mean(rdv[:, within_vec == 1], axis=1)
     m_across = np.mean(rdv[:, within_vec == 0], axis=1)
-    res = pd.DataFrame(
-        {'subject': subject, 'within': m_within, 'across': m_across}
-    )
+    res = pd.DataFrame({'subject': subject, 'within': m_within, 'across': m_across})
     return res
