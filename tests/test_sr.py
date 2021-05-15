@@ -174,6 +174,7 @@ def test_induct_sim2(sim1, sim2, induct_pandas):
 
 
 def test_prob_struct_induct(struct_pandas, induct_pandas):
+    """Test induction test probability given structure learning."""
     gamma = 0.9
     alpha = 0.5
     tau = 1
