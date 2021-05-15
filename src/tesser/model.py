@@ -28,9 +28,8 @@ def learn_sr(struct, gamma, alpha, n_state):
         SR Matrix for all parts and run for a given subject.
     """
     M = np.zeros([n_state, n_state])
-    onehot = np.eye(n_state, dtype=np.dtype('i'))
-    for (part, run), df in struct.groupby(['part', 'run']):
+    for _, df in struct.groupby(['part', 'run']):
         envstep = df['object'].to_numpy() - 1
         envstep = envstep.astype(np.dtype('i'))
-        sr.learn_sr(envstep, gamma, alpha, M, n_state, onehot)
+        sr.learn_sr(M, envstep, gamma, alpha)
     return M
