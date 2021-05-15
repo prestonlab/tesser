@@ -75,9 +75,14 @@ def prob_induct(induct, tau, sim1, w=None, sim2=None):
     return prob
 
 
-def prob_struct_induct(
-    struct, induct, alpha, gamma, tau, w=None, alpha2=None, gamma2=None, sim=None
-):
+def create_sim(struct, n_state, alpha=None, gamma=None, sim=None):
+    """Create a similarity matrix based on structure learning."""
+    if sim is None:
+        sim = learn_struct_sr(struct, gamma, alpha, n_state)
+    return sim
+
+
+def prob_struct_induct(struct, induct, tau, sim1_spec, w=None, sim2_spec=None):
     """
     Calculate response probabilities for induction given structure learning.
 
@@ -87,26 +92,18 @@ def prob_struct_induct(
     induct : pandas.DataFrame
         Induction test data.
 
-    alpha : float
-        Learning rate during structure learning.
-
-    gamma : float
-        Discounting factor.
-
     tau : float
         Temperature parameter for softmax choice rule.
+
+    sim1_spec : dict
+        Must specify either a 'sim' field with a similarity matrix or
+        'alpha' and 'gamma' to generate one from SR learning.
 
     w : float, optional
         Weighting of the sim1 matrix relative to sim2.
 
-    alpha2 : float, optional
-        Learning rate for second SR during structure lrearning.
-
-    gamma2 : float, optional
-        Dicounding factor for second SR.
-
-    sim : numpy.ndarray, optional
-        [item x item] array with the similarity of each item pair.
+    sim2_spec : dict, optional
+        Specification for a second similarity matrix.
 
     Returns
     -------
@@ -120,17 +117,10 @@ def prob_struct_induct(
         induct['opt1'].max(),
         induct['opt2'].max(),
     )
-    SR = learn_struct_sr(struct, gamma, alpha, n_state)
-
-    # calculate induction trial probabilities
-    if alpha2 is not None and gamma2 is not None:
-        # second SR representation
-        SR2 = learn_struct_sr(struct, gamma2, alpha2, n_state)
-        prob = prob_induct(induct, tau, SR, w=w, sim2=SR2)
-    elif sim is not None:
-        # some similarity matrix that doesn't depend on structure learning
-        prob = prob_induct(induct, tau, SR, w=w, sim2=sim)
+    sim1 = create_sim(struct, n_state, **sim1_spec)
+    if sim2_spec is None:
+        prob = prob_induct(induct, tau, sim1)
     else:
-        # just one similarity matrix based on SR
-        prob = prob_induct(induct, tau, SR)
+        sim2 = create_sim(struct, n_state, **sim2_spec)
+        prob = prob_induct(induct, tau, sim1, w, sim2)
     return prob
