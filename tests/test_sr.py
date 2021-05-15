@@ -22,3 +22,20 @@ def test_sr_trials():
         ]
     )
     np.testing.assert_allclose(SR, expected)
+
+
+def test_choice_prob_sim1():
+    """Test choice probability based on one similarity matrix."""
+    sim = np.array([[1, 2, 3], [3, 2, 1], [1, 3, 2]], dtype='double')
+    cue = 0
+    opt1 = 1
+    opt2 = 2
+    response = 0
+
+    tau = 1
+    prob = sr.prob_choice_sim1(cue, opt1, opt2, response, sim, tau)
+    np.testing.assert_allclose(prob, 0.26894142)
+
+    tau = 0.5
+    prob = sr.prob_choice_sim1(cue, opt1, opt2, response, sim, tau)
+    np.testing.assert_allclose(prob, 0.11920292)
