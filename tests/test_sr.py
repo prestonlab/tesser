@@ -38,8 +38,9 @@ def induct_cython(induct_trials):
 
 @pytest.fixture
 def induct_pandas(induct_trials):
-    trials = pd.DataFrame(induct_trials)
-    return trials
+    trials = {key: val + 1 for key, val in induct_trials.items()}
+    induct = pd.DataFrame(trials)
+    return induct
 
 
 @pytest.fixture
