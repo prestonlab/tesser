@@ -4,7 +4,7 @@ import numpy as np
 from tesser import sr
 
 
-def learn_sr(struct, gamma, alpha, n_state):
+def learn_struct_sr(struct, gamma, alpha, n_state):
     """
     Train an SR matrix on the structure-learning task.
 

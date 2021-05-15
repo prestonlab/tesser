@@ -58,7 +58,7 @@ def main(
     struct1 = struct.query('part == 1').copy()
     gamma = [0, .9]
     alpha = 0.05
-    sr_mat = [model.learn_sr(struct1, g, alpha, n_state) for g in gamma]
+    sr_mat = [model.learn_struct_sr(struct1, g, alpha, n_state) for g in gamma]
     sr_rdm = [rsa.make_sym_matrix(1 - sr / np.sum(sr)) for sr in sr_mat]
 
     # create model set
