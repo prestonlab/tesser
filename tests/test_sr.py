@@ -50,6 +50,14 @@ def struct_trials():
 
 
 @pytest.fixture
+def struct_pandas(struct_trials):
+    struct = pd.DataFrame(
+        {'subject': 1, 'part': 1, 'run': 1, 'object': struct_trials + 1}
+    )
+    return struct
+
+
+@pytest.fixture
 def struct_sr():
     srm = np.array(
         [
