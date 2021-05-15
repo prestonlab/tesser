@@ -82,7 +82,7 @@ def create_sim(struct, n_state, alpha=None, gamma=None, sim=None):
     return sim
 
 
-def prob_struct_induct(struct, induct, tau, sim1_spec, w=None, sim2_spec=None):
+def prob_struct_induct_subject(struct, induct, tau, sim1_spec, w=None, sim2_spec=None):
     """
     Calculate response probabilities for induction given structure learning.
 

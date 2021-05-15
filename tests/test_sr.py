@@ -179,7 +179,7 @@ def test_prob_struct_induct(struct_pandas, induct_pandas):
     alpha = 0.5
     tau = 1
     sim_spec = {'alpha': alpha, 'gamma': gamma}
-    prob = model.prob_struct_induct(struct_pandas, induct_pandas, tau, sim_spec)
+    prob = model.prob_struct_induct_subject(struct_pandas, induct_pandas, tau, sim_spec)
     expected = np.array(
         [0.67672246, 0.32327754, 0.38313802, 0.61686198, 0.4378235, 0.5621765]
     )
