@@ -82,10 +82,10 @@ def create_sim(struct, n_state, alpha=None, gamma=None, sim=None):
     return sim
 
 
-def eval_dependent_param(param, spec):
+def eval_dependent_param(dependent, param):
     """Evaluate dependent parameters."""
-    updated = spec.copy()
-    for key, val in spec.items():
+    updated = dependent.copy()
+    for key, val in dependent.items():
         if isinstance(val, str):
             updated[key] = eval(val, {}, param)
     return updated
