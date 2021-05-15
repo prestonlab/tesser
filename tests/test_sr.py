@@ -15,6 +15,17 @@ def sim2():
     return sim
 
 
+@pytest.fixture
+def induct_trials():
+    trials = {
+        'cue': np.array([0, 0, 1, 1, 2, 2], dtype=np.dtype('i')),
+        'opt1': np.array([1, 1, 0, 0, 0, 0], dtype=np.dtype('i')),
+        'opt2': np.array([2, 2, 2, 2, 1, 1], dtype=np.dtype('i')),
+        'response': np.array([0, 1, 0, 1, 0, 1], dtype=np.dtype('i')),
+    }
+    return trials
+
+
 def test_sr_trials():
     """Test SR learning for a set of trials."""
     gamma = 0.9
@@ -72,3 +83,16 @@ def test_choice_prob_sim2(sim1, sim2):
     w = 0
     prob = sr.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
     np.testing.assert_allclose(prob, 0.731058578)
+
+
+def test_induct_prob_sim(sim1, induct_trials):
+    """Test induction test probability based on a similarity matrix."""
+    n_trial = len(induct_trials['cue'])
+    t = induct_trials
+    tau = 1
+    trial_prob = np.zeros(n_trial, dtype='double')
+    sr.prob_induct_sim(t['cue'], t['opt1'], t['opt2'], t['response'], sim1, tau, trial_prob)
+    expected = np.array(
+        [0.26894142, 0.73105858, 0.88079708, 0.11920292, 0.11920292, 0.88079708]
+    )
+    np.testing.assert_allclose(trial_prob, expected)
