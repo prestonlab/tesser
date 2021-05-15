@@ -59,3 +59,31 @@ cpdef prob_choice_sim(
         support = support2
     prob = exp(support / tau) / (exp(support1 / tau) + exp(support2 / tau))
     return prob
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+cpdef prob_choice_sim2(
+    int cue,
+    int opt1,
+    int opt2,
+    int response,
+    double [:,:] sim1,
+    double [:,:] sim2,
+    double w,
+    double tau,
+):
+    """Choice probability given two similarity matrices."""
+    cdef double support1
+    cdef double support2
+    cdef double support
+    cdef double prob
+    support1 = w * sim1[cue, opt1] + (1.0 - w) * sim2[cue, opt1]
+    support2 = w * sim1[cue, opt2] + (1.0 - w) * sim2[cue, opt2]
+    if response == 0:
+        support = support1
+    else:
+        support = support2
+    prob = exp(support / tau) / (exp(support1 / tau) + exp(support2 / tau))
+    return prob
