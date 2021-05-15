@@ -133,7 +133,7 @@ def prob_struct_induct(
         Probability of the observed response for each induction test trial.
     """
     subjects = struct['subject'].unique()
-    questions = induct['subject'].unique()
+    questions = induct['question'].unique()
     prob = np.zeros(len(induct))
     n_state = max(
         struct['object'].max(),
