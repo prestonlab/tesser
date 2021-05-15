@@ -87,7 +87,6 @@ def test_choice_prob_sim2(sim1, sim2):
 
 def test_induct_prob_sim(sim1, induct_trials):
     """Test induction test probability based on a similarity matrix."""
-    n_trial = len(induct_trials['cue'])
     t = induct_trials
     tau = 1
     trial_prob = sr.prob_induct_sim(
