@@ -33,9 +33,9 @@ def test_choice_prob_sim1():
     response = 0
 
     tau = 1
-    prob = sr.prob_choice_sim1(cue, opt1, opt2, response, sim, tau)
+    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim, tau)
     np.testing.assert_allclose(prob, 0.26894142)
 
     tau = 0.5
-    prob = sr.prob_choice_sim1(cue, opt1, opt2, response, sim, tau)
+    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim, tau)
     np.testing.assert_allclose(prob, 0.11920292)

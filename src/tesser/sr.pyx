@@ -38,7 +38,7 @@ def learn_sr(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cpdef prob_choice_sim1(
+cpdef prob_choice_sim(
     int cue,
     int opt1,
     int opt2,
@@ -46,7 +46,7 @@ cpdef prob_choice_sim1(
     double [:,:] sim,
     double tau,
 ):
-    """Choice probability given one similarity matrix."""
+    """Choice probability given a similarity matrix."""
     cdef double support1
     cdef double support2
     cdef double support
