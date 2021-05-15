@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from tesser import sr
+from tesser import learn
 from tesser import model
 
 
@@ -70,7 +70,7 @@ def test_sr_trials(struct_trials, struct_sr):
     n_state = 6
     SR = np.zeros((n_state, n_state), dtype='double')
     env_step = struct_trials.astype(np.dtype('i'))
-    sr.learn_sr(SR, env_step, gamma, alpha)
+    learn.learn_sr(SR, env_step, gamma, alpha)
     np.testing.assert_allclose(SR, struct_sr)
 
 
@@ -82,11 +82,11 @@ def test_choice_prob_sim1(sim1):
     response = 0
 
     tau = 1
-    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim1, tau)
+    prob = learn.prob_choice_sim(cue, opt1, opt2, response, sim1, tau)
     np.testing.assert_allclose(prob, 0.26894142)
 
     tau = 0.5
-    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim1, tau)
+    prob = learn.prob_choice_sim(cue, opt1, opt2, response, sim1, tau)
     np.testing.assert_allclose(prob, 0.11920292)
 
 
@@ -99,15 +99,15 @@ def test_choice_prob_sim2(sim1, sim2):
 
     tau = 1
     w = 0.5
-    prob = sr.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
+    prob = learn.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
     np.testing.assert_allclose(prob, 0.5)
 
     w = 1
-    prob = sr.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
+    prob = learn.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
     np.testing.assert_allclose(prob, 0.26894142)
 
     w = 0
-    prob = sr.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
+    prob = learn.prob_choice_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
     np.testing.assert_allclose(prob, 0.731058578)
 
 
@@ -115,7 +115,7 @@ def test_induct_prob_sim(sim1, induct_cython):
     """Test induction test probability based on a similarity matrix."""
     t = induct_cython
     tau = 1
-    trial_prob = sr.prob_induct_sim(
+    trial_prob = learn.prob_induct_sim(
         t['cue'], t['opt1'], t['opt2'], t['response'], sim1, tau
     )
     expected = np.array(
@@ -129,7 +129,7 @@ def test_induct_prob_sim2(sim1, sim2, induct_cython):
     t = induct_cython
     tau = 1
     w = 0.5
-    trial_prob = sr.prob_induct_sim2(
+    trial_prob = learn.prob_induct_sim2(
         t['cue'], t['opt1'], t['opt2'], t['response'], sim1, sim2, w, tau
     )
     expected = np.array([0.5, 0.5, 0.62245933, 0.37754067, 0.37754067, 0.62245933])
