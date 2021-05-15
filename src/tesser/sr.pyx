@@ -87,3 +87,20 @@ cpdef prob_choice_sim2(
         support = support2
     prob = exp(support / tau) / (exp(support1 / tau) + exp(support2 / tau))
     return prob
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def prob_induct_sim(
+    int [:] cue,
+    int [:] opt1,
+    int [:] opt2,
+    int [:] response,
+    double [:,:] sim,
+    double tau,
+    double [:] trial_prob,
+):
+    """Probability of induction data based on a similarity matrix."""
+    cdef Py_ssize_t num_trials = cue.shape[0]
+    for i in range(num_trials):
+        trial_prob[i] = prob_choice_sim(cue[i], opt1[i], opt2[i], response[i], sim, tau)
