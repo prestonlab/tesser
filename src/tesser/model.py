@@ -57,10 +57,10 @@ def prob_induct(induct, tau, sim1, w=None, sim2=None):
         [item x item] array with the similarity of each item pair.
     """
     induct = induct.reset_index()
-    cue = induct['cue'].to_numpy().astype(np.dtype('i'))
-    opt1 = induct['opt1'].to_numpy().astype(np.dtype('i'))
-    opt2 = induct['opt2'].to_numpy().astype(np.dtype('i'))
-    response = induct['response'].to_numpy().astype(np.dtype('i'))
+    cue = induct['cue'].to_numpy().astype(np.dtype('i')) - 1
+    opt1 = induct['opt1'].to_numpy().astype(np.dtype('i')) - 1
+    opt2 = induct['opt2'].to_numpy().astype(np.dtype('i')) - 1
+    response = induct['response'].to_numpy().astype(np.dtype('i')) - 1
     if sim2 is None:
         prob = learn.prob_induct_sim(cue, opt1, opt2, response, sim1, tau)
     else:
