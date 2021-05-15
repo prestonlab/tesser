@@ -124,3 +124,12 @@ def prob_struct_induct_subject(struct, induct, tau, sim1_spec, w=None, sim2_spec
         sim2 = create_sim(struct, n_state, **sim2_spec)
         prob = prob_induct(induct, tau, sim1, w, sim2)
     return prob
+
+
+def eval_dependent_param(param, spec):
+    """Evaluate dependent parameters."""
+    updated = spec.copy()
+    for key, val in spec.items():
+        if isinstance(val, str):
+            updated[key] = eval(val, {}, param)
+    return updated
