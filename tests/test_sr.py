@@ -42,13 +42,19 @@ def induct_pandas(induct_trials):
     return trials
 
 
-def test_sr_trials():
+@pytest.fixture
+def struct_trials():
+    trials = np.array([0, 1, 2, 1, 0, 1, 2, 3, 4, 5, 4, 3])
+    return trials
+
+
+def test_sr_trials(struct_trials):
     """Test SR learning for a set of trials."""
     gamma = 0.9
     alpha = 0.5
     n_state = 6
     SR = np.zeros((n_state, n_state), dtype='double')
-    env_step = np.array([0, 1, 2, 1, 0, 1, 2, 3, 4, 5, 4, 3], dtype=np.dtype('i'))
+    env_step = struct_trials.astype(np.dtype('i'))
     sr.learn_sr(SR, env_step, gamma, alpha)
 
     expected = np.array(
