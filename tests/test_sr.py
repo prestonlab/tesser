@@ -83,6 +83,15 @@ def test_sr_trials(struct_trials, struct_sr):
     np.testing.assert_allclose(SR, struct_sr)
 
 
+def test_sr_struct(struct_pandas, struct_sr):
+    """Test SR learning of structure data."""
+    gamma = 0.9
+    alpha = 0.5
+    n_state = 6
+    SR = model.learn_struct_sr(struct_pandas, gamma, alpha, n_state)
+    np.testing.assert_allclose(SR, struct_sr)
+
+
 def test_choice_prob_sim1(sim1):
     """Test choice probability based on one similarity matrix."""
     cue = 0
