@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
+import pandas as pd
 from tesser import sr
+from tesser import model
 
 
 @pytest.fixture
@@ -31,6 +33,12 @@ def induct_cython(induct_trials):
     trials = {}
     for key, val in induct_trials.items():
         trials[key] = induct_trials[key].astype(dtype=np.dtype('i'))
+    return trials
+
+
+@pytest.fixture
+def induct_pandas(induct_trials):
+    trials = pd.DataFrame(induct_trials)
     return trials
 
 
@@ -114,5 +122,24 @@ def test_induct_prob_sim2(sim1, sim2, induct_cython):
     trial_prob = sr.prob_induct_sim2(
         t['cue'], t['opt1'], t['opt2'], t['response'], sim1, sim2, w, tau
     )
+    expected = np.array([0.5, 0.5, 0.62245933, 0.37754067, 0.37754067, 0.62245933])
+    np.testing.assert_allclose(trial_prob, expected)
+
+
+def test_induct_sim1(sim1, induct_pandas):
+    """Test induction test probability from DataFrame."""
+    tau = 1
+    trial_prob = model.prob_induct(induct_pandas, tau, sim1)
+    expected = np.array(
+        [0.26894142, 0.73105858, 0.88079708, 0.11920292, 0.11920292, 0.88079708]
+    )
+    np.testing.assert_allclose(trial_prob, expected)
+
+
+def test_induct_sim2(sim1, sim2, induct_pandas):
+    """Test induction test probability from DataFrame with two matrices."""
+    tau = 1
+    w = 0.5
+    trial_prob = model.prob_induct(induct_pandas, tau, sim1, w, sim2)
     expected = np.array([0.5, 0.5, 0.62245933, 0.37754067, 0.37754067, 0.62245933])
     np.testing.assert_allclose(trial_prob, expected)
