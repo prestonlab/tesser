@@ -55,6 +55,11 @@ def prob_induct(induct, tau, sim1, w=None, sim2=None):
 
     sim2 : numpy.ndarray, optional
         [item x item] array with the similarity of each item pair.
+
+    Returns
+    -------
+    prob : numpy.ndarray
+        The probability of each induction test trial.
     """
     induct = induct.reset_index()
     cue = induct['cue'].to_numpy().astype(np.dtype('i')) - 1
