@@ -96,3 +96,15 @@ def test_induct_prob_sim(sim1, induct_trials):
         [0.26894142, 0.73105858, 0.88079708, 0.11920292, 0.11920292, 0.88079708]
     )
     np.testing.assert_allclose(trial_prob, expected)
+
+
+def test_induct_prob_sim2(sim1, sim2, induct_trials):
+    """Test induction test probability based on a similarity matrix."""
+    t = induct_trials
+    tau = 1
+    w = 0.5
+    trial_prob = sr.prob_induct_sim2(
+        t['cue'], t['opt1'], t['opt2'], t['response'], sim1, sim2, w, tau
+    )
+    expected = np.array([0.5, 0.5, 0.62245933, 0.37754067, 0.37754067, 0.62245933])
+    np.testing.assert_allclose(trial_prob, expected)
