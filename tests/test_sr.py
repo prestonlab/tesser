@@ -171,3 +171,14 @@ def test_induct_sim2(sim1, sim2, induct_pandas):
     trial_prob = model.prob_induct(induct_pandas, tau, sim1, w, sim2)
     expected = np.array([0.5, 0.5, 0.62245933, 0.37754067, 0.37754067, 0.62245933])
     np.testing.assert_allclose(trial_prob, expected)
+
+
+def test_prob_struct_induct(struct_pandas, induct_pandas):
+    gamma = 0.9
+    alpha = 0.5
+    tau = 1
+    prob = model.prob_struct_induct(struct_pandas, induct_pandas, alpha, gamma, tau)
+    expected = np.array(
+        [0.67672246, 0.32327754, 0.38313802, 0.61686198, 0.4378235, 0.5621765]
+    )
+    np.testing.assert_allclose(prob, expected)
