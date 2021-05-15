@@ -30,9 +30,9 @@ def induct_trials():
 
 @pytest.fixture
 def induct_cython(induct_trials):
-    trials = {}
-    for key, val in induct_trials.items():
-        trials[key] = induct_trials[key].astype(dtype=np.dtype('i'))
+    trials = {
+        key: val.astype(dtype=np.dtype('i')) for key, val in induct_trials.items()
+    }
     return trials
 
 
