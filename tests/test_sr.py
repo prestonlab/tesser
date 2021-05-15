@@ -20,6 +20,8 @@ def sim2():
 @pytest.fixture
 def induct_trials():
     trials = {
+        'subject': np.array([1, 1, 1, 1, 1, 1]),
+        'question': np.array([1, 1, 1, 2, 2, 2]),
         'cue': np.array([0, 0, 1, 1, 2, 2]),
         'opt1': np.array([1, 1, 0, 0, 0, 0]),
         'opt2': np.array([2, 2, 2, 2, 1, 1]),
@@ -38,7 +40,9 @@ def induct_cython(induct_trials):
 
 @pytest.fixture
 def induct_pandas(induct_trials):
-    trials = {key: val + 1 for key, val in induct_trials.items()}
+    trials = induct_trials.copy()
+    for key in ['cue', 'opt1', 'opt2', 'response']:
+        trials[key] += 1
     induct = pd.DataFrame(trials)
     return induct
 
@@ -175,11 +179,9 @@ def test_induct_sim2(sim1, sim2, induct_pandas):
 
 def test_prob_struct_induct(struct_pandas, induct_pandas):
     """Test induction test probability given structure learning."""
-    gamma = 0.9
-    alpha = 0.5
-    tau = 1
-    sim_spec = {'alpha': alpha, 'gamma': gamma}
-    prob = model.prob_struct_induct_subject(struct_pandas, induct_pandas, tau, sim_spec)
+    param = {'gamma': 0.9, 'alpha': 0.5, 'tau': 1}
+    sim_spec = {'alpha': 'alpha', 'gamma': 'gamma'}
+    prob = model.prob_struct_induct(struct_pandas, induct_pandas, param, sim_spec)
     expected = np.array(
         [0.67672246, 0.32327754, 0.38313802, 0.61686198, 0.4378235, 0.5621765]
     )
