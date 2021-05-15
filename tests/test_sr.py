@@ -90,8 +90,9 @@ def test_induct_prob_sim(sim1, induct_trials):
     n_trial = len(induct_trials['cue'])
     t = induct_trials
     tau = 1
-    trial_prob = np.zeros(n_trial, dtype='double')
-    sr.prob_induct_sim(t['cue'], t['opt1'], t['opt2'], t['response'], sim1, tau, trial_prob)
+    trial_prob = sr.prob_induct_sim(
+        t['cue'], t['opt1'], t['opt2'], t['response'], sim1, tau
+    )
     expected = np.array(
         [0.26894142, 0.73105858, 0.88079708, 0.11920292, 0.11920292, 0.88079708]
     )

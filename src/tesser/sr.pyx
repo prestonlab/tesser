@@ -1,4 +1,5 @@
 cimport cython
+import numpy as np
 from libc.math cimport exp
 
 @cython.boundscheck(False)
@@ -98,9 +99,11 @@ def prob_induct_sim(
     int [:] response,
     double [:,:] sim,
     double tau,
-    double [:] trial_prob,
 ):
     """Probability of induction data based on a similarity matrix."""
-    cdef Py_ssize_t num_trials = cue.shape[0]
-    for i in range(num_trials):
-        trial_prob[i] = prob_choice_sim(cue[i], opt1[i], opt2[i], response[i], sim, tau)
+    cdef Py_ssize_t n_trial = cue.shape[0]
+    trial_prob = np.zeros(n_trial, dtype='double')
+    cdef double [:] trial_view = trial_prob
+    for i in range(n_trial):
+        trial_view[i] = prob_choice_sim(cue[i], opt1[i], opt2[i], response[i], sim, tau)
+    return trial_prob
