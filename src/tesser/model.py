@@ -133,3 +133,78 @@ def eval_dependent_param(param, spec):
         if isinstance(val, str):
             updated[key] = eval(val, {}, param)
     return updated
+
+
+def prob_struct_induct(
+    struct, induct, param, sim1_spec, sim2_spec=None, question_param=None
+):
+    """
+    Probability of induction tests.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    param : dict
+        Parameter values.
+
+    sim1_spec : dict
+        Must specify either a 'sim' field with a similarity matrix or
+        'alpha' and 'gamma' to generate one from SR learning.
+
+    sim2_spec : dict, optional
+        Specification for a second similarity matrix.
+
+    question_param : dict, optional
+        Parameters that vary by question type.
+
+    Returns
+    -------
+    prob : numpy.ndarray
+        Probability of the observed response for each induction test trial.
+    """
+    subjects = struct['subject'].unique()
+    questions = induct['subject'].unique()
+    prob = np.zeros(len(induct))
+    n_state = max(
+        struct['object'].max(),
+        induct['cue'].max(),
+        induct['opt1'].max(),
+        induct['opt2'].max(),
+    )
+    if 'w' not in param:
+        param['w'] = None
+    for subject in subjects:
+        subj_struct = struct.query(f'subject == {subject}')
+        subj_induct = induct.query(f'subject == {subject}')
+
+        # generate similarity matrices based on structure learning data
+        sim1_spec = eval_dependent_param(param, sim1_spec)
+        sim1 = create_sim(subj_struct, n_state, **sim1_spec)
+        if sim2_spec is not None:
+            sim2_spec = eval_dependent_param(param, sim2_spec)
+            sim2 = create_sim(subj_struct, n_state, **sim2_spec)
+        else:
+            sim2 = None
+
+        if question_param is None:
+            # parameters are the same for all induction trials
+            subj_prob = prob_induct(subj_induct, param['tau'], sim1, param['w'], sim2)
+            include = induct.eval(f'subject == {subject}').to_numpy()
+            prob[include] = subj_prob
+        else:
+            for question in questions:
+                # update for question-specific parameters
+                q_param = param.copy()
+                q_param.update(q_param[question])
+
+                # evaluate the model for this question type
+                q_induct = subj_induct.query(f'question == {question}')
+                q_prob = prob_induct(q_induct, q_param['tau'], sim1, q_param['w'], sim2)
+                include = induct.eval(f'subject == {subject} and question == {question}')
+                prob[include.to_numpy()] = q_prob
+    return prob
