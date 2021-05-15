@@ -33,3 +33,38 @@ def learn_struct_sr(struct, gamma, alpha, n_state):
         envstep = envstep.astype(np.dtype('i'))
         sr.learn_sr(M, envstep, gamma, alpha)
     return M
+
+
+def prob_induct(induct, tau, sim1, w=None, sim2=None):
+    """
+    Calculate response probabilities for induction tests.
+
+    Parameters
+    ----------
+    induct : pandas.DataFrame
+        Induction test data.
+
+    tau : float
+        Temperature parameter for softmax choice rule.
+
+    sim1 : numpy.ndarray
+        [item x item] array with the similarity of each item pair.
+
+    w : float, optional
+        Weighting of the sim1 matrix relative to sim2.
+
+    sim2 : numpy.ndarray, optional
+        [item x item] array with the similarity of each item pair.
+    """
+    induct = induct.reset_index()
+    cue = induct['cue'].to_numpy().astype(np.dtype('i'))
+    opt1 = induct['opt1'].to_numpy().astype(np.dtype('i'))
+    opt2 = induct['opt2'].to_numpy().astype(np.dtype('i'))
+    response = induct['response'].to_numpy().astype(np.dtype('i'))
+    if sim2 is None:
+        prob = sr.prob_induct_sim(cue, opt1, opt2, response, sim1, tau)
+    else:
+        if w is None:
+            raise ValueError('If sim2 is defined, w must be defined.')
+        prob = sr.prob_induct_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
+    return prob
