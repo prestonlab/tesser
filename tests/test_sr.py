@@ -18,11 +18,19 @@ def sim2():
 @pytest.fixture
 def induct_trials():
     trials = {
-        'cue': np.array([0, 0, 1, 1, 2, 2], dtype=np.dtype('i')),
-        'opt1': np.array([1, 1, 0, 0, 0, 0], dtype=np.dtype('i')),
-        'opt2': np.array([2, 2, 2, 2, 1, 1], dtype=np.dtype('i')),
-        'response': np.array([0, 1, 0, 1, 0, 1], dtype=np.dtype('i')),
+        'cue': np.array([0, 0, 1, 1, 2, 2]),
+        'opt1': np.array([1, 1, 0, 0, 0, 0]),
+        'opt2': np.array([2, 2, 2, 2, 1, 1]),
+        'response': np.array([0, 1, 0, 1, 0, 1]),
     }
+    return trials
+
+
+@pytest.fixture
+def induct_cython(induct_trials):
+    trials = {}
+    for key, val in induct_trials.items():
+        trials[key] = induct_trials[key].astype(dtype=np.dtype('i'))
     return trials
 
 
@@ -85,9 +93,9 @@ def test_choice_prob_sim2(sim1, sim2):
     np.testing.assert_allclose(prob, 0.731058578)
 
 
-def test_induct_prob_sim(sim1, induct_trials):
+def test_induct_prob_sim(sim1, induct_cython):
     """Test induction test probability based on a similarity matrix."""
-    t = induct_trials
+    t = induct_cython
     tau = 1
     trial_prob = sr.prob_induct_sim(
         t['cue'], t['opt1'], t['opt2'], t['response'], sim1, tau
@@ -98,9 +106,9 @@ def test_induct_prob_sim(sim1, induct_trials):
     np.testing.assert_allclose(trial_prob, expected)
 
 
-def test_induct_prob_sim2(sim1, sim2, induct_trials):
+def test_induct_prob_sim2(sim1, sim2, induct_cython):
     """Test induction test probability based on a similarity matrix."""
-    t = induct_trials
+    t = induct_cython
     tau = 1
     w = 0.5
     trial_prob = sr.prob_induct_sim2(
