@@ -48,16 +48,9 @@ def struct_trials():
     return trials
 
 
-def test_sr_trials(struct_trials):
-    """Test SR learning for a set of trials."""
-    gamma = 0.9
-    alpha = 0.5
-    n_state = 6
-    SR = np.zeros((n_state, n_state), dtype='double')
-    env_step = struct_trials.astype(np.dtype('i'))
-    sr.learn_sr(SR, env_step, gamma, alpha)
-
-    expected = np.array(
+@pytest.fixture
+def struct_sr():
+    srm = np.array(
         [
             [0.225, 0.85125, 0.1125, 0.0, 0.0, 0.0],
             [0.25, 0.3375, 0.72625, 0.0, 0.0, 0.0],
@@ -67,7 +60,18 @@ def test_sr_trials(struct_trials):
             [0.0, 0.0, 0.0, 0.0, 0.5, 0.225],
         ]
     )
-    np.testing.assert_allclose(SR, expected)
+    return srm
+
+
+def test_sr_trials(struct_trials, struct_sr):
+    """Test SR learning for a set of trials."""
+    gamma = 0.9
+    alpha = 0.5
+    n_state = 6
+    SR = np.zeros((n_state, n_state), dtype='double')
+    env_step = struct_trials.astype(np.dtype('i'))
+    sr.learn_sr(SR, env_step, gamma, alpha)
+    np.testing.assert_allclose(SR, struct_sr)
 
 
 def test_choice_prob_sim1(sim1):
