@@ -9,6 +9,7 @@ def learn_sr(
     double gamma,
     double alpha,
 ):
+    """Learn a successor representation from a sequence of trials."""
     cdef int s
     cdef int s_new
     cdef int i
