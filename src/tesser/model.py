@@ -168,7 +168,8 @@ def prob_struct_induct(
             for question in questions:
                 # update for question-specific parameters
                 q_param = subj_param.copy()
-                q_param.update(question_param[question])
+                eval_param = eval_dependent_param(question_param[question], subj_param)
+                q_param.update(eval_param)
 
                 # evaluate the model for this question type
                 q_induct = subj_induct.query(f'question == {question}')
