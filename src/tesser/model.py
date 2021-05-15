@@ -92,7 +92,13 @@ def eval_dependent_param(param, spec):
 
 
 def prob_struct_induct(
-    struct, induct, param, sim1_spec, sim2_spec=None, question_param=None
+    struct,
+    induct,
+    param,
+    sim1_spec,
+    sim2_spec=None,
+    subject_param=None,
+    question_param=None,
 ):
     """
     Probability of induction tests.
@@ -114,6 +120,9 @@ def prob_struct_induct(
 
     sim2_spec : dict, optional
         Specification for a second similarity matrix.
+
+    subject_param : dict, optional
+        Parameters that vary by subject.
 
     question_param : dict, optional
         Parameters that vary by question type.
@@ -137,26 +146,29 @@ def prob_struct_induct(
     for subject in subjects:
         subj_struct = struct.query(f'subject == {subject}')
         subj_induct = induct.query(f'subject == {subject}')
+        subj_param = param.copy()
+        if subject_param is not None:
+            subj_param.update(subject_param[subject])
 
         # generate similarity matrices based on structure learning data
-        sim1_spec = eval_dependent_param(param, sim1_spec)
+        sim1_spec = eval_dependent_param(subj_param, sim1_spec)
         sim1 = create_sim(subj_struct, n_state, **sim1_spec)
         if sim2_spec is not None:
-            sim2_spec = eval_dependent_param(param, sim2_spec)
+            sim2_spec = eval_dependent_param(subj_param, sim2_spec)
             sim2 = create_sim(subj_struct, n_state, **sim2_spec)
         else:
             sim2 = None
 
         if question_param is None:
             # parameters are the same for all induction trials
-            subj_prob = prob_induct(subj_induct, param['tau'], sim1, param['w'], sim2)
+            subj_prob = prob_induct(subj_induct, subj_param['tau'], sim1, subj_param['w'], sim2)
             include = induct.eval(f'subject == {subject}').to_numpy()
             prob[include] = subj_prob
         else:
             for question in questions:
                 # update for question-specific parameters
-                q_param = param.copy()
-                q_param.update(q_param[question])
+                q_param = subj_param.copy()
+                q_param.update(question_param[question])
 
                 # evaluate the model for this question type
                 q_induct = subj_induct.query(f'question == {question}')
