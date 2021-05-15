@@ -1,5 +1,18 @@
+import pytest
 import numpy as np
 from tesser import sr
+
+
+@pytest.fixture
+def sim1():
+    sim = np.array([[1, 2, 3], [3, 2, 1], [1, 3, 2]], dtype='double')
+    return sim
+
+
+@pytest.fixture
+def sim2():
+    sim = np.array([[3, 2, 1], [1, 3, 2], [2, 1, 3]], dtype='double')
+    return sim
 
 
 def test_sr_trials():
@@ -24,27 +37,24 @@ def test_sr_trials():
     np.testing.assert_allclose(SR, expected)
 
 
-def test_choice_prob_sim1():
+def test_choice_prob_sim1(sim1):
     """Test choice probability based on one similarity matrix."""
-    sim = np.array([[1, 2, 3], [3, 2, 1], [1, 3, 2]], dtype='double')
     cue = 0
     opt1 = 1
     opt2 = 2
     response = 0
 
     tau = 1
-    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim, tau)
+    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim1, tau)
     np.testing.assert_allclose(prob, 0.26894142)
 
     tau = 0.5
-    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim, tau)
+    prob = sr.prob_choice_sim(cue, opt1, opt2, response, sim1, tau)
     np.testing.assert_allclose(prob, 0.11920292)
 
 
-def test_choice_prob_sim2():
+def test_choice_prob_sim2(sim1, sim2):
     """Test choice probability based on two similarity matrices."""
-    sim1 = np.array([[1, 2, 3], [3, 2, 1], [1, 3, 2]], dtype='double')
-    sim2 = np.array([[3, 2, 1], [1, 3, 2], [2, 1, 3]], dtype='double')
     cue = 0
     opt1 = 1
     opt2 = 2
