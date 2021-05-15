@@ -82,50 +82,6 @@ def create_sim(struct, n_state, alpha=None, gamma=None, sim=None):
     return sim
 
 
-def prob_struct_induct_subject(struct, induct, tau, sim1_spec, w=None, sim2_spec=None):
-    """
-    Calculate response probabilities for induction given structure learning.
-
-    struct : pandas.DataFrame
-        Structure learning data.
-
-    induct : pandas.DataFrame
-        Induction test data.
-
-    tau : float
-        Temperature parameter for softmax choice rule.
-
-    sim1_spec : dict
-        Must specify either a 'sim' field with a similarity matrix or
-        'alpha' and 'gamma' to generate one from SR learning.
-
-    w : float, optional
-        Weighting of the sim1 matrix relative to sim2.
-
-    sim2_spec : dict, optional
-        Specification for a second similarity matrix.
-
-    Returns
-    -------
-    prob : numpy.ndarray
-        The probability of each induction test trial.
-    """
-    # learn an SR representation from the structure data
-    n_state = max(
-        struct['object'].max(),
-        induct['cue'].max(),
-        induct['opt1'].max(),
-        induct['opt2'].max(),
-    )
-    sim1 = create_sim(struct, n_state, **sim1_spec)
-    if sim2_spec is None:
-        prob = prob_induct(induct, tau, sim1)
-    else:
-        sim2 = create_sim(struct, n_state, **sim2_spec)
-        prob = prob_induct(induct, tau, sim1, w, sim2)
-    return prob
-
-
 def eval_dependent_param(param, spec):
     """Evaluate dependent parameters."""
     updated = spec.copy()
