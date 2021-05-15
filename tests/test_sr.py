@@ -202,3 +202,31 @@ def test_prob_struct_induct_sr2(struct_pandas, induct_pandas):
         [0.67672246, 0.32327754, 0.38313802, 0.61686198, 0.4378235, 0.5621765]
     )
     np.testing.assert_allclose(prob, expected)
+
+
+def test_prob_struct_induct_question(struct_pandas, induct_pandas):
+    """Test induction test probability with question-specific parameters."""
+    param = {
+        'alpha1': 0.5,
+        'gamma1': 0.9,
+        'alpha2': 0.7,
+        'gamma2': 0.8,
+        'tau': 1,
+        'w1': 1,
+        'w2': 1,
+    }
+    sim1_spec = {'alpha': 'alpha1', 'gamma': 'gamma1'}
+    sim2_spec = {'alpha': 'alpha2', 'gamma': 'gamma2'}
+    question_param = {1: {'w': 'w1'}, 2: {'w': 'w2'}}
+    prob = model.prob_struct_induct(
+        struct_pandas,
+        induct_pandas,
+        param,
+        sim1_spec,
+        sim2_spec,
+        question_param=question_param,
+    )
+    expected = np.array(
+        [0.67672246, 0.32327754, 0.38313802, 0.61686198, 0.4378235, 0.5621765]
+    )
+    np.testing.assert_allclose(prob, expected)
