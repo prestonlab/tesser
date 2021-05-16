@@ -21,7 +21,7 @@ def sim2():
 def induct_trials():
     trials = {
         'subject': np.array([1, 1, 1, 1, 1, 1]),
-        'question': np.array([1, 1, 1, 2, 2, 2]),
+        'trial_type': np.array([1, 1, 1, 2, 2, 2]),
         'cue': np.array([0, 0, 1, 1, 2, 2]),
         'opt1': np.array([1, 1, 0, 0, 0, 0]),
         'opt2': np.array([2, 2, 2, 2, 1, 1]),
@@ -271,7 +271,7 @@ def induct_fit():
     induct = pd.DataFrame(
         {
             'subject': 1,
-            'question': 1,
+            'trial_type': 1,
             'cue': mat[0],
             'opt1': mat[1],
             'opt2': mat[2],
