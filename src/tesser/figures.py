@@ -3,6 +3,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
+import seaborn as sns
+
+
+def get_induct_colors():
+    """Induction task colors."""
+    dark = sns.blend_palette(
+        [
+            np.array([20, 125, 201]) / 256,
+            np.array([0, 166, 161]) / 256,
+            np.array([15, 175, 75]) / 256,
+        ], n_colors=3
+    )
+    light = sns.blend_palette(
+        [
+            np.array([171, 212, 237]) / 256,
+            np.array([172, 235, 242]) / 256,
+            np.array([165, 232, 177]) / 256,
+        ], n_colors=3
+    )
+    return {'dark': dark, 'light': light}
 
 
 def plot_group_mat(
