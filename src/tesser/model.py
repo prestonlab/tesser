@@ -174,10 +174,10 @@ def prob_struct_induct(
                 q_param.update(eval_param)
 
                 # evaluate the model for this question type
-                q_induct = subj_induct.query(f'trial_type == {question}')
+                q_induct = subj_induct.query(f'trial_type == "{question}"')
                 q_prob = prob_induct(q_induct, q_param['tau'], sim1, q_param['w'], sim2)
                 include = induct.eval(
-                    f'subject == {subject} and trial_type == {question}'
+                    f'subject == {subject} and trial_type == "{question}"'
                 )
                 prob[include.to_numpy()] = q_prob
     return prob
