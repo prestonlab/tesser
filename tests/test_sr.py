@@ -245,3 +245,40 @@ def test_prob_struct_induct_sim2(struct_pandas, induct_pandas):
         [0.67672246, 0.32327754, 0.38313802, 0.61686198, 0.4378235, 0.5621765]
     )
     np.testing.assert_allclose(prob, expected)
+
+
+def test_fit_induct():
+    """Test fitting model to induction data."""
+    fixed = {'tau': 1}
+    var_names = ['alpha', 'gamma']
+    var_bounds = {'alpha': [0, 1], 'gamma': [0, 1]}
+    sim1_spec = {'alpha': 'alpha', 'gamma': 'gamma'}
+    struct = pd.DataFrame(
+        {
+            'subject': 1,
+            'part': 1,
+            'run': np.repeat(np.arange(1, 5), 6),
+            'object': [1, 3, 5, 7, 2, 4, 6, 8] * 3,
+        }
+    )
+    mat = [
+        [1, 2, 1, 2, 1, 2, 3, 4, 3, 4, 5, 6] * 2,
+        [3, 3, 5, 5, 7, 7, 5, 5, 7, 7, 7, 7] * 2,
+        [4, 4, 6, 6, 8, 8, 6, 6, 8, 8, 8, 8] * 2,
+        [1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 2] * 2,
+    ]
+    induct = pd.DataFrame(
+        {
+            'subject': 1,
+            'question': 1,
+            'cue': mat[0],
+            'opt1': mat[1],
+            'opt2': mat[2],
+            'response': mat[3],
+        }
+    )
+    logl, param = model.fit_induct(
+        struct, induct, fixed, var_names, var_bounds, sim1_spec
+    )
+    np.testing.assert_allclose(param['alpha'], 0.857, atol=0.01)
+    np.testing.assert_allclose(param['gamma'], 0.769, atol=0.01)
