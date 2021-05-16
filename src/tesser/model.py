@@ -272,8 +272,8 @@ def fit_induct(
 
         # handle 0 or NaN probabilities
         eps = 0.000001
-        prob[prob < eps] = eps
         prob[np.isnan(prob)] = eps
+        prob[prob < eps] = eps
         log_liklihood = np.sum(np.log(prob))
         return -log_liklihood
 
