@@ -21,7 +21,7 @@ def sim2():
 def induct_trials():
     trials = {
         'subject': np.array([1, 1, 1, 1, 1, 1]),
-        'trial_type': np.array([1, 1, 1, 2, 2, 2]),
+        'trial_type': np.array(['1', '1', '1', '2', '2', '2']),
         'cue': np.array([0, 0, 1, 1, 2, 2]),
         'opt1': np.array([1, 1, 0, 0, 0, 0]),
         'opt2': np.array([2, 2, 2, 2, 1, 1]),
@@ -217,7 +217,7 @@ def test_prob_struct_induct_question(struct_pandas, induct_pandas):
     }
     sim1_spec = {'alpha': 'alpha1', 'gamma': 'gamma1'}
     sim2_spec = {'alpha': 'alpha2', 'gamma': 'gamma2'}
-    question_param = {1: {'w': 'w1'}, 2: {'w': 'w2'}}
+    question_param = {'1': {'w': 'w1'}, '2': {'w': 'w2'}}
     prob = model.prob_struct_induct(
         struct_pandas,
         induct_pandas,
@@ -271,7 +271,7 @@ def induct_fit():
     induct = pd.DataFrame(
         {
             'subject': 1,
-            'trial_type': 1,
+            'trial_type': '1',
             'cue': mat[0],
             'opt1': mat[1],
             'opt2': mat[2],
