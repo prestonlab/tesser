@@ -1,6 +1,7 @@
 """Functions for fitting models of tesser behavior."""
 
 import numpy as np
+import pandas as pd
 from scipy import optimize
 from tesser import learn
 
@@ -286,3 +287,93 @@ def fit_induct(
 
     logl = -res['fun']
     return logl, param
+
+
+def fit_induct_indiv(
+    struct,
+    induct,
+    fixed,
+    var_names,
+    var_bounds,
+    sim1_spec,
+    sim2_spec=None,
+    subject_param=None,
+    question_param=None,
+    verbose=False,
+    f_optim=optimize.differential_evolution,
+    optim_kws=None,
+):
+    """
+    Fit a model of object similarity to subject induction data.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    fixed : dict
+        Fixed parameter values.
+
+    var_names : list
+        Names of free parameters.
+
+    var_bounds : dict
+        Lower and upper limits for each free parameter.
+
+    sim1_spec : dict
+        Must specify either a 'sim' field with a similarity matrix or
+        'alpha' and 'gamma' to generate one from SR learning.
+
+    sim2_spec : dict, optional
+        Specification for a second similarity matrix.
+
+    subject_param : dict, optional
+        Parameters that vary by subject.
+
+    question_param : dict, optional
+        Parameters that vary by question type.
+
+    verbose : bool, optional
+        If true, more information about the search will be displayed.
+
+    f_optim : callable, optional
+        Optimization function.
+
+    optim_kws : dict, optional
+        Keyword arguments for the optimization function.
+
+    Returns
+    -------
+    results : pandas.DataFrame
+        Search
+    """
+    df_list = []
+    subjects = induct['subject'].unique()
+    for subject in subjects:
+        subj_struct = struct.query(f'subject == {subject}')
+        subj_induct = induct.query(f'subject == {subject}')
+        subj_param = fixed.copy()
+        logl, param = fit_induct(
+            subj_struct,
+            subj_induct,
+            subj_param,
+            var_names,
+            var_bounds,
+            sim1_spec,
+            sim2_spec=sim2_spec,
+            subject_param=subject_param,
+            question_param=question_param,
+            verbose=verbose,
+            f_optim=f_optim,
+            optim_kws=optim_kws,
+        )
+        n = len(subj_induct)
+        res = {'subject': subject, 'logl': logl, 'n': n, 'k': len(var_names)}
+        res.update(param)
+        df = pd.Series(res)
+        df_list.append(df)
+    results = pd.DataFrame(df_list)
+    return results
