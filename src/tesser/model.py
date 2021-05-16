@@ -1,6 +1,7 @@
 """Functions for fitting models of tesser behavior."""
 
 import numpy as np
+from scipy import optimize
 from tesser import learn
 
 
@@ -185,3 +186,103 @@ def param_bounds(var_bounds, var_names):
     group_ub = [var_bounds[k][1] for k in var_names]
     bounds = optimize.Bounds(group_lb, group_ub)
     return bounds
+
+
+def fit_induct(
+    struct,
+    induct,
+    fixed,
+    var_names,
+    var_bounds,
+    sim1_spec,
+    sim2_spec=None,
+    subject_param=None,
+    question_param=None,
+    verbose=False,
+    f_optim=optimize.differential_evolution,
+    optim_kws=None,
+):
+    """
+    Fit a model of object similarity to induction data.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    fixed : dict
+        Fixed parameter values.
+
+    var_names : list
+        Names of free parameters.
+
+    var_bounds : dict
+        Lower and upper limits for each free parameter.
+
+    sim1_spec : dict
+        Must specify either a 'sim' field with a similarity matrix or
+        'alpha' and 'gamma' to generate one from SR learning.
+
+    sim2_spec : dict, optional
+        Specification for a second similarity matrix.
+
+    subject_param : dict, optional
+        Parameters that vary by subject.
+
+    question_param : dict, optional
+        Parameters that vary by question type.
+
+    verbose : bool, optional
+        If true, more information about the search will be displayed.
+
+    f_optim : callable, optional
+        Optimization function.
+
+    optim_kws : dict, optional
+        Keyword arguments for the optimization function.
+
+    Returns
+    -------
+    logl : float
+        Maximum likelihood, based on the search.
+
+    param : dict
+        Best-fitting parameter values.
+    """
+    if optim_kws is None:
+        optim_kws = {}
+
+    # define error function
+    def f_fit(x):
+        fit_param = fixed.copy()
+        fit_param.update(dict(zip(var_names, x)))
+        prob = prob_struct_induct(
+            struct,
+            induct,
+            fit_param,
+            sim1_spec,
+            sim2_spec,
+            subject_param=subject_param,
+            question_param=question_param,
+        )
+
+        # handle 0 or NaN probabilities
+        eps = 0.000001
+        prob[prob < eps] = eps
+        prob[np.isnan(prob)] = eps
+        log_liklihood = np.sum(np.log(prob))
+        return -log_liklihood
+
+    # run the parameter search
+    bounds = param_bounds(var_bounds, var_names)
+    res = f_optim(f_fit, bounds, disp=verbose, **optim_kws)
+
+    # fitted parameters
+    param = fixed.copy()
+    param.update(dict(zip(var_names, res['x'])))
+
+    logl = -res['fun']
+    return logl, param
