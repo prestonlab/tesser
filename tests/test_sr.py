@@ -303,5 +303,5 @@ def test_fit_induct_indiv(struct_fit, induct_fit):
     results = model.fit_induct_indiv(
         struct_fit, induct_fit, fixed, var_names, var_bounds, sim1_spec
     )
-    np.testing.assert_allclose(results.loc[0, 'alpha'], 0.857, atol=0.01)
-    np.testing.assert_allclose(results.loc[0, 'gamma'], 0.769, atol=0.01)
+    np.testing.assert_allclose(results.loc[1, 'alpha'], 0.857, atol=0.01)
+    np.testing.assert_allclose(results.loc[1, 'gamma'], 0.769, atol=0.01)
