@@ -373,9 +373,10 @@ def fit_induct_indiv(
             optim_kws=optim_kws,
         )
         n = len(subj_induct)
-        res = {'subject': subject, 'logl': logl, 'n': n, 'k': len(var_names)}
+        res = {'logl': logl, 'n': n, 'k': len(var_names)}
         res.update(param)
         df = pd.Series(res)
         df_list.append(df)
-    results = pd.DataFrame(df_list)
+    results = pd.DataFrame(df_list, index=subjects)
+    results.astype({'n': int, 'k': int})
     return results
