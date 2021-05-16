@@ -153,11 +153,11 @@ def prob_struct_induct(
             subj_param.update(subject_param[subject])
 
         # generate similarity matrices based on structure learning data
-        sim1_spec = eval_dependent_param(sim1_spec, subj_param)
-        sim1 = create_sim(subj_struct, n_state, **sim1_spec)
+        subj_sim1_spec = eval_dependent_param(sim1_spec, subj_param)
+        sim1 = create_sim(subj_struct, n_state, **subj_sim1_spec)
         if sim2_spec is not None:
-            sim2_spec = eval_dependent_param(sim2_spec, subj_param)
-            sim2 = create_sim(subj_struct, n_state, **sim2_spec)
+            subj_sim2_spec = eval_dependent_param(sim2_spec, subj_param)
+            sim2 = create_sim(subj_struct, n_state, **subj_sim2_spec)
         else:
             sim2 = None
 
