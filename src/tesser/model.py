@@ -177,3 +177,11 @@ def prob_struct_induct(
                 include = induct.eval(f'subject == {subject} and question == {question}')
                 prob[include.to_numpy()] = q_prob
     return prob
+
+
+def param_bounds(var_bounds, var_names):
+    """Pack group-level parameters."""
+    group_lb = [var_bounds[k][0] for k in var_names]
+    group_ub = [var_bounds[k][1] for k in var_names]
+    bounds = optimize.Bounds(group_lb, group_ub)
+    return bounds
