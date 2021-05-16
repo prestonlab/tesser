@@ -247,12 +247,8 @@ def test_prob_struct_induct_sim2(struct_pandas, induct_pandas):
     np.testing.assert_allclose(prob, expected)
 
 
-def test_fit_induct():
-    """Test fitting model to induction data."""
-    fixed = {'tau': 1}
-    var_names = ['alpha', 'gamma']
-    var_bounds = {'alpha': [0, 1], 'gamma': [0, 1]}
-    sim1_spec = {'alpha': 'alpha', 'gamma': 'gamma'}
+@pytest.fixture
+def struct_fit():
     struct = pd.DataFrame(
         {
             'subject': 1,
@@ -261,6 +257,11 @@ def test_fit_induct():
             'object': [1, 3, 5, 7, 2, 4, 6, 8] * 3,
         }
     )
+    return struct
+
+
+@pytest.fixture
+def induct_fit():
     mat = [
         [1, 2, 1, 2, 1, 2, 3, 4, 3, 4, 5, 6] * 2,
         [3, 3, 5, 5, 7, 7, 5, 5, 7, 7, 7, 7] * 2,
@@ -277,8 +278,17 @@ def test_fit_induct():
             'response': mat[3],
         }
     )
+    return induct
+
+
+def test_fit_induct(struct_fit, induct_fit):
+    """Test fitting model to induction data."""
+    fixed = {'tau': 1}
+    var_names = ['alpha', 'gamma']
+    var_bounds = {'alpha': [0, 1], 'gamma': [0, 1]}
+    sim1_spec = {'alpha': 'alpha', 'gamma': 'gamma'}
     logl, param = model.fit_induct(
-        struct, induct, fixed, var_names, var_bounds, sim1_spec
+        struct_fit, induct_fit, fixed, var_names, var_bounds, sim1_spec
     )
     np.testing.assert_allclose(param['alpha'], 0.857, atol=0.01)
     np.testing.assert_allclose(param['gamma'], 0.769, atol=0.01)
