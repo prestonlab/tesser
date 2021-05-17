@@ -21,7 +21,10 @@ rsync -azvu "$src" "$dest" \
     --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/rois/" \
     --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/rois/freesurfer/" \
     --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/rois/mni/" \
-    --include={highres,coronal_mean}.nii.gz \
+    --include="tesser_*/model/" \
+    --include="tesser_*/model/rsa2_4mm_betaseries/" \
+    --include={highres,coronal_mean,aparc+aseg}.nii.gz \
+    --include=betas.nii.gz \
     --include={10m,10p,10r,11m,14c,14r,24,25,32pl}.nii.gz \
     --exclude="*" \
     "$@"
