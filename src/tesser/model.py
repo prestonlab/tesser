@@ -365,7 +365,10 @@ def fit_induct_indiv(
     Returns
     -------
     results : pandas.DataFrame
-        Search
+        Search results for each participant, including log-likelihood
+        (logl), the number of data points fit (n), the number of free
+        parameters (k), and the best-fitting parameter value of each
+        parameter.
     """
     df_list = []
     subjects = induct['subject'].unique()
