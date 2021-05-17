@@ -291,6 +291,21 @@ def fit_induct(
     return logl, param
 
 
+def _fit_subject(struct, induct, subject, fixed, var_names, *args, **kwargs):
+    """Run a parameter search for one subject."""
+    subj_struct = struct.query(f'subject == {subject}')
+    subj_induct = induct.query(f'subject == {subject}')
+    subj_param = fixed.copy()
+    logl, param = fit_induct(
+        subj_struct, subj_induct, subj_param, var_names, *args, **kwargs
+    )
+    n = len(subj_induct)
+    res = {'logl': logl, 'n': n, 'k': len(var_names)}
+    res.update(param)
+    s = pd.Series(res)
+    return s
+
+
 def fit_induct_indiv(
     struct,
     induct,
