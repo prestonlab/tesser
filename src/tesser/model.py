@@ -378,5 +378,5 @@ def fit_induct_indiv(
         df = pd.Series(res)
         df_list.append(df)
     results = pd.DataFrame(df_list, index=subjects)
-    results.astype({'n': int, 'k': int})
+    results = results.astype({'n': int, 'k': int})
     return results
