@@ -407,6 +407,20 @@ def fit_induct_indiv(
     return results
 
 
+def get_best_results(results):
+    """Get best results from a repeated search."""
+    df = []
+    subjects = results.index.get_level_values('subject').unique()
+    for subject in subjects:
+        res = results.loc[subject].reset_index()
+        subject_best = res.loc[[res['logl'].argmax()]]
+        df.append(subject_best)
+    best = pd.concat(df, axis=0)
+    best.index = subjects
+    best.index.rename('subject', inplace=True)
+    return best
+
+
 def fit_induct_indiv_question(struct, induct, *args, **kwargs):
     """
     Fit induction data separately by subject and question type.
