@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from scipy import optimize
+from joblib import Parallel, delayed
 from tesser import learn
 
 
@@ -316,6 +317,8 @@ def fit_induct_indiv(
     sim2_spec=None,
     subject_param=None,
     question_param=None,
+    n_rep=1,
+    n_job=1,
     verbose=False,
     f_optim=optimize.differential_evolution,
     optim_kws=None,
@@ -353,6 +356,12 @@ def fit_induct_indiv(
     question_param : dict, optional
         Parameters that vary by question type.
 
+    n_rep : int, optional
+        Number of times to repeat the search.
+
+    n_job : int, optional
+        Number of jobs to run in parallel.
+
     verbose : bool, optional
         If true, more information about the search will be displayed.
 
@@ -370,16 +379,15 @@ def fit_induct_indiv(
         parameters (k), and the best-fitting parameter value of each
         parameter.
     """
-    df_list = []
     subjects = induct['subject'].unique()
-    for subject in subjects:
-        subj_struct = struct.query(f'subject == {subject}')
-        subj_induct = induct.query(f'subject == {subject}')
-        subj_param = fixed.copy()
-        logl, param = fit_induct(
-            subj_struct,
-            subj_induct,
-            subj_param,
+    full_subjects = np.repeat(subjects, n_rep)
+    full_reps = np.tile(np.arange(n_rep), len(subjects))
+    full_results = Parallel(n_jobs=n_job)(
+        delayed(_fit_subject)(
+            struct,
+            induct,
+            subject,
+            fixed,
             var_names,
             var_bounds,
             sim1_spec,
@@ -389,12 +397,11 @@ def fit_induct_indiv(
             verbose=verbose,
             f_optim=f_optim,
             optim_kws=optim_kws,
-        )
-        n = len(subj_induct)
-        res = {'logl': logl, 'n': n, 'k': len(var_names)}
-        res.update(param)
-        df = pd.Series(res)
-        df_list.append(df)
-    results = pd.DataFrame(df_list, index=subjects)
+        ) for subject in full_subjects
+    )
+    d = {(subject, rep): res for subject, rep, res in
+         zip(full_subjects, full_reps, full_results)}
+    results = pd.DataFrame(d).T
+    results.index.rename(['subject', 'rep'], inplace=True)
     results = results.astype({'n': int, 'k': int})
     return results
