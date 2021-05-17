@@ -7,9 +7,9 @@ case $USER in
         ;;
 
     mortonne)
-        STUDYDIR=$STOCKYARD/lonestar/tesser
-        . $STOCKYARD/lonestar/venv/tesser/bin/activate
-        export BATCHDIR=$STOCKYARD/lonestar/tesser/batch/launchscripts
+        STUDYDIR=$STOCKYARD2/lonestar/tesser
+        . $STOCKYARD2/lonestar/venv/tesser/bin/activate
+        export BATCHDIR=$STOCKYARD2/lonestar/tesser/batch/launchscripts
         ;;
 
     *)
