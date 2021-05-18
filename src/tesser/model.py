@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from scipy import optimize
+from joblib import Parallel, delayed
 from tesser import learn
 
 
@@ -191,7 +192,7 @@ def param_bounds(var_bounds, var_names):
     return bounds
 
 
-def fit_induct(
+def _fit_induct(
     struct,
     induct,
     fixed,
@@ -291,6 +292,121 @@ def fit_induct(
     return logl, param
 
 
+def _fit_subject(struct, induct, subject, fixed, var_names, *args, **kwargs):
+    """Run a parameter search for one subject."""
+    subj_struct = struct.query(f'subject == {subject}')
+    subj_induct = induct.query(f'subject == {subject}')
+    subj_param = fixed.copy()
+    logl, param = _fit_induct(
+        subj_struct, subj_induct, subj_param, var_names, *args, **kwargs
+    )
+    n = len(subj_induct)
+    res = {'logl': logl, 'n': n, 'k': len(var_names)}
+    res.update(param)
+    s = pd.Series(res)
+    return s
+
+
+def fit_induct(
+    struct,
+    induct,
+    fixed,
+    var_names,
+    var_bounds,
+    sim1_spec,
+    sim2_spec=None,
+    subject_param=None,
+    question_param=None,
+    n_rep=1,
+    n_job=1,
+    verbose=False,
+    f_optim=optimize.differential_evolution,
+    optim_kws=None,
+):
+    """
+    Fit a model of object similarity to induction data.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    fixed : dict
+        Fixed parameter values.
+
+    var_names : list
+        Names of free parameters.
+
+    var_bounds : dict
+        Lower and upper limits for each free parameter.
+
+    sim1_spec : dict
+        Must specify either a 'sim' field with a similarity matrix or
+        'alpha' and 'gamma' to generate one from SR learning.
+
+    sim2_spec : dict, optional
+        Specification for a second similarity matrix.
+
+    subject_param : dict, optional
+        Parameters that vary by subject.
+
+    question_param : dict, optional
+        Parameters that vary by question type.
+
+    n_rep : int, optional
+        Number of times to repeat the search.
+
+    n_job : int, optional
+        Number of jobs to run in parallel.
+
+    verbose : bool, optional
+        If true, more information about the search will be displayed.
+
+    f_optim : callable, optional
+        Optimization function.
+
+    optim_kws : dict, optional
+        Keyword arguments for the optimization function.
+
+    Returns
+    -------
+    results : pandas.Series
+        Search results, including log-likelihood (logl), the number of
+        data points fit (n), the number of free parameters (k), and the
+        best-fitting value of each parameter.
+    """
+    full_results = Parallel(n_jobs=n_job)(
+        delayed(_fit_induct)(
+            struct,
+            induct,
+            fixed,
+            var_names,
+            var_bounds,
+            sim1_spec,
+            sim2_spec=sim2_spec,
+            subject_param=subject_param,
+            question_param=question_param,
+            verbose=verbose,
+            f_optim=f_optim,
+            optim_kws=optim_kws,
+        ) for _ in range(n_rep)
+    )
+    n = len(induct)
+    k = len(var_names)
+    d = {
+        rep: {
+            'logl': logl, 'n': n, 'k': k, **param
+        } for rep, (logl, param) in zip(range(n_rep), full_results)
+    }
+    results = pd.DataFrame(d).T
+    results = results.astype({'n': int, 'k': int})
+    results.index.rename('rep', inplace=True)
+    return results
+
+
 def fit_induct_indiv(
     struct,
     induct,
@@ -301,6 +417,8 @@ def fit_induct_indiv(
     sim2_spec=None,
     subject_param=None,
     question_param=None,
+    n_rep=1,
+    n_job=1,
     verbose=False,
     f_optim=optimize.differential_evolution,
     optim_kws=None,
@@ -338,6 +456,12 @@ def fit_induct_indiv(
     question_param : dict, optional
         Parameters that vary by question type.
 
+    n_rep : int, optional
+        Number of times to repeat the search.
+
+    n_job : int, optional
+        Number of jobs to run in parallel.
+
     verbose : bool, optional
         If true, more information about the search will be displayed.
 
@@ -350,18 +474,20 @@ def fit_induct_indiv(
     Returns
     -------
     results : pandas.DataFrame
-        Search
+        Search results for each participant, including log-likelihood
+        (logl), the number of data points fit (n), the number of free
+        parameters (k), and the best-fitting parameter value of each
+        parameter.
     """
-    df_list = []
     subjects = induct['subject'].unique()
-    for subject in subjects:
-        subj_struct = struct.query(f'subject == {subject}')
-        subj_induct = induct.query(f'subject == {subject}')
-        subj_param = fixed.copy()
-        logl, param = fit_induct(
-            subj_struct,
-            subj_induct,
-            subj_param,
+    full_subjects = np.repeat(subjects, n_rep)
+    full_reps = np.tile(np.arange(n_rep), len(subjects))
+    full_results = Parallel(n_jobs=n_job)(
+        delayed(_fit_subject)(
+            struct,
+            induct,
+            subject,
+            fixed,
             var_names,
             var_bounds,
             sim1_spec,
@@ -371,12 +497,111 @@ def fit_induct_indiv(
             verbose=verbose,
             f_optim=f_optim,
             optim_kws=optim_kws,
-        )
-        n = len(subj_induct)
-        res = {'logl': logl, 'n': n, 'k': len(var_names)}
-        res.update(param)
-        df = pd.Series(res)
-        df_list.append(df)
-    results = pd.DataFrame(df_list, index=subjects)
-    results.astype({'n': int, 'k': int})
+        ) for subject in full_subjects
+    )
+    d = {(subject, rep): res for subject, rep, res in
+         zip(full_subjects, full_reps, full_results)}
+    results = pd.DataFrame(d).T
+    results.index.rename(['subject', 'rep'], inplace=True)
+    results = results.astype({'n': int, 'k': int})
     return results
+
+
+def fit_induct_question(struct, induct, *args, **kwargs):
+    """
+    Fit induction data separately by question type.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    See fit_induct for other parameters.
+
+    Returns
+    -------
+    results : pandas.DataFrame
+        Search results for each question type and participant.
+    """
+    questions = induct['trial_type'].unique()
+    res_list = []
+    for question in questions:
+        induct_question = induct.query(f'trial_type == "{question}"')
+        res = fit_induct(struct, induct_question, *args, **kwargs)
+        res_list.append(res)
+    results = pd.concat(res_list, axis=0, keys=questions)
+    results.index.rename(['trial_type', 'rep'], inplace=True)
+    return results
+
+
+def fit_induct_indiv_question(struct, induct, *args, **kwargs):
+    """
+    Fit induction data separately by subject and question type.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    See fit_induct_indiv for other parameters.
+
+    Returns
+    -------
+    results : pandas.DataFrame
+        Search results for each question type and participant.
+    """
+    questions = induct['trial_type'].unique()
+    res_list = []
+    for question in questions:
+        induct_question = induct.query(f'trial_type == "{question}"')
+        res = fit_induct_indiv(struct, induct_question, *args, **kwargs)
+        res_list.append(res)
+    results = pd.concat(res_list, axis=0, keys=questions)
+    results.index.rename(['trial_type', 'subject', 'rep'], inplace=True)
+    return results
+
+
+def get_best_results(results):
+    """Get best results from a repeated search."""
+    if isinstance(results.index, pd.MultiIndex):
+        groups = results.index.names[:-1]
+        df = []
+        for ind, res in results.groupby(groups):
+            rep = res['logl'].argmax()
+            df.append(res.loc[[(ind, rep)]])
+        best = pd.concat(df, axis=0)
+    else:
+        best = results.loc[[results['logl'].argmax()]]
+    return best
+
+
+def get_fitted_prob(results, induct, struct, *args, **kwargs):
+    """Get fitted probability for each trial."""
+    if 'rep' in results.index.names:
+        i = results.index.names.index('rep')
+        results.reset_index(i)
+
+    names = results.index.names
+    stats = induct.copy()
+    stats['prob'] = 0
+    for ind, res in results.iterrows():
+        inc_struct = np.ones(len(struct), dtype=bool)
+        inc_induct = np.ones(len(induct), dtype=bool)
+        for name, val in zip(names, ind):
+            if name == 'subject':
+                inc_struct &= struct[name] == val
+            if name in induct.columns:
+                inc_induct &= induct[name] == val
+
+        param = res.to_dict()
+        prob = prob_struct_induct(
+            struct[inc_struct], induct[inc_induct], param, *args, **kwargs
+        )
+        stats.loc[inc_induct, 'prob'] = prob
+    return stats

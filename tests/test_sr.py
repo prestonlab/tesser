@@ -287,7 +287,7 @@ def test_fit_induct(struct_fit, induct_fit):
     var_names = ['alpha', 'gamma']
     var_bounds = {'alpha': [0, 1], 'gamma': [0, 1]}
     sim1_spec = {'alpha': 'alpha', 'gamma': 'gamma'}
-    logl, param = model.fit_induct(
+    logl, param = model._fit_induct(
         struct_fit, induct_fit, fixed, var_names, var_bounds, sim1_spec
     )
     np.testing.assert_allclose(param['alpha'], 0.857, atol=0.01)
