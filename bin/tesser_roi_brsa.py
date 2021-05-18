@@ -15,7 +15,9 @@ warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA', gp=False):
+def main(
+    study_dir, subject, roi, res_dir, blocks, method='GBRSA', gp=False, roi_type='mni'
+):
     # set up log
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
@@ -40,7 +42,7 @@ def main(study_dir, subject, roi, res_dir, blocks, method='GBRSA', gp=False):
     subject_dir = os.path.join(study_dir, f'tesser_{subject}')
     mask_image = os.path.join(
         subject_dir, 'anatomy', 'antsreg', 'data', 'funcunwarpspace',
-        'rois', 'mni', f'{roi}.nii.gz'
+        'rois', roi_type, f'{roi}.nii.gz'
     )
     logging.info(f'Masking with {mask_image}.')
 
@@ -145,6 +147,9 @@ if __name__ == '__main__':
         'blocks', help="blocks to include ('both','walk','random')",
     )
     parser.add_argument('res_dir', help="path to directory to save results.")
+    parser.add_argument(
+        '--roi-type', '-r', default='mni', help="type of ROI ('freesurfer', ['mni'])"
+    )
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument(
         '--method', '-m', default='GBRSA', help="modeling method ('BRSA', ['GBRSA'])"
@@ -163,6 +168,12 @@ if __name__ == '__main__':
         env_study_dir = args.study_dir
 
     main(
-        env_study_dir, args.subject, args.roi, args.res_dir, args.blocks,
-        method=args.method, gp=args.gaussian_process
+        env_study_dir,
+        args.subject,
+        args.roi,
+        args.res_dir,
+        args.blocks,
+        method=args.method,
+        gp=args.gaussian_process,
+        roi_type=args.roi_type,
     )

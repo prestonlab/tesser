@@ -26,6 +26,7 @@ def get_roi_sets():
         ],
         'mpfc9': ['10m', '10p', '10r', '11m', '14c', '14r', '24', '25', '32pl'],
         'mpfc3': ['ampfc', 'mmpfc', 'pmpfc'],
+        'ifg3': ['b_oper', 'b_tria', 'b_orbi'],
     }
     return rois
 

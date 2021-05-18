@@ -38,3 +38,12 @@ jupyter lab &
 
 In Jupyter lab, load a notebook (in `tesser/jupyter`) and make sure the 
 tesser kernel is selected.
+
+## Running scripts on TACC
+
+You will also need brainiak and ezlaunch:
+
+```bash
+pip install brainiak
+pip install ezlaunch
+```

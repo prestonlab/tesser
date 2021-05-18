@@ -8,12 +8,12 @@ from tesser import tasks
 from tesser import rsa
 
 
-def submit_brsa(subjects, rois, study_dir, res_name, blocks, method):
+def submit_brsa(subjects, rois, study_dir, res_name, blocks, method, roi_type='mni'):
     if subjects is None:
         subjects = tasks.get_subj_list()
 
     res_dir = os.path.join(study_dir, 'batch', 'rsa', res_name)
-    options = f'-m {method} --study-dir={study_dir}'
+    options = f'-m {method} -r {roi_type} --study-dir={study_dir}'
     for roi in rois:
         roi_dir = os.path.join(res_dir, roi)
         for subject in subjects:
@@ -27,6 +27,9 @@ if __name__ == '__main__':
         'blocks', help="blocks to include ['both','walk','random']", default='both'
     )
     parser.add_argument('res_name', help="name for results directory.")
+    parser.add_argument(
+        '--roi-type', '-r', default='mni', help="type of ROI ('freesurfer', ['mni'])"
+    )
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument('--subjects', '-s', help="ID of subjects to process.")
     parser.add_argument(
@@ -48,5 +51,11 @@ if __name__ == '__main__':
 
     inc_rois = rsa.parse_rois(args.rois)
     submit_brsa(
-        inc_subjects, inc_rois, env_study_dir, args.res_name, args.blocks, args.method
+        inc_subjects,
+        inc_rois,
+        env_study_dir,
+        args.res_name,
+        args.blocks,
+        args.method,
+        args.roi_type,
     )
