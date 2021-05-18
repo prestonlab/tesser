@@ -307,6 +307,106 @@ def _fit_subject(struct, induct, subject, fixed, var_names, *args, **kwargs):
     return s
 
 
+def fit_induct(
+    struct,
+    induct,
+    fixed,
+    var_names,
+    var_bounds,
+    sim1_spec,
+    sim2_spec=None,
+    subject_param=None,
+    question_param=None,
+    n_rep=1,
+    n_job=1,
+    verbose=False,
+    f_optim=optimize.differential_evolution,
+    optim_kws=None,
+):
+    """
+    Fit a model of object similarity to induction data.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    fixed : dict
+        Fixed parameter values.
+
+    var_names : list
+        Names of free parameters.
+
+    var_bounds : dict
+        Lower and upper limits for each free parameter.
+
+    sim1_spec : dict
+        Must specify either a 'sim' field with a similarity matrix or
+        'alpha' and 'gamma' to generate one from SR learning.
+
+    sim2_spec : dict, optional
+        Specification for a second similarity matrix.
+
+    subject_param : dict, optional
+        Parameters that vary by subject.
+
+    question_param : dict, optional
+        Parameters that vary by question type.
+
+    n_rep : int, optional
+        Number of times to repeat the search.
+
+    n_job : int, optional
+        Number of jobs to run in parallel.
+
+    verbose : bool, optional
+        If true, more information about the search will be displayed.
+
+    f_optim : callable, optional
+        Optimization function.
+
+    optim_kws : dict, optional
+        Keyword arguments for the optimization function.
+
+    Returns
+    -------
+    results : pandas.Series
+        Search results, including log-likelihood (logl), the number of
+        data points fit (n), the number of free parameters (k), and the
+        best-fitting value of each parameter.
+    """
+    full_results = Parallel(n_jobs=n_job)(
+        delayed(_fit_induct)(
+            struct,
+            induct,
+            fixed,
+            var_names,
+            var_bounds,
+            sim1_spec,
+            sim2_spec=sim2_spec,
+            subject_param=subject_param,
+            question_param=question_param,
+            verbose=verbose,
+            f_optim=f_optim,
+            optim_kws=optim_kws,
+        ) for _ in range(n_rep)
+    )
+    n = len(induct)
+    k = len(var_names)
+    d = {
+        rep: {
+            'logl': logl, 'n': n, 'k': k, **param
+        } for rep, (logl, param) in zip(range(n_rep), full_results)
+    }
+    results = pd.DataFrame(d).T
+    results = results.astype({'n': int, 'k': int})
+    results.index.rename('rep', inplace=True)
+    return results
+
+
 def fit_induct_indiv(
     struct,
     induct,
