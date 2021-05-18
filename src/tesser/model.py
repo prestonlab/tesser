@@ -507,18 +507,34 @@ def fit_induct_indiv(
     return results
 
 
-def get_best_results(results):
-    """Get best results from a repeated search."""
-    if isinstance(results.index, pd.MultiIndex):
-        groups = results.index.names[:-1]
-        df = []
-        for ind, res in results.groupby(groups):
-            rep = res['logl'].argmax()
-            df.append(res.loc[[(ind, rep)]])
-        best = pd.concat(df, axis=0)
-    else:
-        best = results.loc[[results['logl'].argmax()]]
-    return best
+def fit_induct_question(struct, induct, *args, **kwargs):
+    """
+    Fit induction data separately by question type.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    See fit_induct for other parameters.
+
+    Returns
+    -------
+    results : pandas.DataFrame
+        Search results for each question type and participant.
+    """
+    questions = induct['trial_type'].unique()
+    res_list = []
+    for question in questions:
+        induct_question = induct.query(f'trial_type == "{question}"')
+        res = fit_induct(struct, induct_question, *args, **kwargs)
+        res_list.append(res)
+    results = pd.concat(res_list, axis=0, keys=questions)
+    results.index.rename(['trial_type', 'rep'], inplace=True)
+    return results
 
 
 def fit_induct_indiv_question(struct, induct, *args, **kwargs):
@@ -551,31 +567,15 @@ def fit_induct_indiv_question(struct, induct, *args, **kwargs):
     return results
 
 
-def fit_induct_question(struct, induct, *args, **kwargs):
-    """
-    Fit induction data separately by question type.
-
-    Parameters
-    ----------
-    struct : pandas.DataFrame
-        Structure learning data.
-
-    induct : pandas.DataFrame
-        Induction test data.
-
-    See fit_induct for other parameters.
-
-    Returns
-    -------
-    results : pandas.DataFrame
-        Search results for each question type and participant.
-    """
-    questions = induct['trial_type'].unique()
-    res_list = []
-    for question in questions:
-        induct_question = induct.query(f'trial_type == "{question}"')
-        res = fit_induct(struct, induct_question, *args, **kwargs)
-        res_list.append(res)
-    results = pd.concat(res_list, axis=0, keys=questions)
-    results.index.rename(['trial_type', 'rep'], inplace=True)
-    return results
+def get_best_results(results):
+    """Get best results from a repeated search."""
+    if isinstance(results.index, pd.MultiIndex):
+        groups = results.index.names[:-1]
+        df = []
+        for ind, res in results.groupby(groups):
+            rep = res['logl'].argmax()
+            df.append(res.loc[[(ind, rep)]])
+        best = pd.concat(df, axis=0)
+    else:
+        best = results.loc[[results['logl'].argmax()]]
+    return best
