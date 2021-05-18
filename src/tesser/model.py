@@ -517,7 +517,7 @@ def get_best_results(results):
             df.append(res.loc[[(ind, rep)]])
         best = pd.concat(df, axis=0)
     else:
-        best = results.loc[[results['logl'].argmax]]
+        best = results.loc[[results['logl'].argmax()]]
     return best
 
 
