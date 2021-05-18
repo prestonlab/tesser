@@ -549,3 +549,33 @@ def fit_induct_indiv_question(struct, induct, *args, **kwargs):
     results = pd.concat(res_list, axis=0, keys=questions)
     results.index.rename(['trial_type', 'subject', 'rep'], inplace=True)
     return results
+
+
+def fit_induct_question(struct, induct, *args, **kwargs):
+    """
+    Fit induction data separately by question type.
+
+    Parameters
+    ----------
+    struct : pandas.DataFrame
+        Structure learning data.
+
+    induct : pandas.DataFrame
+        Induction test data.
+
+    See fit_induct for other parameters.
+
+    Returns
+    -------
+    results : pandas.DataFrame
+        Search results for each question type and participant.
+    """
+    questions = induct['trial_type'].unique()
+    res_list = []
+    for question in questions:
+        induct_question = induct.query(f'trial_type == "{question}"')
+        res = fit_induct(struct, induct_question, *args, **kwargs)
+        res_list.append(res)
+    results = pd.concat(res_list, axis=0, keys=questions)
+    results.index.rename(['trial_type', 'rep'], inplace=True)
+    return results
