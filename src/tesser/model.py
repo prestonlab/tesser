@@ -192,7 +192,7 @@ def param_bounds(var_bounds, var_names):
     return bounds
 
 
-def fit_induct(
+def _fit_induct(
     struct,
     induct,
     fixed,
@@ -297,7 +297,7 @@ def _fit_subject(struct, induct, subject, fixed, var_names, *args, **kwargs):
     subj_struct = struct.query(f'subject == {subject}')
     subj_induct = induct.query(f'subject == {subject}')
     subj_param = fixed.copy()
-    logl, param = fit_induct(
+    logl, param = _fit_induct(
         subj_struct, subj_induct, subj_param, var_names, *args, **kwargs
     )
     n = len(subj_induct)
