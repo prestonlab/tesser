@@ -547,5 +547,5 @@ def fit_induct_indiv_question(struct, induct, *args, **kwargs):
         res = fit_induct_indiv(struct, induct_question, *args, **kwargs)
         res_list.append(res)
     results = pd.concat(res_list, axis=0, keys=questions)
-    results.index.rename(['trial_type', 'subject'], inplace=True)
+    results.index.rename(['trial_type', 'subject', 'rep'], inplace=True)
     return results
