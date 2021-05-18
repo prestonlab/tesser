@@ -584,7 +584,7 @@ def get_best_results(results):
 def get_fitted_prob(results, induct, struct, *args, **kwargs):
     """Get fitted probability for each trial."""
     if 'rep' in results.index.names:
-        i = results.index.name.index('rep')
+        i = results.index.names.index('rep')
         results.reset_index(i)
 
     names = results.index.names
