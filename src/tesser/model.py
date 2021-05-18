@@ -579,3 +579,29 @@ def get_best_results(results):
     else:
         best = results.loc[[results['logl'].argmax()]]
     return best
+
+
+def get_fitted_prob(results, induct, struct, *args, **kwargs):
+    """Get fitted probability for each trial."""
+    if 'rep' in results.index.names:
+        i = results.index.name.index('rep')
+        results.reset_index(i)
+
+    names = results.index.names
+    stats = induct.copy()
+    stats['prob'] = 0
+    for ind, res in results.iterrows():
+        inc_struct = np.ones(len(struct), dtype=bool)
+        inc_induct = np.ones(len(induct), dtype=bool)
+        for name, val in zip(names, ind):
+            if name == 'subject':
+                inc_struct &= struct[name] == val
+            if name in induct.columns:
+                inc_induct &= induct[name] == val
+
+        param = res.to_dict()
+        prob = prob_struct_induct(
+            struct[inc_struct], induct[inc_induct], param, *args, **kwargs
+        )
+        stats.loc[inc_induct, 'prob'] = prob
+    return stats
