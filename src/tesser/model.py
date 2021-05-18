@@ -509,15 +509,15 @@ def fit_induct_indiv(
 
 def get_best_results(results):
     """Get best results from a repeated search."""
-    df = []
-    subjects = results.index.get_level_values('subject').unique()
-    for subject in subjects:
-        res = results.loc[subject].reset_index()
-        subject_best = res.loc[[res['logl'].argmax()]]
-        df.append(subject_best)
-    best = pd.concat(df, axis=0)
-    best.index = subjects
-    best.index.rename('subject', inplace=True)
+    if isinstance(results.index, pd.MultiIndex):
+        groups = results.index.names[:-1]
+        df = []
+        for ind, res in results.groupby(groups):
+            rep = res['logl'].argmax()
+            df.append(res.loc[[(ind, rep)]])
+        best = pd.concat(df, axis=0)
+    else:
+        best = results.loc[[results['logl'].argmax]]
     return best
 
 
