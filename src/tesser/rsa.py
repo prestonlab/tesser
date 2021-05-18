@@ -231,8 +231,9 @@ def create_brsa_matrix(
     scan_onsets = np.arange(0, n_vol, n_run_vol, dtype=int)
     for run in runs:
         # create a design matrix with one column per trial type and confounds
+        run_events = events.query(f'run == {run}')[['trial_type', 'onset', 'duration']]
         df_run = first_level.make_first_level_design_matrix(
-            frame_times, events=events.query(f'run == {run}'), high_pass=high_pass
+            frame_times, events=run_events, high_pass=high_pass
         )
 
         # signals by themselves (set any missing evs to zero)
