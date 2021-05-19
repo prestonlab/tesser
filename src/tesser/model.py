@@ -589,6 +589,21 @@ def get_best_results(results):
     return best
 
 
+def get_correct_prob(stats):
+    """Get the probability of correct response."""
+    stats = stats.copy()
+    stats['pcorr'] = np.nan
+    corr = stats['correct'] == 1
+    incorr = stats['correct'] == 0
+
+    # when the response was correct, P(correct) = P(response)
+    stats.loc[corr, 'pcorr'] = stats.loc[corr, 'prob']
+
+    # when the response was incorrect, P(correct) = 1 - P(response)
+    stats.loc[incorr, 'pcorr'] = 1 - stats.loc[incorr, 'prob']
+    return stats
+
+
 def get_fitted_prob(results, induct, struct, *args, **kwargs):
     """Get fitted probability for each trial."""
     if not isinstance(results.index, pd.MultiIndex):
