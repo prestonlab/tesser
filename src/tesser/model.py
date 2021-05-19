@@ -592,15 +592,15 @@ def get_best_results(results):
 def get_correct_prob(stats):
     """Get the probability of correct response."""
     stats = stats.copy()
-    stats['pcorr'] = np.nan
+    stats['prob_correct'] = np.nan
     corr = stats['correct'] == 1
     incorr = stats['correct'] == 0
 
     # when the response was correct, P(correct) = P(response)
-    stats.loc[corr, 'pcorr'] = stats.loc[corr, 'prob']
+    stats.loc[corr, 'prob_correct'] = stats.loc[corr, 'prob_response']
 
     # when the response was incorrect, P(correct) = 1 - P(response)
-    stats.loc[incorr, 'pcorr'] = 1 - stats.loc[incorr, 'prob']
+    stats.loc[incorr, 'prob_correct'] = 1 - stats.loc[incorr, 'prob_response']
     return stats
 
 
@@ -617,7 +617,8 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
     if not groups:
         # no groups to deal with; can evaluate in one step
         param = results.loc[0].to_dict()
-        stats['prob'] = prob_struct_induct(struct, induct, param, *args, **kwargs)
+        prob = prob_struct_induct(struct, induct, param, *args, **kwargs)
+        stats['prob_response'] = prob
         stats = get_correct_prob(stats)
         return stats
 
@@ -639,6 +640,6 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
         prob = prob_struct_induct(
             struct[inc_struct], induct[inc_induct], param, *args, **kwargs
         )
-        stats.loc[inc_induct, 'prob'] = prob
+        stats.loc[inc_induct, 'prob_response'] = prob
         stats = get_correct_prob(stats)
     return stats
