@@ -618,6 +618,7 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
         # no groups to deal with; can evaluate in one step
         param = results.loc[0].to_dict()
         stats['prob'] = prob_struct_induct(struct, induct, param, *args, **kwargs)
+        stats = get_correct_prob(stats)
         return stats
 
     # calculate trial probabilities for each group
@@ -639,4 +640,5 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
             struct[inc_struct], induct[inc_induct], param, *args, **kwargs
         )
         stats.loc[inc_induct, 'prob'] = prob
+        stats = get_correct_prob(stats)
     return stats
