@@ -64,17 +64,25 @@ def prob_induct(induct, tau, sim1, w=None, sim2=None):
     prob : numpy.ndarray
         The probability of each induction test trial.
     """
+    # export induction data for use with cython code
     induct = induct.reset_index()
     cue = induct['cue'].to_numpy().astype(np.dtype('i')) - 1
     opt1 = induct['opt1'].to_numpy().astype(np.dtype('i')) - 1
     opt2 = induct['opt2'].to_numpy().astype(np.dtype('i')) - 1
     response = induct['response'].to_numpy().astype(np.dtype('i')) - 1
+
+    # for trials with no response, place a temporary dummy response
+    missing = induct['response'].isna().to_numpy()
+    response[missing] = 0
     if sim2 is None:
         prob = learn.prob_induct_sim(cue, opt1, opt2, response, sim1, tau)
     else:
         if w is None:
             raise ValueError('If sim2 is defined, w must be defined.')
         prob = learn.prob_induct_sim2(cue, opt1, opt2, response, sim1, sim2, w, tau)
+
+    # probability of no response is undefined
+    prob[missing] = np.nan
     return prob
 
 
