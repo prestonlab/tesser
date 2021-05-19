@@ -583,12 +583,22 @@ def get_best_results(results):
 
 def get_fitted_prob(results, induct, struct, *args, **kwargs):
     """Get fitted probability for each trial."""
-    if 'rep' in results.index.names:
-        i = results.index.names.index('rep')
-        results.reset_index(i)
+    if not isinstance(results.index, pd.MultiIndex):
+        groups = False
+    else:
+        groups = True
+    i = results.index.names.index('rep')
+    results = results.reset_index(i)
 
-    names = results.index.names
     stats = induct.copy()
+    if not groups:
+        # no groups to deal with; can evaluate in one step
+        param = results.loc[0].to_dict()
+        stats['prob'] = prob_struct_induct(struct, induct, param, *args, **kwargs)
+        return stats
+
+    # calculate trial probabilities for each group
+    names = results.index.names
     stats['prob'] = 0
     for ind, res in results.iterrows():
         inc_struct = np.ones(len(struct), dtype=bool)
