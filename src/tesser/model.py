@@ -136,7 +136,7 @@ def prob_struct_induct(
         Probability of the observed response for each induction test trial.
     """
     subjects = struct['subject'].unique()
-    questions = induct['trial_type'].unique()
+    questions = induct['trial_type'].cat.categories.values
     prob = np.zeros(len(induct))
     n_state = max(
         struct['object'].max(),
@@ -526,7 +526,7 @@ def fit_induct_question(struct, induct, *args, **kwargs):
     results : pandas.DataFrame
         Search results for each question type and participant.
     """
-    questions = induct['trial_type'].unique()
+    questions = induct['trial_type'].cat.categories.values
     res_list = []
     for question in questions:
         induct_question = induct.query(f'trial_type == "{question}"')
@@ -556,7 +556,7 @@ def fit_induct_indiv_question(struct, induct, *args, **kwargs):
     results : pandas.DataFrame
         Search results for each question type and participant.
     """
-    questions = induct['trial_type'].unique()
+    questions = induct['trial_type'].cat.categories.values
     res_list = []
     for question in questions:
         induct_question = induct.query(f'trial_type == "{question}"')
