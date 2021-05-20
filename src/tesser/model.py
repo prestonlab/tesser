@@ -624,7 +624,6 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
 
     # calculate trial probabilities for each group
     names = results.index.names
-    stats['prob'] = 0
     for ind, res in results.iterrows():
         # get relevant trials for this group
         inc_struct = np.ones(len(struct), dtype=bool)
