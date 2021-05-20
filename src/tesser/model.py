@@ -582,7 +582,11 @@ def get_best_results(results):
         df = []
         for ind, res in results.groupby(groups):
             rep = res['logl'].argmax()
-            df.append(res.loc[[(ind, rep)]])
+            if isinstance(ind, tuple):
+                r = res.loc[[(*ind, rep)]]
+            else:
+                r = res.loc[[(ind, rep)]]
+            df.append(r)
         best = pd.concat(df, axis=0)
     else:
         best = results.loc[[results['logl'].argmax()]]
@@ -628,6 +632,8 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
         # get relevant trials for this group
         inc_struct = np.ones(len(struct), dtype=bool)
         inc_induct = np.ones(len(induct), dtype=bool)
+        if not isinstance(ind, tuple):
+            ind = (ind,)
         for name, val in zip(names, ind):
             if name == 'subject':
                 inc_struct &= struct[name] == val
