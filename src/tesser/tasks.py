@@ -364,6 +364,27 @@ def load_parse(data_dir, subjects=None):
     return df
 
 
+def parse_perf(parse):
+    """Score parsing performance."""
+    trans_parse = (
+        parse.query('transition and prev_walk >= 4')
+             .groupby(['subject', 'trial_type'])['response']
+             .mean()
+    )
+    other_parse = (
+        parse.query('~(transition and prev_walk >= 4)')
+             .groupby(['subject', 'trial_type'])['response']
+             .mean()
+    )
+    results = pd.concat([trans_parse, other_parse], keys=['transition', 'other'])
+    results.index.set_names('parse_type', level=0, inplace=True)
+    results = results.reset_index()
+    parse_type = results['parse_type'].astype('category')
+    parse_type = parse_type.cat.set_categories(['transition', 'other'])
+    results['parse_type'] = parse_type
+    return results
+
+
 def load_group_mat(data_dir, subject_num):
     """Load matrix of grouping data."""
     # subject directory
