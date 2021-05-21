@@ -65,8 +65,8 @@ def main(
     sr_rdm = rsa.make_sym_matrix(1 - sr_mat / np.sum(sr_mat))
 
     # create model set
-    model_rdms = [comm_rdm, sr_rdm]
-    model_names = ['community', 'sr']
+    model_rdms = [comm_rdm, 1 - comm_rdm, sr_rdm, 1 - sr_rdm]
+    model_names = ['community', 'community_sim', 'sr', 'sr_sim']
 
     # initialize the permutation test
     logging.info('Initializing PRSA test.')
