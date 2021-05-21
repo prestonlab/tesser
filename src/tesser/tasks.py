@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.spatial import distance
 from scipy import stats
+from sklearn import linear_model
 import pandas as pd
 import os
 from glob import glob
@@ -448,4 +449,15 @@ def group_distance(data):
     m_within = np.mean(rdv[:, within_vec == 1], axis=1)
     m_across = np.mean(rdv[:, within_vec == 0], axis=1)
     res = pd.DataFrame({'subject': subject, 'within': m_within, 'across': m_across})
+    return res
+
+
+def resid(x, y):
+    """Residual of y after regressing out x."""
+    x = np.asarray(x).reshape(-1, 1)
+    y = np.asarray(y)
+    model = linear_model.LinearRegression()
+    model.fit(x, y)
+    yhat = model.predict(x)
+    res = y - yhat
     return res
