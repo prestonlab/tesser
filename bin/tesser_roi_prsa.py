@@ -75,8 +75,8 @@ def main(
     # create model set
     if invert:
         logging.info('Using inverted models.')
-        comm_rdm = 1 - comm_rdm
-        comm_rdm[np.arange(n_state), np.arange(n_state)] = 0
+        # comm_rdm = 1 - comm_rdm
+        # comm_rdm[np.arange(n_state), np.arange(n_state)] = 0
         sr_rdm = 1 - sr_rdm
         sr_rdm[np.arange(n_state), np.arange(n_state)] = 0
     model_rdms = [comm_rdm, sr_rdm]
