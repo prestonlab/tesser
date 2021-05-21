@@ -19,14 +19,25 @@ from tesser import rsa
 
 
 def main(
-    subject, study_dir, beh_dir, rsa_name, roi, res_name, block=None, n_perm=1000
+    subject,
+    study_dir,
+    beh_dir,
+    rsa_name,
+    roi,
+    res_name,
+    block=None,
+    n_perm=1000,
+    invert=False,
 ):
     # set up log
     res_dir = os.path.join(study_dir, 'batch', 'prsa', res_name, roi)
     log_dir = os.path.join(res_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
-    logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)
+    logging.basicConfig(
+        filename=log_file, filemode='w', level=logging.INFO,
+        format='%(asctime)s %(levelname)s:%(name)s:%(message)s'
+    )
     logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
     # load dissimilarity matrix
@@ -53,22 +64,28 @@ def main(
     comm = struct.groupby('object')['community'].first().to_numpy()
     comm_rdm = (comm[:, None] != comm).astype(float)
 
-    # learning models based on part 1
+    # learning model based on part 1
     # dissimilarity is inversely proportionate to association strength
     struct1 = struct.query('part == 1').copy()
-    gamma = [0, .9]
-    alpha = 0.05
-    sr_mat = [model.learn_struct_sr(struct1, g, alpha, n_state) for g in gamma]
-    sr_rdm = [rsa.make_sym_matrix(1 - sr / np.sum(sr)) for sr in sr_mat]
+    gamma = .97424
+    alpha = 0.1
+    sr_mat = model.learn_struct_sr(struct1, gamma, alpha, n_state)
+    sr_rdm = rsa.make_sym_matrix(1 - sr_mat / np.sum(sr_mat))
 
     # create model set
-    model_rdms = [comm_rdm] + sr_rdm
-    model_names = ['community', 'sr0', 'sr90']
+    if invert:
+        logging.info('Using inverted models.')
+        # comm_rdm = 1 - comm_rdm
+        # comm_rdm[np.arange(n_state), np.arange(n_state)] = 0
+        sr_rdm = 1 - sr_rdm
+        sr_rdm[np.arange(n_state), np.arange(n_state)] = 0
+    model_rdms = [comm_rdm, sr_rdm]
+    model_names = ['community', 'sr']
 
     # initialize the permutation test
     logging.info('Initializing PRSA test.')
     perm = prsa.init_pRSA(n_perm, model_rdms, rank=False)
-    data_vec = sd.pdist(roi_rdm)
+    data_vec = sd.pdist(roi_rdm, 'correlation')
     n_model = len(model_rdms)
 
     # calculate permutation correlations
@@ -100,8 +117,18 @@ if __name__ == '__main__':
         '--n-perm', '-p', type=int, default=1000,
         help="number of permutations to run (1000)"
     )
+    parser.add_argument(
+        '--invert', '-i', action="store_true", help="use model similarity"
+    )
     args = parser.parse_args()
     main(
-        args.subject, args.study_dir, args.beh_dir, args.rsa_name, args.roi,
-        args.res_name, block=args.block, n_perm=args.n_perm
+        args.subject,
+        args.study_dir,
+        args.beh_dir,
+        args.rsa_name,
+        args.roi,
+        args.res_name,
+        block=args.block,
+        n_perm=args.n_perm,
+        invert=args.invert,
     )

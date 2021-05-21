@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.spatial import distance
 from scipy import stats
+from sklearn import linear_model
 import pandas as pd
 import os
 from glob import glob
@@ -364,6 +365,27 @@ def load_parse(data_dir, subjects=None):
     return df
 
 
+def parse_perf(parse):
+    """Score parsing performance."""
+    trans_parse = (
+        parse.query('transition and prev_walk >= 4')
+             .groupby(['subject', 'trial_type'])['response']
+             .mean()
+    )
+    other_parse = (
+        parse.query('~(transition and prev_walk >= 4)')
+             .groupby(['subject', 'trial_type'])['response']
+             .mean()
+    )
+    results = pd.concat([trans_parse, other_parse], keys=['transition', 'other'])
+    results.index.set_names('parse_type', level=0, inplace=True)
+    results = results.reset_index()
+    parse_type = results['parse_type'].astype('category')
+    parse_type = parse_type.cat.set_categories(['transition', 'other'])
+    results['parse_type'] = parse_type
+    return results
+
+
 def load_group_mat(data_dir, subject_num):
     """Load matrix of grouping data."""
     # subject directory
@@ -427,4 +449,15 @@ def group_distance(data):
     m_within = np.mean(rdv[:, within_vec == 1], axis=1)
     m_across = np.mean(rdv[:, within_vec == 0], axis=1)
     res = pd.DataFrame({'subject': subject, 'within': m_within, 'across': m_across})
+    return res
+
+
+def resid(x, y):
+    """Residual of y after regressing out x."""
+    x = np.asarray(x).reshape(-1, 1)
+    y = np.asarray(y)
+    model = linear_model.LinearRegression()
+    model.fit(x, y)
+    yhat = model.predict(x)
+    res = y - yhat
     return res

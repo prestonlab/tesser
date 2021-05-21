@@ -8,7 +8,7 @@ from tesser import tasks
 from tesser import rsa
 
 
-def submit_brsa(subjects, rois, blocks, study_dir, rsa_name):
+def submit_brsa(subjects, rois, blocks, study_dir, rsa_name, invert):
     if subjects is None:
         subjects = tasks.get_subj_list()
 
@@ -18,7 +18,10 @@ def submit_brsa(subjects, rois, blocks, study_dir, rsa_name):
         inputs = f'{beh_dir} {rsa_name} {roi}'
         for block in blocks:
             options = f'--study-dir={study_dir} -b {block} -p 100000'
-            res_name = f'{rsa_name}_{block_name[block]}_com-sr0-sr90'
+            res_name = f'{rsa_name}_{block_name[block]}_com-sr'
+            if invert:
+                options += ' -i'
+                res_name += '_inv'
             for subject in subjects:
                 print(f'tesser_roi_prsa.py {subject} {inputs} {res_name} {options}')
 
@@ -30,6 +33,9 @@ if __name__ == '__main__':
     parser.add_argument('rsa_name', help="name of BRSA model to use.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument('--subjects', '-s', help="IDs of subjects to process.")
+    parser.add_argument(
+        '--invert', '-i', action="store_true", help="use model similarity"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -46,4 +52,11 @@ if __name__ == '__main__':
 
     inc_blocks = args.blocks.split(',')
     inc_rois = rsa.parse_rois(args.rois)
-    submit_brsa(inc_subjects, inc_rois, inc_blocks, env_study_dir, args.rsa_name)
+    submit_brsa(
+        inc_subjects,
+        inc_rois,
+        inc_blocks,
+        env_study_dir,
+        args.rsa_name,
+        args.invert,
+    )

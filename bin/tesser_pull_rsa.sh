@@ -21,4 +21,6 @@ rsync -azvu "$src" "$dest" \
     --include="batch/prsa/*/*/" \
     --include="*.npz" \
     --include="*.csv" \
-    --exclude="*" "$@"
+    --exclude="*" \
+    --prune-empty-dirs \
+    "$@"
