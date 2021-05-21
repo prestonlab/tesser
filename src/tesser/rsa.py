@@ -158,8 +158,10 @@ def mean_corr_community(rdvs, subjects):
             {
                 'within': m_within,
                 'across': m_across,
+                'diff': m_within - m_across,
                 'within_central': m_within_central,
                 'across_central': m_across_central,
+                'diff_central': m_within_central - m_across_central,
             }, index=subjects
         )
         df_list.append(df)
