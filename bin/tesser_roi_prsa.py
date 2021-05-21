@@ -65,6 +65,10 @@ def main(
     sr_rdm = rsa.make_sym_matrix(1 - sr_mat / np.sum(sr_mat))
 
     # create model set
+    comm_sim = 1 - comm_rdm
+    comm_sim[np.arange(n_state), np.arange(n_state)] = 0
+    sr_sim = 1 - sr_rdm
+    sr_sim[np.arange(n_state), np.arange(n_state)] = 0
     model_rdms = [comm_rdm, 1 - comm_rdm, sr_rdm, 1 - sr_rdm]
     model_names = ['community', 'community_sim', 'sr', 'sr_sim']
 
