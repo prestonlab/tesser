@@ -69,7 +69,7 @@ def main(
     comm_sim[np.arange(n_state), np.arange(n_state)] = 0
     sr_sim = 1 - sr_rdm
     sr_sim[np.arange(n_state), np.arange(n_state)] = 0
-    model_rdms = [comm_rdm, 1 - comm_rdm, sr_rdm, 1 - sr_rdm]
+    model_rdms = [comm_rdm, comm_sim, sr_rdm, sr_sim]
     model_names = ['community', 'community_sim', 'sr', 'sr_sim']
 
     # initialize the permutation test
