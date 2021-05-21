@@ -19,7 +19,15 @@ from tesser import rsa
 
 
 def main(
-    subject, study_dir, beh_dir, rsa_name, roi, res_name, block=None, n_perm=1000
+    subject,
+    study_dir,
+    beh_dir,
+    rsa_name,
+    roi,
+    res_name,
+    block=None,
+    n_perm=1000,
+    invert=False,
 ):
     # set up log
     res_dir = os.path.join(study_dir, 'batch', 'prsa', res_name, roi)
@@ -65,12 +73,14 @@ def main(
     sr_rdm = rsa.make_sym_matrix(1 - sr_mat / np.sum(sr_mat))
 
     # create model set
-    comm_sim = 1 - comm_rdm
-    comm_sim[np.arange(n_state), np.arange(n_state)] = 0
-    sr_sim = 1 - sr_rdm
-    sr_sim[np.arange(n_state), np.arange(n_state)] = 0
-    model_rdms = [comm_rdm, comm_sim, sr_rdm, sr_sim]
-    model_names = ['community', 'community_sim', 'sr', 'sr_sim']
+    if invert:
+        logging.info('Using inverted models.')
+        comm_rdm = 1 - comm_rdm
+        comm_rdm[np.arange(n_state), np.arange(n_state)] = 0
+        sr_rdm = 1 - sr_rdm
+        sr_rdm[np.arange(n_state), np.arange(n_state)] = 0
+    model_rdms = [comm_rdm, sr_rdm]
+    model_names = ['community', 'sr']
 
     # initialize the permutation test
     logging.info('Initializing PRSA test.')
@@ -107,8 +117,18 @@ if __name__ == '__main__':
         '--n-perm', '-p', type=int, default=1000,
         help="number of permutations to run (1000)"
     )
+    parser.add_argument(
+        '--invert', '-i', action="store_true", help="use model similarity"
+    )
     args = parser.parse_args()
     main(
-        args.subject, args.study_dir, args.beh_dir, args.rsa_name, args.roi,
-        args.res_name, block=args.block, n_perm=args.n_perm
+        args.subject,
+        args.study_dir,
+        args.beh_dir,
+        args.rsa_name,
+        args.roi,
+        args.res_name,
+        block=args.block,
+        n_perm=args.n_perm,
+        invert=args.invert,
     )
