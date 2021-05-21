@@ -144,11 +144,24 @@ def mean_corr_community(rdvs, subjects):
     within_mat = comm == comm[:, None]
     within_vec = sd.squareform(within_mat, checks=False)
 
+    node_type = nodes['node_type'].to_numpy()
+    central_mat = (node_type == 0) & (node_type[:, None] == 0)
+    central_vec = sd.squareform(central_mat, checks=False)
+
     df_list = []
     for roi, vectors in rdvs.items():
         m_within = np.mean(vectors[:, within_vec == 1], 1)
         m_across = np.mean(vectors[:, within_vec == 0], 1)
-        df = pd.DataFrame({'within': m_within, 'across': m_across}, index=subjects)
+        m_within_central = np.mean(vectors[:, (within_vec == 1) & (central_vec == 1)], 1)
+        m_across_central = np.mean(vectors[:, (within_vec == 0) & (central_vec == 1)], 1)
+        df = pd.DataFrame(
+            {
+                'within': m_within,
+                'across': m_across,
+                'within_central': m_within_central,
+                'across_central': m_across_central,
+            }, index=subjects
+        )
         df_list.append(df)
     results = pd.concat(df_list, keys=rdvs.keys())
     results.index.rename(['roi', 'subject'], inplace=True)
