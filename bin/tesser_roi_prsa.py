@@ -68,7 +68,7 @@ def main(
     # initialize the permutation test
     logging.info('Initializing PRSA test.')
     perm = prsa.init_pRSA(n_perm, model_rdms, rank=False)
-    data_vec = sd.pdist(roi_rdm)
+    data_vec = sd.pdist(roi_rdm, 'correlation')
     n_model = len(model_rdms)
 
     # calculate permutation correlations
