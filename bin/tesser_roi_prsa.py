@@ -53,17 +53,17 @@ def main(
     comm = struct.groupby('object')['community'].first().to_numpy()
     comm_rdm = (comm[:, None] != comm).astype(float)
 
-    # learning models based on part 1
+    # learning model based on part 1
     # dissimilarity is inversely proportionate to association strength
     struct1 = struct.query('part == 1').copy()
-    gamma = [0, .9]
-    alpha = 0.05
-    sr_mat = [model.learn_struct_sr(struct1, g, alpha, n_state) for g in gamma]
-    sr_rdm = [rsa.make_sym_matrix(1 - sr / np.sum(sr)) for sr in sr_mat]
+    gamma = .97424
+    alpha = 0.1
+    sr_mat = model.learn_struct_sr(struct1, gamma, alpha, n_state)
+    sr_rdm = rsa.make_sym_matrix(1 - sr_mat / np.sum(sr_mat))
 
     # create model set
-    model_rdms = [comm_rdm] + sr_rdm
-    model_names = ['community', 'sr0', 'sr90']
+    model_rdms = [comm_rdm, sr_rdm]
+    model_names = ['community', 'sr']
 
     # initialize the permutation test
     logging.info('Initializing PRSA test.')
