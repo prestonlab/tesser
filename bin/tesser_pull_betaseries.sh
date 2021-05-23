@@ -32,5 +32,6 @@ rsync -azvu "$src" "$dest" \
     --include=betas.nii.gz \
     --include={10m,10p,10r,11m,14c,14r,24,25,32pl}.nii.gz \
     --include="brain2functional_run_4_unwarp_Affine.txt" \
+    --include="example_func.nii.gz" \
     --exclude="*" \
     "$@"
