@@ -689,3 +689,16 @@ def save_fit_results(
     results = get_best_results(full_results)
     results.to_csv(os.path.join(res_dir, 'fit.csv'))
     return results
+
+
+def aic(logl, n, k):
+    """Akaike information criterion."""
+    return -2 * logl + 2 * k + ((2 * k * (k + 1)) / (n - k - 1))
+
+
+def waic(a, axis=1):
+    """Akaike weights."""
+    min_aic = np.expand_dims(np.min(a, axis), axis)
+    delta_aic = np.exp(-0.5 * (a - min_aic))
+    sum_aic = np.expand_dims(np.sum(delta_aic, axis), axis)
+    return delta_aic / sum_aic
