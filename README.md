@@ -47,3 +47,10 @@ You will also need brainiak and ezlaunch:
 pip install brainiak
 pip install ezlaunch
 ```
+
+## Authors
+
+The modeling code was developed by Rodrigo Viveros Duran, 
+Demetrius Manuel Hinojosa-Rowland, Neal W Morton, Athula Pudhiyidath, 
+and Ida Momennejad. Code for behavioral and neural analysis was
+developed by Athula Pudhiyidath and Neal W Morton.
