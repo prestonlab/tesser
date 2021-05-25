@@ -1,5 +1,7 @@
 """Functions for fitting models of tesser behavior."""
 
+import os
+import json
 import numpy as np
 import pandas as pd
 from scipy import optimize
@@ -648,3 +650,55 @@ def get_fitted_prob(results, induct, struct, *args, **kwargs):
         stats.loc[inc_induct, 'prob_response'] = prob
         stats = get_correct_prob(stats)
     return stats
+
+
+def save_fit_results(
+    res_dir,
+    full_results,
+    fixed,
+    var_names,
+    var_bounds,
+    sim1_spec,
+    sim2_spec=None,
+    question_param=None,
+):
+    """Save model fit results."""
+    # save parameter definitions
+    free = {name: var_bounds[name] for name in var_names}
+    if sim1_spec is not None and 'sim' in sim1_spec:
+        sim1_spec = sim1_spec.copy()
+        sim1_spec['sim'] = 'within'
+    if sim2_spec is not None and 'sim' in sim2_spec:
+        sim2_spec = sim2_spec.copy()
+        sim2_spec['sim'] = 'within'
+    parameters = {
+        'fixed': fixed,
+        'free': free,
+        'sim1_spec': sim1_spec,
+        'sim2_spec': sim2_spec,
+        'question_param': question_param,
+    }
+    os.makedirs(res_dir, exist_ok=True)
+    with open(os.path.join(res_dir, 'parameters.json'), 'w') as f:
+        json.dump(parameters, f, indent=4)
+
+    # save full results
+    full_results.to_csv(os.path.join(res_dir, 'search.csv'))
+
+    # save best parameters
+    results = get_best_results(full_results)
+    results.to_csv(os.path.join(res_dir, 'fit.csv'))
+    return results
+
+
+def aic(logl, n, k):
+    """Akaike information criterion."""
+    return -2 * logl + 2 * k + ((2 * k * (k + 1)) / (n - k - 1))
+
+
+def waic(a, axis=1):
+    """Akaike weights."""
+    min_aic = np.expand_dims(np.min(a, axis), axis)
+    delta_aic = np.exp(-0.5 * (a - min_aic))
+    sum_aic = np.expand_dims(np.sum(delta_aic, axis), axis)
+    return delta_aic / sum_aic
