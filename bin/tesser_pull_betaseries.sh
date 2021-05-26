@@ -28,8 +28,12 @@ rsync -azvu "$src" "$dest" \
     --include="tesser_*/BOLD/antsreg/data/functional_run_4_bold_mcf_brain_corr.feat/" \
     --include="tesser_*/model/" \
     --include="tesser_*/model/rsa2_4mm_betaseries/" \
+    --include="betas.nii.gz" \
+    --include="tesser_*/model/" \
+    --include="tesser_*/model/rsa2_4mm_betaseries/" \
     --include={highres,coronal_mean,aparc+aseg}.nii.gz \
     --include=betas.nii.gz \
+    --include={b,l,r}_hip_{ant,body,tail}.nii.gz \
     --include={10m,10p,10r,11m,14c,14r,24,25,32pl}.nii.gz \
     --include="brain2functional_run_4_unwarp_Affine.txt" \
     --include="example_func.nii.gz" \
