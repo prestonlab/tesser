@@ -18,8 +18,8 @@ def infotodict(seqinfo):
     subindex: sub index within group
     """
 
-    key_magnitude = create_key('sub-{subject}_run-{item}_magnitude1')
-    key_phasediff = create_key('sub-{subject}_run-{item}-phasediff')
+    key_magnitude = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}_magnitude1')
+    key_phasediff = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}-phasediff')
     info = {key_magnitude: [], key_phasediff: []}
 
     n_fieldmap = 0
