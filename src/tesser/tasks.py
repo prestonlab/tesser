@@ -112,7 +112,7 @@ def load_struct_onsets(scan_dir, subject):
     runs = list(range(1, 7))
     for i, run in enumerate(runs):
         vol_file = os.path.join(
-            study_dir,
+            scan_dir,
             'rsa_allevents_info',
             f'tesser_{subject}_run{run}_info.txt',
         )
