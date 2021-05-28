@@ -124,7 +124,7 @@ def load_struct_onsets(scan_dir, subject):
     return data
 
 
-def load_struct(data_dir, subjects=None):
+def load_struct(data_dir, subjects=None, onsets=None):
     """Load structure learning data for multiple subjects."""
     if subjects is None:
         subjects = get_subj_list()
@@ -154,6 +154,7 @@ def load_struct(data_dir, subjects=None):
             'block': raw['block'],
             'trial': raw['trial'],
             'trial_type': raw['seqtype'].map(trial_type).astype('category'),
+            'onset': 0,
             'community': raw_nodes['community'],
             'object': raw['objnum'],
             'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
@@ -163,6 +164,13 @@ def load_struct(data_dir, subjects=None):
             'correct': raw['acc'].astype('Int64'),
         }
     )
+    if onsets is not None:
+        temp1 = df.set_index(['subject', 'part', 'run', 'trial'])
+        onsets['subject'] = subject
+        onsets['part'] = 2
+        temp2 = onsets.set_index(['subject', 'part', 'run', 'trial'])
+        temp1['onset'] = temp2['onset']
+        df = temp1.reset_index()
     return df
 
 
