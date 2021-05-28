@@ -148,8 +148,8 @@ def load_struct(data_dir, subjects=None, onsets=None):
     object_type = {0: 'central', 1: 'boundary'}
     df = pd.DataFrame(
         {
-            'onset': 0,
-            'duration': 0,
+            'onset': np.nan,
+            'duration': 1,
             'trial_type': raw['seqtype'].map(trial_type).astype('category'),
             'subject': raw['SubjNum'],
             'part': raw['part'],
