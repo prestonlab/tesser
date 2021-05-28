@@ -148,13 +148,14 @@ def load_struct(data_dir, subjects=None, onsets=None):
     object_type = {0: 'central', 1: 'boundary'}
     df = pd.DataFrame(
         {
+            'onset': 0,
+            'duration': 0,
+            'trial_type': raw['seqtype'].map(trial_type).astype('category'),
             'subject': raw['SubjNum'],
             'part': raw['part'],
             'run': raw['run'],
             'block': raw['block'],
             'trial': raw['trial'],
-            'trial_type': raw['seqtype'].map(trial_type).astype('category'),
-            'onset': 0,
             'community': raw_nodes['community'],
             'object': raw['objnum'],
             'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
@@ -170,6 +171,7 @@ def load_struct(data_dir, subjects=None, onsets=None):
         onsets['part'] = 2
         temp2 = onsets.set_index(['subject', 'part', 'run', 'trial'])
         temp1['onset'] = temp2['onset']
+        temp1['duration'] = temp2['duration']
         df = temp1.reset_index()
     return df
 
