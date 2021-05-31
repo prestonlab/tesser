@@ -12,7 +12,8 @@ raw_dir=$2
 heuristic=$3
 bids_dir=$4
 
-subj_raw_dir=$raw_dir/$subject/raw/$subject
+subj_id=tesser_$subject
+subj_raw_dir=$raw_dir/$subj_id/raw/$subj_id
 if [[ ! -d $subj_raw_dir ]]; then
     echo "Error: raw directory not found: $subj_raw_dir"
     exit 1
