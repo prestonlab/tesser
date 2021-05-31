@@ -6,6 +6,7 @@ import os
 import stat
 import json
 import argparse
+import pandas as pd
 from bids import BIDSLayout
 
 
@@ -61,6 +62,12 @@ def main(data_dir):
                 os.chmod(fmap_file.path, prw)
                 with open(fmap_file.path, 'w') as f:
                     json.dump(prop, f, indent=4)
+
+    # sort the participants file
+    participants_file = os.path.join(data_dir, 'participants.tsv')
+    df = pd.read_csv(participants_file, sep='\t')
+    df = df.sort_values('participant_id')
+    df.to_csv(participants_file, sep='\t', index=False, na_rep='n/a')
 
 
 if __name__ == '__main__':
