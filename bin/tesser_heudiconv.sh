@@ -2,7 +2,7 @@
 #
 # Run heudiconv to convert raw data for one subject.
 
-if [[ $# -lt 2 ]]; then
+if [[ $# -lt 4 ]]; then
     echo "Usage: tesser_heudiconv.sh subject raw_dir heuristic bids_dir"
     exit 1
 fi
