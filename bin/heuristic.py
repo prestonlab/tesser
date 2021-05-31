@@ -18,9 +18,21 @@ def infotodict(seqinfo):
     subindex: sub index within group
     """
 
-    key_magnitude = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}_magnitude1')
-    key_phasediff = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}-phasediff')
-    info = {key_magnitude: [], key_phasediff: []}
+    key_T1w = create_key('sub-{subject}/anat/sub-{subject}_T1w')
+    key_T2w = create_key('sub-{subject}/anat/sub-{subject}_run-{item}_T2w')
+    key_magnitude = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}_magnitude')
+    key_phasediff = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}_phasediff')
+    key_struct = create_key('sub-{subject}/func/sub-{subject}_task-struct_run-{item}_bold')
+    key_sbref = create_key('sub-{subject}/func/sub-{subject}_task-struct_run-{item}_sbref')
+
+    info = {
+        key_T1w: [],
+        key_T2w: [],
+        key_magnitude: [],
+        key_phasediff: [],
+        key_sbref: [],
+        key_struct: [],
+    }
 
     n_fieldmap = 0
     for s in seqinfo:
@@ -48,10 +60,18 @@ def infotodict(seqinfo):
         * series_description
         * image_type
         """
-        if s.series_description == 'fieldmap':
+        if s.series_description == 'mprage':
+            info[key_T1w].append(s.series_id)
+        elif 'T2' in s.series_description:
+            info[key_T2w].append(s.series_id)
+        elif s.series_description == 'fieldmap':
             n_fieldmap += 1
             if n_fieldmap % 2 == 1:
                 info[key_magnitude].append(s.series_id)
             else:
                 info[key_phasediff].append(s.series_id)
+        elif s.series_description == 'functional_run_SBRef':
+            info[key_sbref].append(s.series_id)
+        elif s.series_description == 'functional_run':
+            info[key_struct].append(s.series_id)
     return info
