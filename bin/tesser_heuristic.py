@@ -34,6 +34,16 @@ def infotodict(seqinfo):
         key_struct: [],
     }
 
+    # get just the functional runs that were completed
+    include_sbref = []
+    include_bold = []
+    for i, s in enumerate(seqinfo):
+        if s.series_description == 'functional_run':
+            if s.dim4 == 298:
+                # include this scan and the one before, which is the SBRef
+                include_sbref.append(seqinfo[i - 1].series_id)
+                include_bold.append(s.series_id)
+
     n_fieldmap = 0
     for s in seqinfo:
         """
@@ -71,7 +81,9 @@ def infotodict(seqinfo):
             else:
                 info[key_phasediff].append(s.series_id)
         elif s.series_description == 'functional_run_SBRef':
-            info[key_sbref].append(s.series_id)
+            if s.series_id in include_sbref:
+                info[key_sbref].append(s.series_id)
         elif s.series_description == 'functional_run':
-            info[key_struct].append(s.series_id)
+            if s.series_id in include_bold:
+                info[key_struct].append(s.series_id)
     return info
