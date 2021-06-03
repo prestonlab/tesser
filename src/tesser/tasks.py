@@ -105,22 +105,28 @@ def load_struct_subject(data_dir, subject_num):
     return df
 
 
-def load_struct_onsets(scan_dir, subject):
-    """Load onset information for all structure runs for a subject."""
-    data_list = []
+def load_struct_onsets(scan_dir, subjects):
+    """Load onset information for structure scans."""
     columns = ['trial', 'onset', 'tr', 'sequence_type', 'trial_type', 'duration']
     runs = list(range(1, 7))
-    for i, run in enumerate(runs):
-        vol_file = os.path.join(
-            scan_dir,
-            'rsa_allevents_info',
-            f'tesser_{subject}_run{run}_info.txt',
-        )
-        run_data = pd.read_csv(vol_file, names=columns)
-        run_data['duration'] = 1
-        run_data['run'] = run
-        data_list.append(run_data)
-    data = pd.concat(data_list, axis=0)
+    subj_list = []
+    for subject in subjects:
+        data_list = []
+        for i, run in enumerate(runs):
+            vol_file = os.path.join(
+                scan_dir,
+                'rsa_allevents_info',
+                f'tesser_{subject}_run{run}_info.txt',
+            )
+            run_data = pd.read_csv(vol_file, names=columns)
+            run_data['duration'] = 1
+            run_data['run'] = run
+            data_list.append(run_data)
+        subj_data = pd.concat(data_list, axis=0)
+        subj_data['subject'] = subject
+        subj_data['part'] = 2
+        subj_list.append(subj_data)
+    data = pd.concat(subj_list, axis=0)
     return data
 
 
