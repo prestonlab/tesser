@@ -39,7 +39,8 @@ def infotodict(seqinfo):
     include_bold = []
     for i, s in enumerate(seqinfo):
         if s.series_description == 'functional_run':
-            if s.dim4 == 298:
+            # should be 298 TRs (one participant shows as 596 for some reason)
+            if s.dim4 in [298, 596]:
                 # include this scan and the one before, which is the SBRef
                 include_sbref.append(seqinfo[i - 1].series_id)
                 include_bold.append(s.series_id)
