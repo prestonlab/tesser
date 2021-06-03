@@ -10,6 +10,7 @@ from nilearn.glm import first_level
 from mindstorm import prsa
 from tesser import tasks
 from tesser import network
+from tesser import learn
 
 
 def get_roi_sets():
@@ -168,6 +169,25 @@ def mean_corr_community(rdvs, subjects):
     results = pd.concat(df_list, keys=rdvs.keys())
     results.index.rename(['roi', 'subject'], inplace=True)
     return results
+
+
+def beta_sr_rdm(struct, alpha, gamma, distance='correlation'):
+    """Calculate an RDM for an SR model of each run."""
+    if struct['subject'].nunique() > 1:
+        raise ValueError('Structure data should only contain one subject.')
+
+    n_state = struct['object'].nunique()
+    M = np.zeros([n_state, n_state])
+    M_run = {}
+    for ind, df in struct.groupby(['part', 'run']):
+        envstep = df['object'].to_numpy() - 1
+        envstep = envstep.astype(np.dtype('i'))
+        learn.learn_sr(M, envstep, gamma, alpha)
+        M_run[ind] = M.copy()
+    struct_mat = [M_run[(2, n)] for n in range(1, 7)]
+    big_mat = np.vstack(struct_mat)
+    big_rdm = sd.squareform(sd.pdist(big_mat, 'correlation'))
+    return big_rdm
 
 
 def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
