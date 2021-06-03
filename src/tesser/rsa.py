@@ -289,8 +289,7 @@ def create_betaseries_design(trials, n_vol, tr, high_pass=0):
     sequence = trials['trial_type'].to_numpy()
     trial_type = trials['object'].to_numpy()
     n_evs = trials.query('sequence == "scrambled"')['object'].nunique()
-    struct_code = n_evs + 1
-    trial_type[sequence == 'structured'] = struct_code
+    trial_type[sequence == 'structured'] = n_evs
     events = trials.copy()
     events['trial_type'] = trial_type
 
