@@ -280,3 +280,57 @@ def create_brsa_matrix(
     # package for use with BRSA
     mat = np.vstack(signal_list)
     return mat, nuisance, scan_onsets
+
+
+def estimate_betaseries(data, design, confound=None):
+    """
+    Estimate beta images for a set of trials.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        [timepoints x voxels] array of functional data to model.
+
+    design : numpy.ndarray
+        [timepoints x EVs] array. Each explanatory variable (EV) will
+        be estimated using a separate model.
+
+    confound : numpy.ndarray
+        [timepoints x regressors] array with regressors of no interest,
+        which will be included in each model.
+
+    Returns
+    -------
+    beta : numpy.ndarray
+        [EVs by voxels] array of beta estimates.
+    """
+    n_trial = design.shape[1]
+    n_sample = data.shape[1]
+    beta_maker = np.zeros((n_trial, n_sample))
+    trial_evs = list(range(n_trial))
+    for i, ev in enumerate(trial_evs):
+        # this trial
+        dm_trial = design[:, ev, np.newaxis]
+
+        # other trials, summed together
+        other_trial_evs = [x for x in trial_evs if x != ev]
+        dm_otherevs = np.sum(design[:, other_trial_evs, np.newaxis], 1)
+
+        # put together the design matrix
+        if confound is not None:
+            dm_full = np.hstack((dm_trial, dm_otherevs, confound))
+        else:
+            dm_full = np.hstack((dm_trial, dm_otherevs))
+        s = dm_full.shape
+        dm_full = dm_full - np.kron(np.ones(s), np.mean(dm_full, 0))[:s[0], :s[1]]
+        dm_full = np.hstack((dm_full, np.ones((n_sample, 1))))
+
+        # calculate beta-forming vector
+        beta_maker_loop = np.linalg.pinv(dm_full)
+        beta_maker[i, :] = beta_maker_loop[0, :]
+
+    # this uses Jeanette Mumford's trick of extracting the beta-forming
+    # vector for each trial and putting them together, which allows
+    # estimation for all trials at once
+    beta = np.dot(beta_maker, data)
+    return beta
