@@ -45,6 +45,7 @@ def infotodict(seqinfo):
                 include_bold.append(s.series_id)
 
     n_fieldmap = 0
+    n_T2 = 0
     for s in seqinfo:
         """
         The namedtuple `s` contains the following fields:
@@ -73,6 +74,13 @@ def infotodict(seqinfo):
         if s.series_description == 'mprage':
             info[key_T1w].append(s.series_id)
         elif 'T2' in s.series_description:
+            n_T2 += 1
+            if s.patient_id == 'tesser_101' and n_T2 == 1:
+                # first scan was bad
+                continue
+            elif s.patient_id == 'tesser_108' and n_T2 == 3:
+                # first two scans were best
+                continue
             info[key_T2w].append(s.series_id)
         elif s.series_description == 'fieldmap':
             n_fieldmap += 1
