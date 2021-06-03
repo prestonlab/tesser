@@ -45,7 +45,7 @@ def main(data_dir):
     func_runs = {1: [1, 2, 3], 2: [4, 5, 6]}
     for subject in layout.get_subjects():
         for run in range(1, 3):
-            if subject == 112:
+            if subject == '112':
                 # only one fieldmap for all scans
                 runs = [1, 2, 3, 4, 5, 6]
             else:
