@@ -1,4 +1,4 @@
-import os
+"""Heuristic file for use with heudiconv."""
 
 
 def create_key(template, outtype=('nii.gz',), annotation_classes=None):
