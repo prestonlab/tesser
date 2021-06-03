@@ -84,6 +84,15 @@ def infotodict(seqinfo):
             info[key_T2w].append(s.series_id)
         elif s.series_description == 'fieldmap':
             n_fieldmap += 1
+            if s.patient_id == 'tesser_105' and n_fieldmap in [1, 2]:
+                # discard first fieldmap
+                continue
+            elif s.patient_id == 'tesser_109' and n_fieldmap in [3, 4]:
+                # discard second fieldmap
+                continue
+            elif s.patient_id == 'tesser_122' and n_fieldmap in [1, 2]:
+                # discard first fieldmap
+                continue
             if n_fieldmap % 2 == 1:
                 info[key_magnitude].append(s.series_id)
             else:
