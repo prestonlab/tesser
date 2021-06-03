@@ -79,7 +79,7 @@ def infotodict(seqinfo):
             if s.patient_id == 'tesser_101' and n_T2 == 1:
                 # first scan was bad
                 continue
-            elif s.patient_id == 'tesser_108' and n_T2 == 3:
+            elif s.patient_id == 'TESSER_108' and n_T2 == 3:
                 # first two scans were best
                 continue
             info[key_T2w].append(s.series_id)
@@ -88,7 +88,7 @@ def infotodict(seqinfo):
             if s.patient_id == 'tesser_105' and n_fieldmap in [1, 2]:
                 # discard first fieldmap
                 continue
-            elif s.patient_id == 'tesser_109' and n_fieldmap in [3, 4]:
+            elif s.patient_id == 'TESSER_109' and n_fieldmap in [3, 4]:
                 # discard second fieldmap
                 continue
             elif s.patient_id == 'tesser_122' and n_fieldmap in [1, 2]:
