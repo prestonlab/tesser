@@ -173,8 +173,6 @@ def load_struct(data_dir, subjects=None, onsets=None):
     )
     if onsets is not None:
         temp1 = df.set_index(['subject', 'part', 'run', 'trial'])
-        onsets['subject'] = subject
-        onsets['part'] = 2
         temp2 = onsets.set_index(['subject', 'part', 'run', 'trial'])
         temp1['onset'] = temp2['onset']
         temp1['duration'] = temp2['duration']
