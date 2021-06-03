@@ -282,6 +282,26 @@ def create_brsa_matrix(
     return mat, nuisance, scan_onsets
 
 
+def create_betaseries_design(trials, n_vol, tr, high_pass=0):
+    """Create a design matrix for betaseries estimation."""
+    # set new EVs with each object in the scrambled run and one for
+    # the structured runs
+    sequence = trials['trial_type'].to_numpy()
+    trial_type = trials['object'].to_numpy()
+    n_evs = trials.query('sequence == "scrambled"')['object'].nunique()
+    struct_code = n_evs + 1
+    trial_type[sequence == 'structured'] = struct_code
+    events = trials.copy()
+    events['trial_type'] = trial_type
+
+    # create a design matrix
+    frame_times = np.arange(n_vol) * tr
+    design = first_level.make_first_level_design_matrix(
+        frame_times, events=events, high_pass=high_pass
+    )
+    return design
+
+
 def estimate_betaseries(data, design, confound=None):
     """
     Estimate beta images for a set of trials.
