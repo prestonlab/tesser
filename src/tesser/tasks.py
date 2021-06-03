@@ -105,7 +105,26 @@ def load_struct_subject(data_dir, subject_num):
     return df
 
 
-def load_struct(data_dir, subjects=None):
+def load_struct_onsets(scan_dir, subject):
+    """Load onset information for all structure runs for a subject."""
+    data_list = []
+    columns = ['trial', 'onset', 'tr', 'sequence_type', 'trial_type', 'duration']
+    runs = list(range(1, 7))
+    for i, run in enumerate(runs):
+        vol_file = os.path.join(
+            scan_dir,
+            'rsa_allevents_info',
+            f'tesser_{subject}_run{run}_info.txt',
+        )
+        run_data = pd.read_csv(vol_file, names=columns)
+        run_data['duration'] = 1
+        run_data['run'] = run
+        data_list.append(run_data)
+    data = pd.concat(data_list, axis=0)
+    return data
+
+
+def load_struct(data_dir, subjects=None, onsets=None):
     """Load structure learning data for multiple subjects."""
     if subjects is None:
         subjects = get_subj_list()
@@ -129,12 +148,14 @@ def load_struct(data_dir, subjects=None):
     object_type = {0: 'central', 1: 'boundary'}
     df = pd.DataFrame(
         {
+            'onset': np.nan,
+            'duration': 1,
+            'trial_type': raw['seqtype'].map(trial_type).astype('category'),
             'subject': raw['SubjNum'],
             'part': raw['part'],
             'run': raw['run'],
             'block': raw['block'],
             'trial': raw['trial'],
-            'trial_type': raw['seqtype'].map(trial_type).astype('category'),
             'community': raw_nodes['community'],
             'object': raw['objnum'],
             'object_type': raw_nodes['node_type'].map(object_type).astype('category'),
@@ -144,6 +165,14 @@ def load_struct(data_dir, subjects=None):
             'correct': raw['acc'].astype('Int64'),
         }
     )
+    if onsets is not None:
+        temp1 = df.set_index(['subject', 'part', 'run', 'trial'])
+        onsets['subject'] = subject
+        onsets['part'] = 2
+        temp2 = onsets.set_index(['subject', 'part', 'run', 'trial'])
+        temp1['onset'] = temp2['onset']
+        temp1['duration'] = temp2['duration']
+        df = temp1.reset_index()
     return df
 
 
