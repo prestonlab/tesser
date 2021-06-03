@@ -45,13 +45,18 @@ def main(data_dir):
     func_runs = {1: [1, 2, 3], 2: [4, 5, 6]}
     for subject in layout.get_subjects():
         for run in range(1, 3):
+            if subject == 112:
+                # only one fieldmap for all scans
+                runs = [1, 2, 3, 4, 5, 6]
+            else:
+                runs = func_runs[run]
             func_files = [
                 f'func/sub-{subject}_task-struct_run-{func_run}_bold.nii.gz'
-                for func_run in func_runs[run]
+                for func_run in runs
             ]
             sbref_files = [
                 f'func/sub-{subject}_task-struct_run-{func_run}_sbref.nii.gz'
-                for func_run in func_runs[run]
+                for func_run in runs
             ]
             fmap_files = layout.get(
                 datatype='fmap', extension='json', subject=subject, run=run
