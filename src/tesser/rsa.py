@@ -317,9 +317,11 @@ def create_betaseries_design(trials, n_vol, tr, high_pass=0):
     # set new EVs with each object in the scrambled run and one for
     # the structured runs
     sequence = trials['trial_type'].to_numpy()
-    trial_type = trials['object'].to_numpy()
+    trial_type = trials['object'].to_numpy().copy()
     n_evs = trials.query('trial_type == "scrambled"')['object'].nunique()
-    trial_type[sequence == 'structured'] = n_evs
+
+    structured = sequence == 'structured'
+    trial_type[structured] = trial_type[structured] + n_evs
     events = trials.filter(['trial_type', 'onset', 'duration'])
     events['trial_type'] = trial_type
 
