@@ -190,6 +190,16 @@ def beta_sr_rdm(struct, alpha, gamma, distance='correlation'):
     return big_rdm
 
 
+def beta_community_rdm(struct):
+    """Calculate a betaseries RDM for the community model."""
+    vols = struct.groupby(['run', 'object']).first().reset_index()
+    nodes = network.node_info()
+    vol_nodes = nodes.loc[vols['object']]
+    community = vol_nodes['community'].to_numpy()
+    rdm = community == community[:, np.newaxis]
+    return rdm
+
+
 def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
     """Load z-statistic from permutation test results."""
     if subjects is None:
