@@ -320,7 +320,7 @@ def create_betaseries_design(trials, n_vol, tr, high_pass=0):
     trial_type = trials['object'].to_numpy()
     n_evs = trials.query('trial_type == "scrambled"')['object'].nunique()
     trial_type[sequence == 'structured'] = n_evs
-    events = trials.copy()
+    events = trials.filter(['trial_type', 'onset', 'duration'])
     events['trial_type'] = trial_type
 
     # create a design matrix
