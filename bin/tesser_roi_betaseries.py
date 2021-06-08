@@ -22,7 +22,7 @@ def main(raw_dir, post_dir, mask, bold, subject):
     # save a numpy array with the results
     out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask)
     os.makedirs(out_dir, exist_ok=True)
-    out_file = os.path.join(out_dir, f'beta_{subject}.np')
+    out_file = os.path.join(out_dir, f'beta_{subject}.npy')
     np.save(out_file, beta)
 
 
