@@ -2,7 +2,7 @@
 #
 # Smooth functional data and copy related metadata to the results directory.
 
-if [[ $# -lt 4 ]]; then
+if [[ $# -lt 3 ]]; then
     echo "Usage: tesser_smooth.sh prepdir outdir subject"
     exit 1
 fi
