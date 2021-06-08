@@ -16,7 +16,12 @@ outsubj=$outdir/sub-$subject
 mkdir -p "$outsubj/anat"
 mkdir -p "$outsubj/func"
 
-cp "$prepsubj/anat/sub-100_from-fsnative_to-T1w_mode-image_xfm.txt" "$outsubj/anat"
+cp "$prepsubj/anat/sub-${subject}_desc-"{preproc_T1w,brain_mask}.{.nii.gz,json} "$outsubj/anat"
+cp "$prepsubj/anat/sub-${subject}_from-fsnative_to-T1w_mode-image_xfm.txt" "$outsubj/anat"
+cp "$prepsubj/anat/sub-${subject}_from-T1w_to-fsnative_mode-image_xfm.txt" "$outsubj/anat"
+cp "$prepsubj/anat/sub-${subject}_from-MNI152NLin2009cAsym_to-T1w_mode-image_xfm.h5" "$outsubj/anat"
+cp "$prepsubj/anat/sub-${subject}_from-T1w_to-MNI152NLin2009cAsym_mode-image_xfm.h5" "$outsubj/anat"
+
 for run in 1 2 3 4 5 6; do
     base="sub-${subject}_task-struct_run-${run}"
     cp "$prepsubj/func/${base}_desc-brain_mask".{nii.gz,json} "$outsubj/func"
