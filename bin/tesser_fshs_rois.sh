@@ -16,7 +16,8 @@ l_hbt="$mri/lh.hippoAmygLabels-T1-T2.v21.HBT.mgz"
 r_hbt="$mri/lh.hippoAmygLabels-T1-T2.v21.HBT.mgz"
 
 # convert to nifti
-temp=$(mktemp -d)
+temp=$SCRATCH/model/$subject
+mkdir -p "$temp"
 mri_convert "$l_hbt" "$temp/l_hbt_fsnative.nii.gz"
 mri_convert "$r_hbt" "$temp/r_hbt_fsnative.nii.gz"
 fslreorient2std "$temp/l_hbt_fsnative" "$temp/l_hbt_fsnative"
