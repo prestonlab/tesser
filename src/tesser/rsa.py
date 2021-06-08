@@ -385,3 +385,79 @@ def estimate_betaseries(data, design, confound=None):
     # estimation for all trials at once
     beta = np.dot(beta_maker, data)
     return beta
+
+
+def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=None):
+    """Estimate betaseries for one run."""
+    tr = 2
+    n_object = 21
+    subj_raw = os.path.join(raw_dir, f'sub-{subject}', 'func')
+    subj_post = os.path.join(post_dir, f'sub-{subject}', 'func')
+
+    # task events
+    events_file = os.path.join(
+        subj_raw, f'sub-{subject}_task-struct_run-{run}_events.tsv'
+    )
+    if not os.path.exists(events_file):
+        raise IOError(f'Events do not exist: {events_file}')
+
+    # ROI/brain mask
+    mask_file = os.path.join(
+        subj_post, f'sub-{subject}_task-struct_run-{run}_desc-{mask}_mask.nii.gz'
+    )
+    if not os.path.exists(mask_file):
+        raise IOError(f'Mask file does not exist: {mask_file}')
+
+    # BOLD scan
+    bold_file = os.path.join(
+        subj_post, f'sub-{subject}_task-struct_run-{run}_desc-{bold}_bold.nii.gz'
+    )
+    if not os.path.exists(bold_file):
+        raise IOError(f'BOLD file does not exist: {bold_file}')
+
+    # confounds file
+    conf_file = os.path.join(
+        subj_post, f'sub-{subject}_task-struct_run-{run}_desc-confounds_timeseries.tsv'
+    )
+    if not os.path.exists(conf_file):
+        raise IOError(f'Confounds file does not exist: {conf_file}')
+
+    # create nuisance regressor matrix
+    conf = pd.read_csv(conf_file, sep='\t')
+    include = [
+        'csf',
+        'csf_derivative1',
+        'white_matter',
+        'white_matter_derivative1',
+        'trans_x',
+        'trans_x_derivative1',
+        'trans_y',
+        'trans_y_derivative1',
+        'trans_z',
+        'trans_z_derivative1',
+        'rot_x',
+        'rot_x_derivative1',
+        'rot_y',
+        'rot_y_derivative1',
+        'rot_z',
+        'rot_z_derivative1',
+    ]
+    raw = conf.filter(include).to_numpy()
+    nuisance = raw - np.nanmean(raw, 0)
+    nuisance[np.isnan(nuisance)] = 0
+
+    # create design matrix
+    design = create_betaseries_design(struct, data.shape[0], tr, high_pass)
+    mat = design.iloc[:, :n_object].to_numpy()
+    confound = np.hstack((design.iloc[:, n_object:-1].to_numpy(), nuisance))
+
+    # load functional data
+    bold_vol = nib.load(bold_file)
+    mask_vol = nib.load(mask_file)
+    bold_img = bold_vol.get_fdata()
+    mask_img = mask_vol.get_fdata().astype(bool)
+    data = bold_img[mask_img].T
+
+    # estimate each beta image
+    beta = estimate_betaseries(data, mat, confound)
+    return beta
