@@ -6,6 +6,7 @@ import pandas as pd
 import scipy.spatial.distance as sd
 from scipy import linalg
 from scipy import stats
+import nibabel as nib
 from nilearn.glm import first_level
 from mindstorm import prsa
 from tesser import tasks
