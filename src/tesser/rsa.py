@@ -356,7 +356,7 @@ def estimate_betaseries(data, design, confound=None):
         [EVs by voxels] array of beta estimates.
     """
     n_trial = design.shape[1]
-    n_sample = data.shape[1]
+    n_sample = data.shape[0]
     beta_maker = np.zeros((n_trial, n_sample))
     trial_evs = list(range(n_trial))
     for i, ev in enumerate(trial_evs):
