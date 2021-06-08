@@ -23,6 +23,7 @@ cp "$prepsubj/anat/sub-${subject}_from-MNI152NLin2009cAsym_to-T1w_mode-image_xfm
 cp "$prepsubj/anat/sub-${subject}_from-T1w_to-MNI152NLin2009cAsym_mode-image_xfm.h5" "$outsubj/anat"
 
 for run in 1 2 3 4 5 6; do
+    echo "Smoothing run ${run}..."
     base="sub-${subject}_task-struct_run-${run}"
     cp "$prepsubj/func/${base}_desc-brain_mask".{nii.gz,json} "$outsubj/func"
     cp "$prepsubj/func/${base}_desc-confounds_timeseries".{tsv,json} "$outsubj/func"
