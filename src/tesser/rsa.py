@@ -387,7 +387,7 @@ def estimate_betaseries(data, design, confound=None):
     return beta
 
 
-def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=None):
+def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=0):
     """Estimate betaseries for one run."""
     tr = 2
     n_object = 21
