@@ -16,7 +16,7 @@ outsubj=$outdir/sub-$subject
 mkdir -p "$outsubj/anat"
 mkdir -p "$outsubj/func"
 
-cp "$prepsubj/anat/sub-${subject}_desc-"{preproc_T1w,brain_mask}.{.nii.gz,json} "$outsubj/anat"
+cp "$prepsubj/anat/sub-${subject}_desc-"{preproc_T1w,brain_mask}.{nii.gz,json} "$outsubj/anat"
 cp "$prepsubj/anat/sub-${subject}_from-fsnative_to-T1w_mode-image_xfm.txt" "$outsubj/anat"
 cp "$prepsubj/anat/sub-${subject}_from-T1w_to-fsnative_mode-image_xfm.txt" "$outsubj/anat"
 cp "$prepsubj/anat/sub-${subject}_from-MNI152NLin2009cAsym_to-T1w_mode-image_xfm.h5" "$outsubj/anat"
