@@ -404,14 +404,16 @@ def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=0):
 
     # ROI/brain mask
     mask_file = os.path.join(
-        subj_post, f'sub-{subject}_task-struct_run-{run}_desc-{mask}_mask.nii.gz'
+        subj_post,
+        f'sub-{subject}_task-struct_run-{run}_space-T1w_desc-{mask}_mask.nii.gz',
     )
     if not os.path.exists(mask_file):
         raise IOError(f'Mask file does not exist: {mask_file}')
 
     # BOLD scan
     bold_file = os.path.join(
-        subj_post, f'sub-{subject}_task-struct_run-{run}_desc-{bold}_bold.nii.gz'
+        subj_post,
+        f'sub-{subject}_task-struct_run-{run}_space-T1w_desc-{bold}_bold.nii.gz',
     )
     if not os.path.exists(bold_file):
         raise IOError(f'BOLD file does not exist: {bold_file}')
