@@ -10,10 +10,11 @@ from tesser import rsa
 
 def main(raw_dir, post_dir, mask, bold, subject):
     # run betaseries estimation for each run
+    high_pass = 1 / 128
     beta = np.hstack(
         [
             rsa.run_betaseries(
-                raw_dir, post_dir, mask, bold, subject, run
+                raw_dir, post_dir, mask, bold, subject, run, high_pass
             ) for run in range(1, 7)
         ]
     )
