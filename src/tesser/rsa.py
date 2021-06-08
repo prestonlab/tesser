@@ -447,7 +447,9 @@ def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=0):
     nuisance[np.isnan(nuisance)] = 0
 
     # create design matrix
-    design = create_betaseries_design(struct, data.shape[0], tr, high_pass)
+    n_sample = len(conf)
+    events = pd.read_csv(events_file, sep='\t')
+    design = create_betaseries_design(events, n_sample, tr, high_pass)
     mat = design.iloc[:, :n_object].to_numpy()
     confound = np.hstack((design.iloc[:, n_object:-1].to_numpy(), nuisance))
 
