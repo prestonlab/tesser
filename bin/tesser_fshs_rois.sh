@@ -32,17 +32,16 @@ for run in 1 2 3 4 5 6; do
     for hemi in l r; do
         antsApplyTransforms -d 3 -e 0 \
             -i "$temp/${hemi}_hbt_fsnative.nii.gz" \
-            -r "$funcdir/${base}_desc-brain_mask.nii.gz" \
+            -r "$funcdir/${base}_space-T1w_boldref.nii.gz" \
             -o "$temp/$run/${hemi}_hbt.nii.gz" \
             -n MultiLabel \
-            -t "$funcdir/${base}_from-T1w_to-scanner_mode-image_xfm.txt" \
             -t "$anatdir/sub-${subject}_from-fsnative_to-T1w_mode-image_xfm.txt"
     done
 done
 
 # do image math to get masks of interest
 for run in 1 2 3 4 5 6; do
-    base=sub-${subject}_task-struct_run-${run}
+    base=sub-${subject}_task-struct_run-${run}_space-T1w
     cd "$temp/$run" || exit
 
     # tail 226
