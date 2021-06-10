@@ -6,6 +6,7 @@ import os
 import argparse
 import shutil
 from pkg_resources import resource_filename
+import numpy as np
 
 from tesser import tasks
 
@@ -14,6 +15,8 @@ def main(study_dir, bids_dir):
     data_dir = os.path.join(study_dir, 'Data')
     scan_dir = os.path.join(study_dir, 'TesserScan')
     subjects = tasks.get_subj_list()
+
+    # structure task
     struct_onsets = tasks.load_struct_onsets(scan_dir, subjects)
     struct = tasks.load_struct(data_dir, subjects, struct_onsets)
     struct_keys = [
@@ -28,6 +31,22 @@ def main(study_dir, bids_dir):
         'response',
         'response_time',
     ]
+
+    # learn
+    struct = struct.query('part == 1')
+    duration = 1.5
+    for (subject, run), data in struct.groupby(['subject', 'run']):
+        subj_dir = os.path.join(bids_dir, f'sub-{subject}', 'beh')
+        os.makedirs(subj_dir, exist_ok=True)
+        data = data[struct_keys].copy()
+        data['onset'] = np.arange(0, len(data) * duration, duration)
+        data['duration'] = duration
+        file = os.path.join(subj_dir, f'sub-{subject}_task-learn_run-{run}_events.tsv')
+        data.to_csv(file, sep='\t', index=False, na_rep='n/a')
+    json_file = resource_filename('tesser', 'data/task-learn_events.json')
+    shutil.copy(json_file, os.path.join(bids_dir, 'task-learn_events.json'))
+
+    # struct
     struct = struct.query('part == 2')
     for (subject, run), data in struct.groupby(['subject', 'run']):
         subj_dir = os.path.join(bids_dir, f'sub-{subject}', 'func')
