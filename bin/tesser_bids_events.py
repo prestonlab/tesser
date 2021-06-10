@@ -52,8 +52,8 @@ def main(study_dir, bids_dir):
         subj_dir = os.path.join(bids_dir, f'sub-{subject}', 'func')
         os.makedirs(subj_dir, exist_ok=True)
         data = data[struct_keys]
-        file = os.path.join(subj_dir, f'sub-{subject}_task-struct_run-{run}_events')
-        data.to_csv(file + '.tsv', sep='\t', index=False, na_rep='n/a')
+        file = os.path.join(subj_dir, f'sub-{subject}_task-struct_run-{run}_events.tsv')
+        data.to_csv(file, sep='\t', index=False, na_rep='n/a')
     json_file = resource_filename('tesser', 'data/task-struct_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
 
