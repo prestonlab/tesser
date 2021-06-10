@@ -374,8 +374,8 @@ def load_parse(data_dir, subjects=None):
             raw.loc[include.to_numpy(), 'prev_walk'] = walk_length
 
     # convert to BIDS format
-    trial_type = {1: 'random', 2: 'hamiltonian', 3: 'hamiltonian'}
-    path_type = {1: 'random', 2: 'forward', 3: 'backward'}
+    trial_type = {1: 'structured', 2: 'hamiltonian', 3: 'hamiltonian'}
+    path_type = {1: 'structured', 2: 'forward', 3: 'backward'}
     response_type = {'PARSED': 1, 'NONE': 0}
     object_type = {0: 'central', 1: 'boundary'}
     df = pd.DataFrame(
