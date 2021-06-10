@@ -50,19 +50,19 @@ def main(study_dir, bids_dir):
     ]
 
     # learn
-    data = struct.query('part == 1')[struct_keys].copy()
+    data = struct.query('part == 1').copy()
     duration = 1.5
-    for (subject, run), _ in data.groupby(['subject', 'run']):
+    for (subject, run), run_data in data.groupby(['subject', 'run']):
         include = data.eval(f'subject == {subject} and run == {run}')
-        data.loc[include, 'onset'] = np.arange(0, len(data) * duration, duration)
+        data.loc[include, 'onset'] = np.arange(0, len(run_data) * duration, duration)
         data.loc[include, 'duration'] = duration
-    write_events(data, bids_dir, 'learn', 'beh')
+    write_events(data, struct_keys, bids_dir, 'learn', 'beh')
     json_file = resource_filename('tesser', 'data/task-learn_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-learn_events.json'))
 
     # struct
     data = struct.query('part == 2')
-    write_events(data, bids_dir, 'struct', 'beh')
+    write_events(data, struct_keys, bids_dir, 'struct', 'func')
     json_file = resource_filename('tesser', 'data/task-struct_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
 
