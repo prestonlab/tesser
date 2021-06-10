@@ -94,6 +94,28 @@ def main(study_dir, bids_dir):
     json_file = resource_filename('tesser', 'data/task-induct_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-induct_events.json'))
 
+    # parse
+    parse = tasks.load_parse(data_dir, subjects).copy()
+    parse_keys = [
+        'onset',
+        'duration',
+        'trial_type',
+        'path_type',
+        'community',
+        'object',
+        'object_type',
+        'response',
+        'response_time',
+    ]
+    duration = 1.5
+    for (subject, run), run_data in parse.groupby(['subject', 'run']):
+        include = parse.eval(f'subject == {subject} and run == {run}')
+        parse.loc[include, 'onset'] = np.arange(0, len(run_data) * duration, duration)
+        parse.loc[include, 'duration'] = duration
+    write_events(parse, parse_keys, bids_dir, 'parse', 'beh')
+    json_file = resource_filename('tesser', 'data/task-parse_events.json')
+    shutil.copy(json_file, os.path.join(bids_dir, 'task-parse_events.json'))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
