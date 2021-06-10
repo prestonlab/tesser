@@ -11,13 +11,21 @@ import numpy as np
 from tesser import tasks
 
 
-def write_events(data, bids_dir, task, data_type):
+def write_events(data, keys, bids_dir, task, data_type):
     """Write run events."""
+    multiple_runs = data['run'].nunique() > 1
     for (subject, run), run_data in data.groupby(['subject', 'run']):
         subj_dir = os.path.join(bids_dir, f'sub-{subject}', data_type)
         os.makedirs(subj_dir, exist_ok=True)
-        file = os.path.join(subj_dir, f'sub-{subject}_task-{task}_run-{run}_events.tsv')
-        run_data.to_csv(file, sep='\t', index=False, na_rep='n/a')
+        if multiple_runs:
+            file = os.path.join(
+                subj_dir, f'sub-{subject}_task-{task}_run-{run}_events.tsv'
+            )
+        else:
+            file = os.path.join(subj_dir, f'sub-{subject}_task-{task}_events.tsv')
+        run_data[keys].to_csv(
+            file, sep='\t', index=False, na_rep='n/a', float_format='%.3f'
+        )
 
 
 def main(study_dir, bids_dir):
