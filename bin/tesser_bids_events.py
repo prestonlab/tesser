@@ -11,6 +11,15 @@ import numpy as np
 from tesser import tasks
 
 
+def write_events(data, bids_dir, task, data_type):
+    """Write run events."""
+    for (subject, run), run_data in data.groupby(['subject', 'run']):
+        subj_dir = os.path.join(bids_dir, f'sub-{subject}', data_type)
+        os.makedirs(subj_dir, exist_ok=True)
+        file = os.path.join(subj_dir, f'sub-{subject}_task-{task}_run-{run}_events.tsv')
+        run_data.to_csv(file, sep='\t', index=False, na_rep='n/a')
+
+
 def main(study_dir, bids_dir):
     data_dir = os.path.join(study_dir, 'Data')
     scan_dir = os.path.join(study_dir, 'TesserScan')
@@ -33,27 +42,19 @@ def main(study_dir, bids_dir):
     ]
 
     # learn
-    struct = struct.query('part == 1')
+    data = struct.query('part == 1')[struct_keys].copy()
     duration = 1.5
-    for (subject, run), data in struct.groupby(['subject', 'run']):
-        subj_dir = os.path.join(bids_dir, f'sub-{subject}', 'beh')
-        os.makedirs(subj_dir, exist_ok=True)
-        data = data[struct_keys].copy()
-        data['onset'] = np.arange(0, len(data) * duration, duration)
-        data['duration'] = duration
-        file = os.path.join(subj_dir, f'sub-{subject}_task-learn_run-{run}_events.tsv')
-        data.to_csv(file, sep='\t', index=False, na_rep='n/a')
+    for (subject, run), _ in data.groupby(['subject', 'run']):
+        include = data.eval(f'subject == {subject} and run == {run}')
+        data.loc[include, 'onset'] = np.arange(0, len(data) * duration, duration)
+        data.loc[include, 'duration'] = duration
+    write_events(data, bids_dir, 'learn', 'beh')
     json_file = resource_filename('tesser', 'data/task-learn_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-learn_events.json'))
 
     # struct
-    struct = struct.query('part == 2')
-    for (subject, run), data in struct.groupby(['subject', 'run']):
-        subj_dir = os.path.join(bids_dir, f'sub-{subject}', 'func')
-        os.makedirs(subj_dir, exist_ok=True)
-        data = data[struct_keys]
-        file = os.path.join(subj_dir, f'sub-{subject}_task-struct_run-{run}_events.tsv')
-        data.to_csv(file, sep='\t', index=False, na_rep='n/a')
+    data = struct.query('part == 2')
+    write_events(data, bids_dir, 'struct', 'beh')
     json_file = resource_filename('tesser', 'data/task-struct_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
 
