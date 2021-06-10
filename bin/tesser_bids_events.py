@@ -66,6 +66,34 @@ def main(study_dir, bids_dir):
     json_file = resource_filename('tesser', 'data/task-struct_events.json')
     shutil.copy(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
 
+    # induct
+    max_duration = 8
+    fix_duration = 0.5
+    induct = tasks.load_induct(data_dir, subjects).copy()
+    induct['within_opt'] = induct['within']
+    induct['run'] = 1
+    duration = induct['response_time'].fillna(max_duration)
+    onset = (duration + fix_duration).cumsum().shift(1).fillna(0)
+    induct['onset'] = onset
+    induct['duration'] = duration
+    induct['response'] = induct['response'].astype('Int64')
+    induct_keys = [
+        'onset',
+        'duration',
+        'trial_type',
+        'environment',
+        'community',
+        'cue',
+        'opt1',
+        'opt2',
+        'within_opt',
+        'response',
+        'response_time',
+    ]
+    write_events(induct, induct_keys, bids_dir, 'induct', 'beh')
+    json_file = resource_filename('tesser', 'data/task-induct_events.json')
+    shutil.copy(json_file, os.path.join(bids_dir, 'task-induct_events.json'))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
