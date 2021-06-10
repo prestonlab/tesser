@@ -1,0 +1,58 @@
+{
+    "onset": {
+        "LongName": "Stimulus onset",
+        "Description": "Time the object appeared on screen",
+        "Units": "s"
+    },
+    "duration": {
+        "LongName": "Stimulus duration",
+        "Description": "Time the object remained on screen",
+        "Units": "s"
+    },
+    "trial_type": {
+        "LongName": "Trial type",
+        "Description": "Type of object sequence trial",
+        "Levels": {
+            "structured": "A random walk drawn from the temporal community graph",
+            "hamiltonian": "A Hamiltonian walk through the temporal community graph"
+        }
+    },
+    "path_type": {
+        "LongName": "Path type",
+        "Description": "Type of path through the graph",
+        "Levels": {
+            "structured": "A random walk drawn from the temporal community graph",
+            "forward": "A forward Hamiltonian path",
+            "backward": "A backward Hamiltonian path"
+        }
+    },
+    "community": {
+        "LongName": "Community number",
+        "Description": "The community of the current object"
+    },
+    "object": {
+        "LongName": "Object number",
+        "Description": "The node of the current object"
+    },
+    "object_type": {
+        "LongName": "Object type",
+        "Description": "Node type of the object in the graph",
+        "Levels": {
+            "central": "A central node within a community",
+            "boundary": "A node connecting to another community"
+        }
+    },
+    "response": {
+        "LongName": "Response",
+        "Description": "Parsing response",
+        "Levels": {
+            "0": "No parse response made",
+            "1": "Parsing button pressed"
+        }
+    },
+    "response_time": {
+        "LongName": "Response time",
+        "Description": "Time of parsing response",
+        "Units": "s"
+    },
+}

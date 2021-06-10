@@ -1,0 +1,62 @@
+{
+    "onset": {
+        "LongName": "Stimulus onset",
+        "Description": "Time the object appeared on screen",
+        "Units": "s"
+    },
+    "duration": {
+        "LongName": "Stimulus duration",
+        "Description": "Time the object remained on screen",
+        "Units": "s"
+    },
+    "trial_type": {
+        "LongName": "Trial type",
+        "Description": "Type of inference test",
+        "Levels": {
+            "central": "Test cuing with a central node with central node options",
+            "boundary1": "Test cuing with a boundary node with options that are 1-away in the graph",
+            "boundary2": "Test cuing with a boundary node with options that are 2-away in the graph"
+        }
+    },
+    "environment": {
+        "LongName": "Environment name",
+        "Description": "Environment assigned to the cue object's community"
+    },
+    "community": {
+        "LongName": "Community number",
+        "Description": "The community of the cue object"
+    },
+    "cue": {
+        "LongName": "Cue object number",
+        "Description": "The node of the cue object"
+    },
+    "opt1": {
+        "LongName": "Option 1 object number",
+        "Description": "The node of the option 1 object"
+    },
+    "opt2": {
+        "LongName": "Option 2 object number",
+        "Description": "The node of the option 2 object"
+    },
+    "within_opt": {
+        "LongName": "Within-community option",
+        "Description": "Option that is within the same community as the cue",
+        "Levels": {
+            "1": "Option 1",
+            "2": "Option 2"
+        }
+    },
+    "response": {
+        "LongName": "Response",
+        "Description": "Response to the rotation detection task",
+        "Levels": {
+            "canonical": "Same orientation as learned earlier",
+            "rotated": "Rotated 90 degrees from original"
+        }
+    },
+    "response_time": {
+        "LongName": "Response time",
+        "Description": "Time of response to rotation decision",
+        "Units": "s"
+    }
+}
