@@ -10,10 +10,10 @@
         "Units": "s"
     },
     "trial_type": {
-        "LongName": "Block type",
+        "LongName": "Trial type",
         "Description": "Type of object sequence trial",
         "Levels": {
-            "learning": "A random walk drawn from the temporal community graph"
+            "structured": "A random walk drawn from the temporal community graph"
         }
     },
     "block": {

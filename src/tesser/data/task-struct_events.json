@@ -10,8 +10,8 @@
         "Units": "s"
     },
     "trial_type": {
-        "LongName": "Block type",
-        "Description": "Type of object sequence block",
+        "LongName": "Trial type",
+        "Description": "Type of object sequence trial",
         "Levels": {
             "structured": "A random walk drawn from the temporal community graph",
             "scrambled": "All objects in random order"

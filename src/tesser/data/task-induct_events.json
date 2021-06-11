@@ -1,12 +1,12 @@
 {
     "onset": {
         "LongName": "Stimulus onset",
-        "Description": "Time the object appeared on screen",
+        "Description": "Time the test array appeared on screen",
         "Units": "s"
     },
     "duration": {
-        "LongName": "Stimulus duration",
-        "Description": "Time the object remained on screen",
+        "LongName": "Trial duration",
+        "Description": "Duration of the test trial",
         "Units": "s"
     },
     "trial_type": {
@@ -48,15 +48,15 @@
     },
     "response": {
         "LongName": "Response",
-        "Description": "Response to the rotation detection task",
+        "Description": "Response to the induction test",
         "Levels": {
-            "canonical": "Same orientation as learned earlier",
-            "rotated": "Rotated 90 degrees from original"
+            "1": "Option 1",
+            "2": "Option 2"
         }
     },
     "response_time": {
         "LongName": "Response time",
-        "Description": "Time of response to rotation decision",
+        "Description": "Time of response to induction test",
         "Units": "s"
     }
 }
