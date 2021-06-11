@@ -461,6 +461,16 @@ def load_group(data_dir, subjects=None):
     return df
 
 
+def group_rdms(data):
+    """Calculate dissimilarity matrices from grouping task data."""
+    rdms = {}
+    for subject, df in data.groupby('subject'):
+        coords = df.filter(like='dim').to_numpy()
+        rdm = distance.squareform(distance.pdist(coords, 'euclidean'))
+        rdms[subject] = rdm
+    return rdms
+
+
 def group_distance(data):
     """Calculate within and across group distance."""
     # calculate pairwise distances (stored as vectors)
