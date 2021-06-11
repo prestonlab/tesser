@@ -81,11 +81,13 @@ def main(study_dir, bids_dir):
     induct = tasks.load_induct(data_dir, subjects).copy()
     induct['within_opt'] = induct['within']
     induct['run'] = 1
-    duration = induct['response_time'].fillna(max_duration)
-    onset = (duration + fix_duration).cumsum().shift(1).fillna(0)
-    induct['onset'] = onset
-    induct['duration'] = duration
     induct['response'] = induct['response'].astype('Int64')
+    for subject in induct['subject'].unique():
+        include = induct.eval(f'subject == {subject}')
+        duration = induct.loc[include, 'response_time'].fillna(max_duration)
+        onset = (duration + fix_duration).cumsum().shift(1).fillna(0)
+        induct.loc[include, 'onset'] = onset
+        induct.loc[include, 'duration'] = duration
     induct_keys = [
         'onset',
         'duration',
