@@ -388,7 +388,9 @@ def estimate_betaseries(data, design, confound=None):
     return beta
 
 
-def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=0):
+def run_betaseries(
+    raw_dir, post_dir, mask, bold, subject, run, high_pass=0, space='T1w'
+):
     """Estimate betaseries for one run."""
     tr = 2
     n_object = 21
@@ -405,7 +407,7 @@ def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=0):
     # ROI/brain mask
     mask_file = os.path.join(
         subj_post,
-        f'sub-{subject}_task-struct_run-{run}_space-T1w_desc-{mask}_mask.nii.gz',
+        f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
     )
     if not os.path.exists(mask_file):
         raise IOError(f'Mask file does not exist: {mask_file}')
@@ -413,7 +415,7 @@ def run_betaseries(raw_dir, post_dir, mask, bold, subject, run, high_pass=0):
     # BOLD scan
     bold_file = os.path.join(
         subj_post,
-        f'sub-{subject}_task-struct_run-{run}_space-T1w_desc-{bold}_bold.nii.gz',
+        f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{bold}_bold.nii.gz',
     )
     if not os.path.exists(bold_file):
         raise IOError(f'BOLD file does not exist: {bold_file}')
