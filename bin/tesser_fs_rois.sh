@@ -26,34 +26,34 @@ for run in 1 2 3 4 5 6; do
     cd "$temp/$run" || exit
 
     # medialorbitofrontal X014
-    fslmaths aparc -thr 1014 -uthr 1014 -bin l_fsmorb
-    fslmaths aparc -thr 2014 -uthr 2014 -bin r_fsmorb
-    fslmaths l_fsmorb -add r_fsmorb -bin b_fsmorb
+    fslmaths aparc -thr 1014 -uthr 1014 -bin l_morb
+    fslmaths aparc -thr 2014 -uthr 2014 -bin r_morb
+    fslmaths l_morb -add r_morb -bin b_morb
 
     # parsopercularis X018
-    fslmaths aparc -thr 1018 -uthr 1018 -bin l_fsoper
-    fslmaths aparc -thr 2018 -uthr 2018 -bin r_fsoper
-    fslmaths l_fsoper -add r_fsoper -bin b_fsoper
+    fslmaths aparc -thr 1018 -uthr 1018 -bin l_oper
+    fslmaths aparc -thr 2018 -uthr 2018 -bin r_oper
+    fslmaths l_oper -add r_oper -bin b_oper
 
     # parsorbitalis X019
-    fslmaths aparc -thr 1019 -uthr 1019 -bin l_fsorbi
-    fslmaths aparc -thr 2019 -uthr 2019 -bin r_fsorbi
-    fslmaths l_fsorbi -add r_fsorbi -bin b_fsorbi
+    fslmaths aparc -thr 1019 -uthr 1019 -bin l_orbi
+    fslmaths aparc -thr 2019 -uthr 2019 -bin r_orbi
+    fslmaths l_orbi -add r_orbi -bin b_orbi
 
     # parstriangularis X020
-    fslmaths aparc -thr 1020 -uthr 1020 -bin l_fstria
-    fslmaths aparc -thr 2020 -uthr 2020 -bin r_fstria
-    fslmaths l_fstria -add r_fstria -bin b_fstria
+    fslmaths aparc -thr 1020 -uthr 1020 -bin l_tria
+    fslmaths aparc -thr 2020 -uthr 2020 -bin r_tria
+    fslmaths l_tria -add r_tria -bin b_tria
 
     # ifg
-    fslmaths l_fsoper -add l_fsorbi -add l_fstria -bin l_fsifg
-    fslmaths r_fsoper -add r_fsorbi -add r_fstria -bin r_fsifg
-    fslmaths l_fsifg -add r_fsifg -bin b_fsifg
+    fslmaths l_oper -add l_orbi -add l_tria -bin l_ifg
+    fslmaths r_oper -add r_orbi -add r_tria -bin r_ifg
+    fslmaths l_ifg -add r_ifg -bin b_ifg
 
     # pericalcarine X021
-    fslmaths aparc -thr 1021 -uthr 1021 -bin l_fsperi
-    fslmaths aparc -thr 2021 -uthr 2021 -bin r_fsperi
-    fslmaths l_fsperi -add r_fsperi -bin b_fsperi
+    fslmaths aparc -thr 1021 -uthr 1021 -bin l_peri
+    fslmaths aparc -thr 2021 -uthr 2021 -bin r_peri
+    fslmaths l_peri -add r_peri -bin b_peri
 
     # copy to output with BIDS naming
     resdir=$outdir/sub-${subject}/func
