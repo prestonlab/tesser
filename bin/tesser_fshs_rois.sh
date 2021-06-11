@@ -67,7 +67,7 @@ for run in 1 2 3 4 5 6; do
     # copy to output with BIDS naming
     for roi in tail body head post; do
         for hemi in l r b; do
-            cp "${hemi}_${roi}.nii.gz" "$funcdir/${base}_desc-${hemi}hip${roi}_mask.nii.gz"
+            cp "${hemi}_${roi}.nii.gz" "$funcdir/${base}_desc-hip${hemi}${roi}_mask.nii.gz"
         done
     done
 done
