@@ -2,8 +2,8 @@
 #
 # Convert FreeSurfer hippocampal segmentation and project to native space.
 
-if [[ $# -lt 3 ]]; then
-    echo "Usage: tesser_fshs_rois.sh studydir outdir subject"
+if [[ $# -lt 2 ]]; then
+    echo "Usage: tesser_fs_rois.sh prepdir subject"
     exit 1
 fi
 
