@@ -56,5 +56,5 @@
         "LongName": "Response time",
         "Description": "Time of response to rotation decision",
         "Units": "s"
-    },
+    }
 }

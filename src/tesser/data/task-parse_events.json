@@ -54,5 +54,5 @@
         "LongName": "Response time",
         "Description": "Time of parsing response",
         "Units": "s"
-    },
+    }
 }
