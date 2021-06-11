@@ -52,5 +52,17 @@ if __name__ == "__main__":
     parser.add_argument('mask', help='desc of mask defining the ROI')
     parser.add_argument('bold', help='desc of preprocessed bold images')
     parser.add_argument('subject', help='subject identifier (e.g., 100)')
+    parser.add_argument('--space', '-s', default='T1w', help='image space to use')
+    parser.add_argument(
+        '--format', '-f', default='matrix', help='output format [("matrix"), "image"]'
+    )
     args = parser.parse_args()
-    main(args.raw_dir, args.post_dir, args.mask, args.bold, args.subject)
+    main(
+        args.raw_dir,
+        args.post_dir,
+        args.mask,
+        args.bold,
+        args.subject,
+        args.space,
+        args.format,
+    )
