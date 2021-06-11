@@ -4,7 +4,7 @@
 
 import os
 import argparse
-import shutil
+import json
 from pkg_resources import resource_filename
 import numpy as np
 
@@ -26,6 +26,15 @@ def write_events(data, keys, bids_dir, task, data_type):
         run_data[keys].to_csv(
             file, sep='\t', index=False, na_rep='n/a', float_format='%.3f'
         )
+
+
+def copy_json(in_file, out_file):
+    """Copy a JSON file."""
+    with open(in_file, 'r') as f:
+        j = json.load(f)
+
+    with open(out_file, 'w') as f:
+        json.dump(j, f, indent=4)
 
 
 def main(study_dir, bids_dir):
@@ -58,13 +67,13 @@ def main(study_dir, bids_dir):
         data.loc[include, 'duration'] = duration
     write_events(data, struct_keys, bids_dir, 'learn', 'beh')
     json_file = resource_filename('tesser', 'data/task-learn_events.json')
-    shutil.copy(json_file, os.path.join(bids_dir, 'task-learn_events.json'))
+    copy_json(json_file, os.path.join(bids_dir, 'task-learn_events.json'))
 
     # struct
     data = struct.query('part == 2')
     write_events(data, struct_keys, bids_dir, 'struct', 'func')
     json_file = resource_filename('tesser', 'data/task-struct_events.json')
-    shutil.copy(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
+    copy_json(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
 
     # induct
     max_duration = 8
@@ -92,7 +101,7 @@ def main(study_dir, bids_dir):
     ]
     write_events(induct, induct_keys, bids_dir, 'induct', 'beh')
     json_file = resource_filename('tesser', 'data/task-induct_events.json')
-    shutil.copy(json_file, os.path.join(bids_dir, 'task-induct_events.json'))
+    copy_json(json_file, os.path.join(bids_dir, 'task-induct_events.json'))
 
     # parse
     parse = tasks.load_parse(data_dir, subjects).copy()
@@ -114,7 +123,7 @@ def main(study_dir, bids_dir):
         parse.loc[include, 'duration'] = duration
     write_events(parse, parse_keys, bids_dir, 'parse', 'beh')
     json_file = resource_filename('tesser', 'data/task-parse_events.json')
-    shutil.copy(json_file, os.path.join(bids_dir, 'task-parse_events.json'))
+    copy_json(json_file, os.path.join(bids_dir, 'task-parse_events.json'))
 
 
 if __name__ == '__main__':
