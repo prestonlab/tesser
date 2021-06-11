@@ -5,16 +5,17 @@
 import os
 import argparse
 import numpy as np
+import nibabel as nib
 from tesser import rsa
 
 
-def main(raw_dir, post_dir, mask, bold, subject):
+def main(raw_dir, post_dir, mask, bold, subject, space='T1w', save_format='matrix'):
     # run betaseries estimation for each run
     high_pass = 1 / 128
     beta = np.vstack(
         [
             rsa.run_betaseries(
-                raw_dir, post_dir, mask, bold, subject, run, high_pass
+                raw_dir, post_dir, mask, bold, subject, run, high_pass, space
             ) for run in range(1, 7)
         ]
     )
@@ -22,8 +23,26 @@ def main(raw_dir, post_dir, mask, bold, subject):
     # save a numpy array with the results
     out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask)
     os.makedirs(out_dir, exist_ok=True)
-    out_file = os.path.join(out_dir, f'beta_{subject}.npy')
-    np.save(out_file, beta)
+    if save_format == 'matrix':
+        out_file = os.path.join(out_dir, f'beta_{subject}.npy')
+        np.save(out_file, beta)
+    elif save_format == 'image':
+        run = 1
+        mask_file = os.path.join(
+            post_dir,
+            f'sub-{subject}',
+            'func'
+            f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
+        )
+        mask_vol = nib.load(mask_file)
+        mask_img = mask_vol.get_fdata().astype(bool)
+        out_data = np.zeros([*mask_img.shape, beta.shape[0]])
+        out_data[mask_img, :] = beta.T
+        new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
+        out_file = os.path.join(out_dir, f'beta_{subject}.nii.gz')
+        nib.save(new_img, out_file)
+    else:
+        raise ValueError(f'Invalid save format: {save_format}')
 
 
 if __name__ == "__main__":
