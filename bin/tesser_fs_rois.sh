@@ -60,7 +60,7 @@ for run in 1 2 3 4 5 6; do
     mkdir -p "$resdir"
     for roi in morb oper orbi tria ifg peri; do
         for hemi in l r b; do
-            cp "${hemi}_${roi}.nii.gz" "$resdir/${base}_desc-${hemi}${roi}_mask.nii.gz"
+            cp "${hemi}_${roi}.nii.gz" "$resdir/${base}_desc-fs${hemi}${roi}_mask.nii.gz"
         done
     done
 done
