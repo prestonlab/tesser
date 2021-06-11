@@ -2,13 +2,14 @@
 #
 # Convert FreeSurfer hippocampal segmentation and project to native space.
 
-if [[ $# -lt 2 ]]; then
-    echo "Usage: tesser_fs_rois.sh prepdir subject"
+if [[ $# -lt 3 ]]; then
+    echo "Usage: tesser_fs_rois.sh prepdir outdir subject"
     exit 1
 fi
 
 prepdir=$1
-subject=$2
+outdir=$2
+subject=$3
 
 # convert to nifti
 temp=$SCRATCH/model/$subject
@@ -55,9 +56,11 @@ for run in 1 2 3 4 5 6; do
     fslmaths l_peri -add r_peri -bin b_peri
 
     # copy to output with BIDS naming
+    resdir=$outdir/sub-${subject}/func
+    mkdir -p "$resdir"
     for roi in morb oper orbi tria ifg peri; do
         for hemi in l r b; do
-            cp "${hemi}_${roi}.nii.gz" "$funcdir/${base}_desc-${hemi}${roi}_mask.nii.gz"
+            cp "${hemi}_${roi}.nii.gz" "$resdir/${base}_desc-${hemi}${roi}_mask.nii.gz"
         done
     done
 done
