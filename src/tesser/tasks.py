@@ -148,7 +148,7 @@ def load_struct(data_dir, subjects=None, onsets=None):
     raw_nodes = nodes.loc[raw['objnum'], :].reset_index()
 
     # convert to BIDS format
-    trial_type = {0: 'learning', 1: 'structured', 2: 'scrambled'}
+    trial_type = {0: 'structured', 1: 'structured', 2: 'scrambled'}
     orientation = {'cor': 'canonical', 'rot': 'rotated'}
     response = {'c': 'canonical', 'n': 'rotated'}
     object_type = {0: 'central', 1: 'boundary'}
