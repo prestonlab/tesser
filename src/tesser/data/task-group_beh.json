@@ -1,0 +1,26 @@
+{
+    "dim1": {
+        "LongName": "Dimension 1",
+        "Description": "Placement of the object along dimension 1 (row on the grid)"
+    },
+    "dim2": {
+        "LongName": "Dimension 2",
+        "Description": "Placement of the object along dimension 2 (column on the grid)"
+    },
+    "community": {
+        "LongName": "Community number",
+        "Description": "The community of the object"
+    },
+    "object": {
+        "LongName": "Object number",
+        "Description": "The node of the object"
+    },
+    "object_type": {
+        "LongName": "Object type",
+        "Description": "Node type of the object in the graph",
+        "Levels": {
+            "central": "A central node within a community",
+            "boundary": "A node connecting to another community"
+        }
+    }
+}
