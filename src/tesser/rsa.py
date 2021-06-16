@@ -87,7 +87,7 @@ def load_struct_vols(bids_dir, subject):
             .copy()
         )
         run_vols['run'] = run
-        vols_list.append(run_vols.loc[columns])
+        vols_list.append(run_vols.loc[:, columns])
     vols = pd.concat(vols_list, axis=0)
     return vols
 
