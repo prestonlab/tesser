@@ -30,23 +30,17 @@ def within_across(subj, mask, sl_rad, var):
     n_perm = len(ind)
 
     rdm = sd.squareform(sd.pdist(data, 'correlation'))
-    stat = np.zeros((4, n_perm))
+    stat = np.zeros((2, n_perm))
     for i, perm_ind in enumerate(ind):
         rdm_perm = rdm[np.ix_(perm_ind, perm_ind)]
         stat[0, i] = np.mean(rdm_perm[var['within']])
         stat[1, i] = np.mean(rdm_perm[var['across']])
-        stat[2, i] = np.mean(rdm_perm[var['same']])
-        stat[3, i] = np.mean(rdm_perm[var['diff']])
 
     z = (
         prsa.perm_z(stat[0]),
         prsa.perm_z(stat[1]),
         prsa.perm_z(stat[0] - stat[1]),
         prsa.perm_z(stat[1] - stat[0]),
-        prsa.perm_z(stat[2]),
-        prsa.perm_z(stat[3]),
-        prsa.perm_z(stat[2] - stat[3]),
-        prsa.perm_z(stat[3] - stat[2]),
     )
     return z
 
@@ -106,10 +100,6 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
         'across',
         'withinMinusAcross',
         'acrossMinusWithin',
-        'same',
-        'diff',
-        'sameMinusDiff',
-        'diffMinusSame',
     ]
     for i, name in enumerate(names):
         out_data = np.zeros(mask_img.shape)
