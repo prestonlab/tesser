@@ -50,7 +50,7 @@ def main(
         mask_file = os.path.join(
             post_dir,
             f'sub-{subject}',
-            'func'
+            'func',
             f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
         )
         mask_vol = nib.load(mask_file)
