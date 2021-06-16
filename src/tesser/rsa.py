@@ -389,7 +389,16 @@ def estimate_betaseries(data, design, confound=None):
 
 
 def run_betaseries(
-    raw_dir, post_dir, mask, bold, subject, run, high_pass=0, space='T1w'
+    raw_dir,
+    post_dir,
+    mask,
+    bold,
+    subject,
+    run,
+    high_pass=0,
+    space='T1w',
+    mask_dir='func',
+    mask_thresh=None,
 ):
     """Estimate betaseries for one run."""
     tr = 2
@@ -405,10 +414,18 @@ def run_betaseries(
         raise IOError(f'Events do not exist: {events_file}')
 
     # ROI/brain mask
-    mask_file = os.path.join(
-        subj_post,
-        f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
-    )
+    if mask_dir == 'func':
+        mask_file = os.path.join(
+            subj_post,
+            f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
+        )
+    else:
+        mask_file = os.path.join(
+            post_dir,
+            f'sub-{subject}',
+            mask_dir,
+            f'sub-{subject}_space-{space}_desc-{mask}_mask.nii.gz',
+        )
     if not os.path.exists(mask_file):
         raise IOError(f'Mask file does not exist: {mask_file}')
 
@@ -462,7 +479,10 @@ def run_betaseries(
     bold_vol = nib.load(bold_file)
     mask_vol = nib.load(mask_file)
     bold_img = bold_vol.get_fdata()
-    mask_img = mask_vol.get_fdata().astype(bool)
+    if mask_thresh is None:
+        mask_img = mask_vol.get_fdata().astype(bool)
+    else:
+        mask_img = mask_vol.get_fdata() > mask_thresh
     data = bold_img[mask_img].T
 
     # estimate each beta image
