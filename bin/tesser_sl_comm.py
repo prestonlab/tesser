@@ -51,7 +51,7 @@ def within_across(subj, mask, sl_rad, var):
     return z
 
 
-def main(model_dir, subject, beta, mask, n_perm=1000):
+def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
     beta_dir = os.path.join(model_dir, 'results', 'beta', beta, mask)
     beta_file = os.path.join(beta_dir, f'sub-{subject}_beta.nii.gz')
     mask_file = os.path.join(beta_dir, f'sub-{subject}_mask.nii.gz')
@@ -99,7 +99,7 @@ def main(model_dir, subject, beta, mask, n_perm=1000):
     sl.distribute([beta], mask)
     sl.broadcast(bcast_var)
 
-    outputs = sl.run_searchlight(within_across, pool_size=6)
+    outputs = sl.run_searchlight(within_across, pool_size=n_proc)
     temp = np.array(outputs)
     names = [
         'within',
@@ -128,5 +128,13 @@ if __name__ == '__main__':
     parser.add_argument(
         '--n-perm', '-p', type=int, default=1000, help='number of permutations'
     )
+    parser.add_argument('--n-proc', '-n', type=int, help='number of processes')
     args = parser.parse_args()
-    main(args.model_dir, args.subject, args.beta, args.mask, n_perm=args.n_perm)
+    main(
+        args.model_dir,
+        args.subject,
+        args.beta,
+        args.mask,
+        n_perm=args.n_perm,
+        n_proc=args.n_proc,
+    )
