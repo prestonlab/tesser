@@ -11,12 +11,15 @@ from brainiak.searchlight.searchlight import Searchlight, Ball
 from mindstorm import prsa
 
 
-def perm_indices(n_perm, n_run, n_object):
+def perm_indices(n_perm, run, n_object):
     """Set indices to permute object."""
+    n_run = len(np.unique(run))
     ind = [
-        np.tile(np.random.permutation(n_object), n_run) for _ in range(n_perm - 1)
+        np.tile(
+            np.random.permutation(n_object), n_run
+        ) + (run - 1) * n_object for _ in range(n_perm - 1)
     ]
-    ind.insert(0, np.tile(np.arange(n_object)))
+    ind.insert(0, np.arange(n_run * n_object))
     return ind
 
 
