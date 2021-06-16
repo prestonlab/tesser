@@ -11,7 +11,7 @@ import numpy as np
 from tesser import tasks
 
 
-def write_events(data, keys, bids_dir, task, data_type):
+def write_events(data, keys, bids_dir, task, data_type, file_type):
     """Write run events."""
     multiple_runs = data['run'].nunique() > 1
     for (subject, run), run_data in data.groupby(['subject', 'run']):
@@ -22,7 +22,7 @@ def write_events(data, keys, bids_dir, task, data_type):
                 subj_dir, f'sub-{subject}_task-{task}_run-{run}_events.tsv'
             )
         else:
-            file = os.path.join(subj_dir, f'sub-{subject}_task-{task}_events.tsv')
+            file = os.path.join(subj_dir, f'sub-{subject}_task-{task}_{file_type}.tsv')
         run_data[keys].to_csv(
             file, sep='\t', index=False, na_rep='n/a', float_format='%.3f'
         )
@@ -65,13 +65,13 @@ def main(study_dir, bids_dir):
         include = data.eval(f'subject == {subject} and run == {run}')
         data.loc[include, 'onset'] = np.arange(0, len(run_data) * duration, duration)
         data.loc[include, 'duration'] = duration
-    write_events(data, struct_keys, bids_dir, 'learn', 'beh')
+    write_events(data, struct_keys, bids_dir, 'learn', 'beh', 'events')
     json_file = resource_filename('tesser', 'data/task-learn_events.json')
     copy_json(json_file, os.path.join(bids_dir, 'task-learn_events.json'))
 
     # struct
     data = struct.query('part == 2')
-    write_events(data, struct_keys, bids_dir, 'struct', 'func')
+    write_events(data, struct_keys, bids_dir, 'struct', 'func', 'events')
     json_file = resource_filename('tesser', 'data/task-struct_events.json')
     copy_json(json_file, os.path.join(bids_dir, 'task-struct_events.json'))
 
@@ -101,7 +101,7 @@ def main(study_dir, bids_dir):
         'response',
         'response_time',
     ]
-    write_events(induct, induct_keys, bids_dir, 'induct', 'beh')
+    write_events(induct, induct_keys, bids_dir, 'induct', 'beh', 'events')
     json_file = resource_filename('tesser', 'data/task-induct_events.json')
     copy_json(json_file, os.path.join(bids_dir, 'task-induct_events.json'))
 
@@ -123,7 +123,7 @@ def main(study_dir, bids_dir):
         include = parse.eval(f'subject == {subject} and run == {run}')
         parse.loc[include, 'onset'] = np.arange(0, len(run_data) * duration, duration)
         parse.loc[include, 'duration'] = duration
-    write_events(parse, parse_keys, bids_dir, 'parse', 'beh')
+    write_events(parse, parse_keys, bids_dir, 'parse', 'beh', 'events')
     json_file = resource_filename('tesser', 'data/task-parse_events.json')
     copy_json(json_file, os.path.join(bids_dir, 'task-parse_events.json'))
 
