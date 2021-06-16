@@ -127,6 +127,14 @@ def main(study_dir, bids_dir):
     json_file = resource_filename('tesser', 'data/task-parse_events.json')
     copy_json(json_file, os.path.join(bids_dir, 'task-parse_events.json'))
 
+    # group
+    group = tasks.load_group(data_dir, subjects).copy()
+    group['run'] = 1
+    group_keys = ['object', 'object_type', 'community', 'dim1', 'dim2']
+    write_events(group, group_keys, bids_dir, 'group', 'beh', 'beh')
+    json_file = resource_filename('tesser', 'data/task-group_beh.json')
+    copy_json(json_file, os.path.join(bids_dir, 'task-group_beh.json'))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
