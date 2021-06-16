@@ -9,13 +9,32 @@ import nibabel as nib
 from tesser import rsa
 
 
-def main(raw_dir, post_dir, mask, bold, subject, space='T1w', save_format='matrix'):
+def main(
+    raw_dir,
+    post_dir,
+    mask,
+    bold,
+    subject,
+    space='T1w',
+    save_format='matrix',
+    mask_dir='func',
+    mask_thresh=0.001,
+):
     # run betaseries estimation for each run
     high_pass = 1 / 128
     beta = np.vstack(
         [
             rsa.run_betaseries(
-                raw_dir, post_dir, mask, bold, subject, run, high_pass, space
+                raw_dir,
+                post_dir,
+                mask,
+                bold,
+                subject,
+                run,
+                high_pass,
+                space,
+                mask_dir,
+                mask_thresh,
             ) for run in range(1, 7)
         ]
     )
