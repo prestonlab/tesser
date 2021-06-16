@@ -75,6 +75,12 @@ if __name__ == "__main__":
     parser.add_argument(
         '--format', '-f', default='matrix', help='output format [("matrix"), "image"]'
     )
+    parser.add_argument(
+        '--mask-dir', '-m', help='directory with the mask [("func"), "anat"]'
+    )
+    parser.add_argument(
+        '--mask-thresh', '-t', help='threshold to apply to the mask'
+    )
     args = parser.parse_args()
     main(
         args.raw_dir,
@@ -84,4 +90,6 @@ if __name__ == "__main__":
         args.subject,
         args.space,
         args.format,
+        args.mask_dir,
+        args.mask_thresh,
     )
