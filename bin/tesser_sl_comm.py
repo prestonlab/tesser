@@ -48,7 +48,6 @@ def within_across(subj, mask, sl_rad, var):
         prsa.perm_z(stat[2] - stat[3]),
         prsa.perm_z(stat[3] - stat[2]),
     )
-    breakpoint()
     return z
 
 
@@ -101,7 +100,23 @@ def main(model_dir, subject, beta, mask, n_perm=1000):
     sl.broadcast(bcast_var)
 
     outputs = sl.run_searchlight(within_across, pool_size=6)
-    breakpoint()
+    temp = np.array(outputs)
+    names = [
+        'within',
+        'across',
+        'withinMinusAcross',
+        'acrossMinusWithin',
+        'same',
+        'diff',
+        'sameMinusDiff',
+        'diffMinusSame',
+    ]
+    for i, name in enumerate(names):
+        out_data = np.zeros(mask_img.shape)
+        out_data[mask_img] = temp[i].T
+        new_img = nib.Nifti1Image(out_data, mask_img.affine, mask_img.header)
+        out_file = os.path.join(beta_dir, f'sub-{subject}_desc-{name}_zstat.nii.gz')
+        nib.save(new_img, out_file)
 
 
 if __name__ == '__main__':
