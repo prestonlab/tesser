@@ -68,6 +68,30 @@ def load_vol_info(study_dir, subject):
     return data
 
 
+def load_struct_vols(bids_dir, subject):
+    """Load beta volume information for a subject."""
+    vols_list = []
+    columns = ['duration', 'run', 'trial_type', 'community', 'object', 'object_type']
+    for run in range(1, 7):
+        events_file = os.path.join(
+            bids_dir,
+            f'sub-{subject}',
+            'func',
+            f'sub-{subject}_task-struct_run-{run}_events.tsv',
+        )
+        events = pd.read_table(events_file)
+        run_vols = (
+            events.query('trial_type == "scrambled"')
+            .groupby('object')
+            .first()
+            .copy()
+        )
+        run_vols['run'] = run
+        vols_list.append(run_vols[columns])
+    vols = pd.concat(vols_list, axis=0)
+    return vols
+
+
 def make_sym_matrix(asym_mat):
     """Calculate an average symmetric matrix from an asymmetric matrix."""
     v1 = sd.squareform(asym_mat, checks=False)
