@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Run a searchlight to search for community structure.
-
+import argparse
 import os
 import numpy as np
 import scipy.spatial.distance as sd
@@ -99,3 +99,14 @@ def main(model_dir, subject, beta, mask, n_perm=1000):
 
     outputs = sl.run_searchlight(within_across, pool_size=6)
     breakpoint()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('model_dir', help='path to model director')
+    parser.add_argument('subject', help='subject ID')
+    parser.add_argument('beta', help='name of betaseries')
+    parser.add_argument('mask', help='name of mask')
+    parser.add_argument('--n-perm', '-p', help='number of permutations')
+    args = parser.parse_args()
+    main(args.model_dir, args.subject, args.beta, args.mask, args.n_perm=1000)
