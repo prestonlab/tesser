@@ -66,6 +66,13 @@ def main(
             mask_img = mask_vol.get_fdata().astype(bool)
         else:
             mask_img = mask_vol.get_fdata() > mask_thresh
+
+        # save the mask
+        new_img = nib.Nifti1Image(mask_img, mask_vol.affine, mask_vol.header)
+        out_file = os.path.join(f'sub-{subject}_mask.nii.gz')
+        nib.save(new_img, out_file)
+
+        # save the betaseries image
         out_data = np.zeros([*mask_img.shape, beta.shape[0]])
         out_data[mask_img, :] = beta.T
         new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
