@@ -79,7 +79,7 @@ if __name__ == "__main__":
         '--mask-dir', '-m', help='directory with the mask [("func"), "anat"]'
     )
     parser.add_argument(
-        '--mask-thresh', '-t', help='threshold to apply to the mask'
+        '--mask-thresh', '-t', type=float, help='threshold to apply to the mask'
     )
     args = parser.parse_args()
     main(
