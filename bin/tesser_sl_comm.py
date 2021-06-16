@@ -107,6 +107,6 @@ if __name__ == '__main__':
     parser.add_argument('subject', help='subject ID')
     parser.add_argument('beta', help='name of betaseries')
     parser.add_argument('mask', help='name of mask')
-    parser.add_argument('--n-perm', '-p', help='number of permutations')
+    parser.add_argument('--n-perm', '-p', default=1000, help='number of permutations')
     args = parser.parse_args()
-    main(args.model_dir, args.subject, args.beta, args.mask, args.n_perm=1000)
+    main(args.model_dir, args.subject, args.beta, args.mask, n_perm=args.n_perm)
