@@ -69,7 +69,7 @@ def main(
 
         # save the mask
         new_img = nib.Nifti1Image(mask_img, mask_vol.affine, mask_vol.header)
-        out_file = os.path.join(f'sub-{subject}_mask.nii.gz')
+        out_file = os.path.join(out_dir, f'sub-{subject}_mask.nii.gz')
         nib.save(new_img, out_file)
 
         # save the betaseries image
