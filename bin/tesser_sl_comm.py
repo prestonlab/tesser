@@ -88,9 +88,8 @@ def main(model_dir, subject, beta, mask, n_perm=1000):
     sl = Searchlight(
         sl_rad=3, max_blk_edge=5, shape=Ball, min_active_voxels_proportion=0
     )
-    n_run = events['run'].nunique()
     n_object = events['object'].nunique()
-    ind = perm_indices(n_perm, n_run, n_object)
+    ind = perm_indices(n_perm, run, n_object)
     bcast_var = {
         'ind': ind,
         'within': include_within,
