@@ -69,7 +69,7 @@ def main(
         out_data = np.zeros([*mask_img.shape, beta.shape[0]])
         out_data[mask_img, :] = beta.T
         new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
-        out_file = os.path.join(out_dir, f'beta_{subject}.nii.gz')
+        out_file = os.path.join(out_dir, f'sub-{subject}_beta.nii.gz')
         nib.save(new_img, out_file)
     else:
         raise ValueError(f'Invalid save format: {save_format}')
