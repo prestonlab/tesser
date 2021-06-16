@@ -67,6 +67,14 @@ def main(
         else:
             mask_img = mask_vol.get_fdata() > mask_thresh
 
+        # save events
+        vols = rsa.load_struct_vols(raw_dir, subject)
+        events = vols.copy()
+        events['onset'] = np.arange(len(events))
+        events['duration'] = 1.0
+        events_file = os.path.join(out_dir, f'sub-{subject}_events.tsv')
+        events.to_csv(events_file, sep='\t', index=False)
+
         # save the mask
         new_img = nib.Nifti1Image(mask_img, mask_vol.affine, mask_vol.header)
         out_file = os.path.join(out_dir, f'sub-{subject}_mask.nii.gz')
