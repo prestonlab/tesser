@@ -84,7 +84,7 @@ def load_struct_vols(bids_dir, subject):
             events.query('trial_type == "scrambled"')
             .groupby('object')
             .first()
-            .copy()
+            .reset_index()
         )
         run_vols['run'] = run
         vols_list.append(run_vols.loc[:, columns])
