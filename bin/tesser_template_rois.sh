@@ -2,15 +2,15 @@
 #
 # Transform template ROIs to native resolution template space.
 
-if [[ $# -lt 3 ]]; then
-    echo "Usage: tesser_fshs_rois.sh templatedir outdir subject"
+if [[ $# -lt 4 ]]; then
+    echo "Usage: tesser_fshs_rois.sh templatedir space outdir subject"
     exit 1
 fi
 
 templatedir=$1
-outdir=$2
-subject=$3
-space=$4
+space=$2
+outdir=$3
+subject=$4
 
 subjdir=${outdir}/sub-${subject}
 reference_name=task-struct_run-1_space-${space}_desc-brain_mask
