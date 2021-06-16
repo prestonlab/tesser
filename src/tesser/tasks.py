@@ -439,6 +439,12 @@ def extract_group_coords(mat, subject=None):
     """Extract coordinates from a grouping data matrix."""
     ind = np.where(mat)
     nodes = network.node_info()
+    nodes.rename(
+        columns={
+            'node': 'object', 'node_type': 'object_type', 'connect': 'connection'
+        }, inplace=True
+    )
+    nodes['object_type'] = nodes['object_type'].map({0: 'central', 1: 'boundary'})
     df_ind = pd.DataFrame(
         {'subject': subject, 'dim1': ind[0], 'dim2': ind[1]}, index=mat[ind]
     )
