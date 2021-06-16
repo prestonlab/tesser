@@ -54,7 +54,10 @@ def main(
             f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
         )
         mask_vol = nib.load(mask_file)
-        mask_img = mask_vol.get_fdata().astype(bool)
+        if mask_thresh is None:
+            mask_img = mask_vol.get_fdata().astype(bool)
+        else:
+            mask_img = mask_vol.get_fdata() > mask_thresh
         out_data = np.zeros([*mask_img.shape, beta.shape[0]])
         out_data[mask_img, :] = beta.T
         new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
