@@ -7,6 +7,7 @@ import scipy.spatial.distance as sd
 from scipy import linalg
 from scipy import stats
 import nibabel as nib
+import sklearn.linear_model as lm
 from nilearn.glm import first_level
 from mindstorm import prsa
 from tesser import tasks
@@ -532,4 +533,10 @@ def run_betaseries(
 
     # estimate each beta image
     beta = estimate_betaseries(data, mat, confound)
-    return beta
+
+    # estimate model residuals (for smoothness calculation)
+    model = lm.LinearRegression()
+    design = np.hstack([mat, confound])
+    model.fit(design, data)
+    resid = data - model.predict(design)
+    return beta, resid
