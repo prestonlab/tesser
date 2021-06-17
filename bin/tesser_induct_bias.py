@@ -18,6 +18,9 @@ def main(raw_dir, out_file, zscore):
             raw_dir, f'sub-{subject}', 'beh', f'sub-{subject}_task-induct_events.tsv'
         )
         induct = pd.read_table(induct_file)
+        induct['correct'] = induct['within_opt'] == induct['response']
+        exclude = induct['response'].isna()
+        induct.loc[exclude, 'correct'] = np.nan
         bias[i] = induct['correct'].mean()
     if zscore:
         bias = stats.zscore(bias)
