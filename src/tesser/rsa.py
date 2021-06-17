@@ -358,6 +358,41 @@ def create_betaseries_design(trials, n_vol, tr, high_pass=0):
     return design
 
 
+def prepare_betaseries_design(events_file, conf_file, tr, high_pass):
+    """Prepare betaseries design matrix and confounds."""
+    # create nuisance regressor matrix
+    conf = pd.read_csv(conf_file, sep='\t')
+    include = [
+        'csf',
+        'csf_derivative1',
+        'white_matter',
+        'white_matter_derivative1',
+        'trans_x',
+        'trans_x_derivative1',
+        'trans_y',
+        'trans_y_derivative1',
+        'trans_z',
+        'trans_z_derivative1',
+        'rot_x',
+        'rot_x_derivative1',
+        'rot_y',
+        'rot_y_derivative1',
+        'rot_z',
+        'rot_z_derivative1',
+    ]
+    raw = conf.filter(include).to_numpy()
+    nuisance = raw - np.nanmean(raw, 0)
+    nuisance[np.isnan(nuisance)] = 0
+
+    # create design matrix
+    n_sample = len(conf)
+    events = pd.read_csv(events_file, sep='\t')
+    design = create_betaseries_design(events, n_sample, tr, high_pass)
+    mat = design.iloc[:, :n_object].to_numpy()
+    confound = np.hstack((design.iloc[:, n_object:-1].to_numpy(), nuisance))
+    return mat, confound
+
+
 def estimate_betaseries(data, design, confound=None):
     """
     Estimate beta images for a set of trials.
@@ -483,35 +518,7 @@ def run_betaseries(
         raise IOError(f'Confounds file does not exist: {conf_file}')
 
     # create nuisance regressor matrix
-    conf = pd.read_csv(conf_file, sep='\t')
-    include = [
-        'csf',
-        'csf_derivative1',
-        'white_matter',
-        'white_matter_derivative1',
-        'trans_x',
-        'trans_x_derivative1',
-        'trans_y',
-        'trans_y_derivative1',
-        'trans_z',
-        'trans_z_derivative1',
-        'rot_x',
-        'rot_x_derivative1',
-        'rot_y',
-        'rot_y_derivative1',
-        'rot_z',
-        'rot_z_derivative1',
-    ]
-    raw = conf.filter(include).to_numpy()
-    nuisance = raw - np.nanmean(raw, 0)
-    nuisance[np.isnan(nuisance)] = 0
-
-    # create design matrix
-    n_sample = len(conf)
-    events = pd.read_csv(events_file, sep='\t')
-    design = create_betaseries_design(events, n_sample, tr, high_pass)
-    mat = design.iloc[:, :n_object].to_numpy()
-    confound = np.hstack((design.iloc[:, n_object:-1].to_numpy(), nuisance))
+    mat, confound = prepare_betaseries_design(events_file, conf_file, tr, high_pass)
 
     # load functional data
     bold_vol = nib.load(bold_file)
