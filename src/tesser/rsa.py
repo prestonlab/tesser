@@ -414,23 +414,23 @@ def estimate_betaseries(data, design, confound=None):
 
 def get_func_mask(base_dir, subject, task, run, space, desc=None, label=None):
     """Get the full path to a functional mask."""
-    mask_dir = os.path.join(base_dir, f'sub-{subject}')
     base = f'sub-{subject}_task-{task}_run-{run}_space-{space}'
     if desc is not None:
-        mask_file = f'{base}_desc-{desc}_mask.nii.gz'
+        mask_name = f'{base}_desc-{desc}_mask.nii.gz'
     else:
-        mask_file = f'{base}_label-{label}_probseg.nii.gz'
+        mask_name = f'{base}_label-{label}_probseg.nii.gz'
+    mask_file = os.path.join(base_dir, f'sub-{subject}', mask_name)
     return mask_file
 
 
 def get_anat_mask(base_dir, subject, space, desc=None, label=None):
     """Get the full path to an anatomical mask."""
-    mask_dir = os.path.join(base_dir, f'sub-{subject}')
     base = f'sub-{subject}_space-{space}'
     if desc is not None:
-        mask_file = f'{base}_desc-{desc}_mask.nii.gz'
+        mask_name = f'{base}_desc-{desc}_mask.nii.gz'
     else:
-        mask_file = f'{base}_label-{label}_probseg.nii.gz'
+        mask_name = f'{base}_label-{label}_probseg.nii.gz'
+    mask_file = os.path.join(base_dir, f'sub-{subject}', mask_name)
     return mask_file
 
 
