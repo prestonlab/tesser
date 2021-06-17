@@ -24,7 +24,7 @@ def main(raw_dir, out_file, zscore):
         bias[i] = induct['correct'].mean()
     if zscore:
         bias = stats.zscore(bias)
-    np.savetxt(out_file, bias)
+    np.savetxt(out_file, bias, fmt='%.8f')
 
 
 if __name__ == '__main__':
