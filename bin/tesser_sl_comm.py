@@ -29,12 +29,12 @@ def within_across(subj, mask, sl_rad, var):
     ind = var['ind']
     n_perm = len(ind)
 
-    rdm = sd.squareform(sd.pdist(data, 'correlation'))
+    sim = 1 - sd.squareform(sd.pdist(data, 'correlation'))
     stat = np.zeros((2, n_perm))
     for i, perm_ind in enumerate(ind):
-        rdm_perm = rdm[np.ix_(perm_ind, perm_ind)]
-        stat[0, i] = np.mean(rdm_perm[var['within']])
-        stat[1, i] = np.mean(rdm_perm[var['across']])
+        sim_perm = sim[np.ix_(perm_ind, perm_ind)]
+        stat[0, i] = np.mean(sim_perm[var['within']])
+        stat[1, i] = np.mean(sim_perm[var['across']])
 
     z = (
         prsa.perm_z(stat[0]),
