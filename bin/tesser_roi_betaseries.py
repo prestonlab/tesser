@@ -48,19 +48,11 @@ def main(
     elif save_format == 'image':
         run = 1
         if mask_dir == 'func':
-            mask_file = os.path.join(
-                post_dir,
-                f'sub-{subject}',
-                'func',
-                f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
+            mask_file = rsa.get_func_mask(
+                post_dir, subject, 'struct', run, space, desc=mask
             )
         else:
-            mask_file = os.path.join(
-                post_dir,
-                f'sub-{subject}',
-                mask_dir,
-                f'sub-{subject}_space-{space}_desc-{mask}_mask.nii.gz',
-            )
+            mask_file = rsa.get_anat_mask(post_dir, subject, space, label=mask)
         mask_vol = nib.load(mask_file)
         if mask_thresh is None:
             mask_img = mask_vol.get_fdata().astype(bool)

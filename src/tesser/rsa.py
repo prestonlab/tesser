@@ -412,6 +412,28 @@ def estimate_betaseries(data, design, confound=None):
     return beta
 
 
+def get_func_mask(base_dir, subject, task, run, space, desc=None, label=None):
+    """Get the full path to a functional mask."""
+    mask_dir = os.path.join(base_dir, f'sub-{subject}')
+    base = f'sub-{subject}_task-{task}_run-{run}_space-{space}'
+    if desc is not None:
+        mask_file = f'{base}_desc-{desc}_mask.nii.gz'
+    else:
+        mask_file = f'{base}_label-{label}_probseg.nii.gz'
+    return mask_file
+
+
+def get_anat_mask(base_dir, subject, space, desc=None, label=None):
+    """Get the full path to an anatomical mask."""
+    mask_dir = os.path.join(base_dir, f'sub-{subject}')
+    base = f'sub-{subject}_space-{space}'
+    if desc is not None:
+        mask_file = f'{base}_desc-{desc}_mask.nii.gz'
+    else:
+        mask_file = f'{base}_label-{label}_probseg.nii.gz'
+    return mask_file
+
+
 def run_betaseries(
     raw_dir,
     post_dir,
@@ -439,17 +461,9 @@ def run_betaseries(
 
     # ROI/brain mask
     if mask_dir == 'func':
-        mask_file = os.path.join(
-            subj_post,
-            f'sub-{subject}_task-struct_run-{run}_space-{space}_desc-{mask}_mask.nii.gz',
-        )
+        mask_file = get_func_mask(post_dir, subject, 'struct', run, space, desc=mask)
     else:
-        mask_file = os.path.join(
-            post_dir,
-            f'sub-{subject}',
-            mask_dir,
-            f'sub-{subject}_space-{space}_desc-{mask}_mask.nii.gz',
-        )
+        mask_file = get_anat_mask(post_dir, subject, space, label=mask)
     if not os.path.exists(mask_file):
         raise IOError(f'Mask file does not exist: {mask_file}')
 
