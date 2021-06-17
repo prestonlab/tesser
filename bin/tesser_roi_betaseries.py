@@ -43,8 +43,7 @@ def main(
     out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask)
     os.makedirs(out_dir, exist_ok=True)
     if save_format == 'matrix':
-        out_file = os.path.join(out_dir, f'beta_{subject}.npy')
-        np.save(out_file, beta)
+        np.save(os.path.join(out_dir, f'sub-{subject}_beta.npy'), beta)
     elif save_format == 'image':
         run = 1
         if mask_dir == 'func':
@@ -64,20 +63,19 @@ def main(
         events = vols.copy()
         events['onset'] = np.arange(len(events))
         events['duration'] = 1.0
-        events_file = os.path.join(out_dir, f'sub-{subject}_events.tsv')
-        events.to_csv(events_file, sep='\t', index=False)
+        events.to_csv(
+            os.path.join(out_dir, f'sub-{subject}_events.tsv'), sep='\t', index=False
+        )
 
         # save the mask
         new_img = nib.Nifti1Image(mask_img, mask_vol.affine, mask_vol.header)
-        out_file = os.path.join(out_dir, f'sub-{subject}_mask.nii.gz')
-        nib.save(new_img, out_file)
+        nib.save(new_img, os.path.join(out_dir, f'sub-{subject}_mask.nii.gz'))
 
         # save the betaseries image
         out_data = np.zeros([*mask_img.shape, beta.shape[0]])
         out_data[mask_img, :] = beta.T
         new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
-        out_file = os.path.join(out_dir, f'sub-{subject}_beta.nii.gz')
-        nib.save(new_img, out_file)
+        nib.save(new_img, os.path.join(out_dir, f'sub-{subject}_beta.nii.gz'))
     else:
         raise ValueError(f'Invalid save format: {save_format}')
 
