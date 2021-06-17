@@ -92,8 +92,9 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
     }
     sl.distribute([beta], mask)
     sl.broadcast(bcast_var)
-
     outputs = sl.run_searchlight(within_across, pool_size=n_proc)
+
+    # unpack searchlight output
     names = [
         'within',
         'across',
@@ -109,6 +110,7 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
                 if outputs[i, j, k] is not None:
                     out_data[i, j, k, :] = outputs[i, j, k]
 
+    # save searchlight results images
     for i, name in enumerate(names):
         zstat = np.zeros(mask_img.shape)
         zstat[mask_img] = out_data[..., i].T
