@@ -22,28 +22,34 @@ def main(
 ):
     # run betaseries estimation for each run
     high_pass = 1 / 128
-    beta = np.vstack(
-        [
-            rsa.run_betaseries(
-                raw_dir,
-                post_dir,
-                mask,
-                bold,
-                subject,
-                run,
-                high_pass,
-                space,
-                mask_dir,
-                mask_thresh,
-            ) for run in range(1, 7)
-        ]
-    )
+    beta = None
+    resid = None
+    for run in range(1, 7):
+        run_beta, run_resid = rsa.run_betaseries(
+            raw_dir,
+            post_dir,
+            mask,
+            bold,
+            subject,
+            run,
+            high_pass,
+            space,
+            mask_dir,
+            mask_thresh,
+        )
+        if beta is None:
+            beta = run_beta
+            resid = run_resid
+        else:
+            beta = np.vstack((beta, run_beta))
+            resid = np.vstack((resid, run_resid))
 
     # save a numpy array with the results
     out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask)
     os.makedirs(out_dir, exist_ok=True)
     if save_format == 'matrix':
         np.save(os.path.join(out_dir, f'sub-{subject}_beta.npy'), beta)
+        np.save(os.path.join(out_dir, f'sub-{subject}_resid.npy'), beta)
     elif save_format == 'image':
         run = 1
         if mask_dir == 'func':
@@ -76,6 +82,12 @@ def main(
         out_data[mask_img, :] = beta.T
         new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
         nib.save(new_img, os.path.join(out_dir, f'sub-{subject}_beta.nii.gz'))
+
+        # save the residuals image
+        out_data = np.zeros([*mask_img.shape, resid.shape[0]])
+        out_data[mask_img, :] = resid.T
+        new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
+        nib.save(new_img, os.path.join(out_dir, f'sub-{subject}_resid.nii.gz'))
     else:
         raise ValueError(f'Invalid save format: {save_format}')
 
