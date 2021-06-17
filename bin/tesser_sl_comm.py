@@ -113,7 +113,7 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
     # save searchlight results images
     for i, name in enumerate(names):
         zstat = np.zeros(mask_img.shape)
-        zstat[mask_img] = out_data[..., i].T
+        zstat[mask] = out_data[..., i].T
         new_img = nib.Nifti1Image(zstat, mask_img.affine, mask_img.header)
         out_file = os.path.join(beta_dir, f'sub-{subject}_desc-{name}_zstat.nii.gz')
         nib.save(new_img, out_file)
