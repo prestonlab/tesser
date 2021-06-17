@@ -102,19 +102,16 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
         'acrossMinusWithin',
     ]
     d1, d2, d3 = mask.shape
-    out_data = np.empty((d1, d2, d3, len(names)))
-    out_data.fill(np.nan)
+    zstat = np.zeros((d1, d2, d3, len(names)))
     for i in range(d1):
         for j in range(d2):
             for k in range(d3):
                 if outputs[i, j, k] is not None:
-                    out_data[i, j, k, :] = outputs[i, j, k]
+                    zstat[i, j, k, :] = outputs[i, j, k]
 
     # save searchlight results images
     for i, name in enumerate(names):
-        zstat = np.zeros(mask_img.shape)
-        zstat[mask] = out_data[..., i].T
-        new_img = nib.Nifti1Image(zstat, mask_img.affine, mask_img.header)
+        new_img = nib.Nifti1Image(zstat[..., i], mask_img.affine, mask_img.header)
         out_file = os.path.join(beta_dir, f'sub-{subject}_desc-{name}_zstat.nii.gz')
         nib.save(new_img, out_file)
 
