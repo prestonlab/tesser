@@ -419,7 +419,7 @@ def get_func_mask(base_dir, subject, task, run, space, desc=None, label=None):
         mask_name = f'{base}_desc-{desc}_mask.nii.gz'
     else:
         mask_name = f'{base}_label-{label}_probseg.nii.gz'
-    mask_file = os.path.join(base_dir, f'sub-{subject}', mask_name)
+    mask_file = os.path.join(base_dir, f'sub-{subject}', 'func', mask_name)
     return mask_file
 
 
@@ -430,7 +430,7 @@ def get_anat_mask(base_dir, subject, space, desc=None, label=None):
         mask_name = f'{base}_desc-{desc}_mask.nii.gz'
     else:
         mask_name = f'{base}_label-{label}_probseg.nii.gz'
-    mask_file = os.path.join(base_dir, f'sub-{subject}', mask_name)
+    mask_file = os.path.join(base_dir, f'sub-{subject}', 'anat', mask_name)
     return mask_file
 
 
