@@ -61,15 +61,12 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
     across_run = run != run[:, np.newaxis]
     within_community = community == community[:, np.newaxis]
     across_community = community != community[:, np.newaxis]
-    same_object = objects == objects[:, np.newaxis]
     diff_object = objects != objects[:, np.newaxis]
     lower = np.tril(np.ones((len(run), len(run)), dtype=bool), -1)
 
     # bin definition
     include_within = across_run & within_community & diff_object & lower
     include_across = across_run & across_community & diff_object & lower
-    include_same = across_run & same_object & lower
-    include_diff = across_run & diff_object & lower
 
     # load images
     beta_img = nib.load(beta_file)
@@ -87,8 +84,6 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
         'ind': ind,
         'within': include_within,
         'across': include_across,
-        'same': include_same,
-        'diff': include_diff,
     }
     sl.distribute([beta], mask)
     sl.broadcast(bcast_var)
