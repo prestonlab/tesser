@@ -2,8 +2,8 @@
 #
 # Smooth functional data and copy related metadata to the results directory.
 
-if [[ $# -lt 4 ]]; then
-    echo "Usage: tesser_smooth.sh prepdir outdir subject space"
+if [[ $# -lt 5 ]]; then
+    echo "Usage: tesser_smooth.sh prepdir outdir subject space smooth"
     exit 1
 fi
 
@@ -11,6 +11,7 @@ prepdir=$1
 outdir=$2
 subject=$3
 space=$4
+smooth=$5
 
 prepsubj=$prepdir/sub-$subject
 outsubj=$outdir/sub-$subject
@@ -37,6 +38,6 @@ for run in 1 2 3 4 5 6; do
     smooth_susan \
         "$prepsubj/func/${base}_space-${space}_desc-preproc_bold.nii.gz" \
         "$prepsubj/func/${base}_space-${space}_desc-brain_mask.nii.gz" \
-        4.0 \
-        "$outsubj/func/${base}_space-${space}_desc-smooth4mm_bold.nii.gz"
+        "$smooth" \
+        "$outsubj/func/${base}_space-${space}_desc-smooth${smooth}mm_bold.nii.gz"
 done
