@@ -2,7 +2,7 @@
 #
 # Run small volume correction for a searchlight.
 
-if [[ $# -lt 3 ]]; then
+if [[ $# -lt 2 ]]; then
     echo "Usage: tesser_svc.sh [-o] betadir contrast"
     exit 1
 fi
