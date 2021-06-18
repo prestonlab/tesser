@@ -44,7 +44,7 @@ def main(
         resid[run] = run_resid
 
     # save a numpy array with the results
-    out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask)
+    out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask, f'sub-{subject}')
     os.makedirs(out_dir, exist_ok=True)
     if save_format == 'matrix':
         np.save(os.path.join(out_dir, f'sub-{subject}_beta.npy'), beta)
