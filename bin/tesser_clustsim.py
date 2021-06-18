@@ -23,7 +23,9 @@ def main(beta_dir):
             run_acf = smoothness[1, :3]
             all_acf.append(run_acf)
     acf = np.mean(np.array(all_acf), 0)
-    mask_file = os.path.join(f'sub-{subjects[0]}', f'sub-{subjects[0]}_mask.nii.gz')
+    mask_file = os.path.join(
+        beta_dir, f'sub-{subjects[0]}', f'sub-{subjects[0]}_mask.nii.gz'
+    )
 
     # run 3dClustSim
     out_dir = os.path.join(beta_dir, 'clustsim')
