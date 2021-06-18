@@ -28,6 +28,7 @@ def main(beta_dir):
 
     # run 3dClustSim
     out_dir = os.path.join(beta_dir, 'clustsim')
+    os.makedirs(out_dir, exist_ok=True)
     mask_copy = os.path.join(out_dir, 'mask.nii.gz')
     shutil.copyfile(mask_file, mask_copy)
     acf_str = f'{acf[0]} {acf[1]} {acf[2]}'
