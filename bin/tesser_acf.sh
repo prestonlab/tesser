@@ -12,7 +12,7 @@ subject=$2
 nthreads=$3
 
 export OMP_NUM_THREADS=$nthreads
-base=${resdir}/${subject}/sub-${subject}
+base=${resdir}/sub-${subject}/sub-${subject}
 mask=${base}_mask.nii.gz
 
 for run in 1 2 3 4 5 6; do
