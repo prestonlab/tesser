@@ -46,7 +46,7 @@ def within_across(subj, mask, sl_rad, var):
 
 
 def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
-    beta_dir = os.path.join(model_dir, 'results', 'beta', beta, mask)
+    beta_dir = os.path.join(model_dir, 'results', 'beta', beta, mask, f'sub-{subject}')
     beta_file = os.path.join(beta_dir, f'sub-{subject}_beta.nii.gz')
     mask_file = os.path.join(beta_dir, f'sub-{subject}_mask.nii.gz')
     events_file = os.path.join(beta_dir, f'sub-{subject}_events.tsv')
