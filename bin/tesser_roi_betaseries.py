@@ -48,7 +48,6 @@ def main(
     os.makedirs(out_dir, exist_ok=True)
     if save_format == 'matrix':
         np.save(os.path.join(out_dir, f'sub-{subject}_beta.npy'), beta)
-        np.save(os.path.join(out_dir, f'sub-{subject}_resid.npy'), beta)
     elif save_format == 'image':
         run = 1
         if mask_dir == 'func':
