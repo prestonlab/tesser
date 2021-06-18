@@ -29,12 +29,10 @@ def main(beta_dir):
     # run 3dClustSim
     out_dir = os.path.join(beta_dir, 'clustsim')
     os.makedirs(out_dir, exist_ok=True)
-    mask_copy = os.path.join(out_dir, 'mask.nii.gz')
-    shutil.copyfile(mask_file, mask_copy)
     acf_str = f'{acf[0]} {acf[1]} {acf[2]}'
     prefix = os.path.join(out_dir, 'clustsim')
     command = (
-        f'3dClustSim -mask {mask_copy} -acf {acf_str} -iter 2000 -nodec -prefix {prefix}'
+        f'3dClustSim -mask {mask_file} -acf {acf_str} -iter 2000 -nodec -prefix {prefix}'
     )
     output = sub.run(command, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     print(output.stdout)
