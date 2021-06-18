@@ -3,7 +3,7 @@
 # Run small volume correction for a searchlight.
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: tesser_svc.sh [-o] betadir contrast template"
+    echo "Usage: tesser_svc.sh [-o] betadir contrast"
     exit 1
 fi
 
@@ -23,7 +23,7 @@ shift $((OPTIND-1))
 
 betadir=$1
 contrast=$2
-template=$3
+template=$betadir/template.nii.gz
 
 # fixed voxelwise alpha because we just have a thresholded image, not
 # a zscore image
