@@ -23,7 +23,7 @@ def main(
     # run betaseries estimation for each run
     high_pass = 1 / 128
     beta = None
-    resid = None
+    resid = {}
     for run in range(1, 7):
         run_beta, run_resid = rsa.run_betaseries(
             raw_dir,
@@ -39,10 +39,9 @@ def main(
         )
         if beta is None:
             beta = run_beta
-            resid = run_resid
         else:
             beta = np.vstack((beta, run_beta))
-            resid = np.vstack((resid, run_resid))
+        resid[run] = run_resid
 
     # save a numpy array with the results
     out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask)
@@ -84,10 +83,13 @@ def main(
         nib.save(new_img, os.path.join(out_dir, f'sub-{subject}_beta.nii.gz'))
 
         # save the residuals image
-        out_data = np.zeros([*mask_img.shape, resid.shape[0]])
-        out_data[mask_img, :] = resid.T
-        new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
-        nib.save(new_img, os.path.join(out_dir, f'sub-{subject}_resid.nii.gz'))
+        for run, res in resid.items():
+            out_data = np.zeros([*mask_img.shape, res.shape[0]])
+            out_data[mask_img, :] = res.T
+            new_img = nib.Nifti1Image(out_data, mask_vol.affine, mask_vol.header)
+            nib.save(
+                new_img, os.path.join(out_dir, f'sub-{subject}_run-{run}_resid.nii.gz')
+            )
     else:
         raise ValueError(f'Invalid save format: {save_format}')
 
