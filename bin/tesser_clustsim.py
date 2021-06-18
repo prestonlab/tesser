@@ -7,7 +7,6 @@ import shutil
 import subprocess as sub
 import argparse
 import numpy as np
-import pandas as pd
 from tesser import tasks
 
 
@@ -18,10 +17,10 @@ def main(beta_dir):
     for subject in subjects:
         subj_dir = os.path.join(beta_dir, f'sub-{subject}')
         for run in range(1, 7):
-            smoothness = pd.read_table(
+            smoothness = np.loadtxt(
                 os.path.join(subj_dir, f'sub-{subject}_run-{run}_smoothness.tsv')
             )
-            run_acf = smoothness.to_numpy()[1, :3]
+            run_acf = smoothness[1, :3]
             all_acf.append(run_acf)
     acf = np.mean(np.array(all_acf), 0)
     mask_file = os.path.join(f'sub-{subjects[0]}', f'sub-{subjects[0]}_mask.nii.gz')
