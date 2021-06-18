@@ -3,7 +3,6 @@
 # Estimate null cluster sizes based on average ACF smoothness parameters.
 
 import os
-import shutil
 import subprocess as sub
 import argparse
 import numpy as np
