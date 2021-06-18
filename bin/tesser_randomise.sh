@@ -14,7 +14,7 @@ n_perm=$4
 
 mkdir -p "${resdir}/${resname}"
 fslmerge -t "${resdir}/${resname}/zstat.nii.gz" \
-    "${resdir}"/sub-*_desc-"${contrast}"_zstat.nii.gz
+    "${resdir}"/sub-*/sub-*_desc-"${contrast}"_zstat.nii.gz
 
 randomise -i "${resdir}/${resname}/zstat.nii.gz" \
     -o "${resdir}/${resname}/zstat" \
