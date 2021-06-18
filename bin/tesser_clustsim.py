@@ -34,6 +34,7 @@ def main(beta_dir):
     command = (
         f'3dClustSim -mask {mask_file} -acf {acf_str} -iter 2000 -nodec -prefix {prefix}'
     )
+    print(command)
     output = sub.run(command, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     print(output.stdout)
     print(output.stderr)
