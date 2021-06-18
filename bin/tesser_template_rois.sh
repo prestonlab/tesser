@@ -3,7 +3,7 @@
 # Transform template ROIs to native resolution template space.
 
 if [[ $# -lt 4 ]]; then
-    echo "Usage: tesser_fshs_rois.sh templatedir space outdir subject"
+    echo "Usage: tesser_template_rois.sh templatedir space outdir subject"
     exit 1
 fi
 
