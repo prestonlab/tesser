@@ -389,6 +389,7 @@ def prepare_betaseries_design(events_file, conf_file, tr, high_pass):
     n_sample = len(conf)
     events = pd.read_csv(events_file, sep='\t')
     design = create_betaseries_design(events, n_sample, tr, high_pass)
+    n_objects = events['object'].nunique()
     mat = design.iloc[:, :n_object].to_numpy()
     confound = np.hstack((design.iloc[:, n_object:-1].to_numpy(), nuisance))
     return mat, confound
