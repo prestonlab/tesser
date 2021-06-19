@@ -42,6 +42,7 @@ for subject in ${subjects}; do
     files="${files} ${tempdir}/${subject}/b_gray.nii.gz"
 done
 
+# average subject images to create a probabilistic mask
 cd "${tempdir}" || exit 1
 fslmerge -t b_gray_all ${files}
 fslmaths b_gray_all -Tmean b_gray_prob
