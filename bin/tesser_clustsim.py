@@ -9,7 +9,7 @@ import numpy as np
 from tesser import tasks
 
 
-def main(beta_dir):
+def main(beta_dir, n_threads=None):
     # get average smoothness parameters
     subjects = tasks.get_subj_list()
     all_acf = []
@@ -34,6 +34,8 @@ def main(beta_dir):
     command = (
         f'3dClustSim -mask {mask_file} -acf {acf_str} -iter 2000 -nodec -prefix {prefix}'
     )
+    if n_threads is not None:
+        command = f'export OMP_NUM_THREADS={n_threads}; ' + command
     print(command)
     output = sub.run(command, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     print(output.stdout)
@@ -43,5 +45,6 @@ def main(beta_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('beta_dir', help='path to main beta series directory')
+    parser.add_argument('--n-threads', '-n', type=int, help='number of threads to use')
     args = parser.parse_args()
-    main(args.beta_dir)
+    main(args.beta_dir, args.n_threads)
