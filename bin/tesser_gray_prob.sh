@@ -2,8 +2,8 @@
 #
 # Calculate a group-level cortex probability image.
 
-if [[ $# -lt 1 ]]; then
-    echo "Usage: tesser_ctx_prob.sh prepdir space outdir"
+if [[ $# -lt 3 ]]; then
+    echo "Usage: tesser_gray_prob.sh prepdir space outdir"
     exit 1
 fi
 
