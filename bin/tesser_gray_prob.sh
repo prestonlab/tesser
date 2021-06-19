@@ -26,7 +26,7 @@ for subject in ${subjects}; do
     mkdir -p "${tempdir}/${subject}"
     cd "${tempdir}/${subject}" || exit 1
 
-    seg="${prepdir}/${subject}/${subject}_task-struct_run-1_space-${space}_desc-aparcaseg_dseg"
+    seg="${prepdir}/${subject}/func/${subject}_task-struct_run-1_space-${space}_desc-aparcaseg_dseg"
     imcp "${seg}" parcels
 
     fslmaths parcels -thr 1000 -uthr 1035 -bin l_ctx
