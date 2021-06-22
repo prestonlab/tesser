@@ -27,9 +27,10 @@ for subject in $subjects; do
     mkdir -p "${tempdir}/${subject}"
     cd "${tempdir}/${subject}" || exit 1
     anatdir=${outdir}/${subject}/anat
+    subjno=${subject/sub-/}
 
     # FreeSurfer hippocampal segmentation output
-    mri=${studydir}/tesser_${subject}/anatomy/tesser_${subject}/mri
+    mri=${studydir}/tesser_${subjno}/anatomy/tesser_${subjno}/mri
     l_hbt=${mri}/lh.hippoAmygLabels-T1-T2.v21.HBT.mgz
     r_hbt=${mri}/lh.hippoAmygLabels-T1-T2.v21.HBT.mgz
 
