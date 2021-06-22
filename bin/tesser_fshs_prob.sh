@@ -47,7 +47,7 @@ for subject in $subjects; do
             -r "${anatdir}/${subject}_space-${space}_desc-brain_mask.nii.gz" \
             -o "${hemi}_hbt.nii.gz" \
             -n MultiLabel \
-            -t "${anatdir}/${subject}_from-T1w_to-MNI152NLin2009cAsym_mode-image_xfm.txt" \
+            -t "${anatdir}/${subject}_from-T1w_to-MNI152NLin2009cAsym_mode-image_xfm.h5" \
             -t "${anatdir}/${subject}_from-fsnative_to-T1w_mode-image_xfm.txt"
     done
 
