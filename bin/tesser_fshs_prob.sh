@@ -52,8 +52,8 @@ for subject in $subjects; do
     done
 
     # pool over head/body/tail ROIs
-    fslmaths l_hbt -thr 1 -bin hipl
-    fslmaths r_hbt -thr 1 -bin hipr
+    fslmaths l_hbt -thr 200 -uthr 300 -bin hipl
+    fslmaths r_hbt -thr 200 -uthr 300 -bin hipr
     fslmaths hipl -add hipr -bin hipb
     hipl_files="${hipl_files} ${tempdir}/${subject}/hipl"
     hipr_files="${hipr_files} ${tempdir}/${subject}/hipr"
