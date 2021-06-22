@@ -32,7 +32,7 @@ for subject in $subjects; do
     # FreeSurfer hippocampal segmentation output
     mri=${studydir}/tesser_${subjno}/anatomy/tesser_${subjno}/mri
     l_hbt=${mri}/lh.hippoAmygLabels-T1-T2.v21.HBT.mgz
-    r_hbt=${mri}/lh.hippoAmygLabels-T1-T2.v21.HBT.mgz
+    r_hbt=${mri}/rh.hippoAmygLabels-T1-T2.v21.HBT.mgz
 
     # convert to nifti
     mri_convert "$l_hbt" l_hbt_fsnative.nii.gz
