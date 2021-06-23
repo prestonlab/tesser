@@ -80,8 +80,8 @@ if [[ $recalc = true ]]; then
 
     # get uncorrected clusters of at least minimal size (useful for
     # defining masks, getting cluster size)
-    "$FSLDIR/bin/cluster" -i vox_mask -t 0.5 --minextent=100 \
-        -o cluster_mask100 > cluster100.txt
+    "$FSLDIR/bin/cluster" -i vox_mask -t 0.5 --minextent=10 \
+        -o cluster_mask10 > cluster10.txt
 fi
 
 # report corrected clusters
