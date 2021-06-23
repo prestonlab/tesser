@@ -3,16 +3,16 @@
 # Calculate group-level probability images from FreeSurfer.
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: tesser_fs_prob.sh prepdir space outdir"
+    echo "Usage: tesser_fs_prob.sh fsdir space outdir"
     exit 1
 fi
 
-prepdir=$1
+fsdir=$1
 space=$2
 outdir=$3
 
 # get a list of the subjects
-cd "${prepdir}" || exit 1
+cd "${fsdir}" || exit 1
 subjects=""
 for d in sub-*/; do
     subject=${d%/}
@@ -27,9 +27,19 @@ ifgr_files=""
 for subject in ${subjects}; do
     mkdir -p "${tempdir}/${subject}"
     cd "${tempdir}/${subject}" || exit 1
+    anatdir=${outdir}/${subject}/anat
 
-    seg="${prepdir}/${subject}/func/${subject}_task-struct_run-1_space-${space}_desc-aparcaseg_dseg"
-    imcp "${seg}" parcels
+    # convert FreeSurfer results to Nifti and transform to template
+    seg=${fsdir}/${subject}/mri/aparc+aseg.mgz
+    mri_convert "${seg}" seg_fsnative.nii.gz
+    fslreorient2std seg_fsnative seg_fsnative
+    antsApplyTransforms -d 3 -e 0 \
+        -i seg_fsnative.nii.gz \
+        -r "${anatdir}/${subject}_space-${space}_desc-brain_mask.nii.gz" \
+        -o parcels.nii.gz \
+        -n MultiLabel \
+        -t "${anatdir}/${subject}_from-T1w_to-MNI152NLin2009cAsym_mode-image_xfm.h5" \
+        -t "${anatdir}/${subject}_from-fsnative_to-T1w_mode-image_xfm.txt"
 
     # parsopercularis X018
     fslmaths parcels -thr 1018 -uthr 1018 -bin l_oper
