@@ -44,6 +44,7 @@ def induct_pandas(induct_trials):
     for key in ['cue', 'opt1', 'opt2', 'response']:
         trials[key] += 1
     induct = pd.DataFrame(trials)
+    induct = induct.astype({'trial_type': 'category'})
     return induct
 
 
@@ -278,6 +279,7 @@ def induct_fit():
             'response': mat[3],
         }
     )
+    induct = induct.astype({'trial_type': 'category'})
     return induct
 
 
