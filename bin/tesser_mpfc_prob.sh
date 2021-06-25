@@ -2,7 +2,7 @@
 #
 # Create a mask of mPFC.
 
-if [[ $# -lt 3 ]]; then
+if [[ $# -lt 2 ]]; then
     echo "Usage: tesser_mpfc_prob.sh outdir space"
     exit 1
 fi
