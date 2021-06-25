@@ -28,6 +28,6 @@ for subject in $subjects; do
         -n MultiLabel
     fslmaths \
         "${anatdir}/${subject}_space-${space}_desc-mpfc_mask.nii.gz" -mul \
-        "${anatdir}/${subject}_space-${space}_label-gray_probseg.nii.gz" -bin \
+        "${anatdir}/${subject}_space-${space}_label-gray_probseg.nii.gz" \
         "${anatdir}/${subject}_space-${space}_label-mpfc_probseg.nii.gz"
 done
