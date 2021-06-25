@@ -12,7 +12,10 @@ from tesser import rsa
 
 
 def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
-    stat_dir = os.path.join(beta_dir, model_name)
+    if model_name == 'community':
+        stat_dir = os.path.join(beta_dir, model_name)
+    else:
+        stat_dir = os.path.join(beta_dir, f'community_{model_name}')
     cluster_mask = os.path.join(stat_dir, 'cluster_mask10.nii.gz')
     cluster_dir = os.path.join(stat_dir, 'clusters')
     os.makedirs(cluster_dir, exist_ok=True)
