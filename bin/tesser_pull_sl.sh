@@ -15,8 +15,7 @@ rsync -azvu "$src" "$dest" \
     --include=beta/ \
     --include="beta/smooth?mm/" \
     --include="beta/smooth?mm/*/" \
-    --include="beta/smooth?mm/*/community/" \
-    --include="beta/smooth?mm/*/community_bias/" \
+    --include="beta/smooth?mm/*/community*/" \
     --include="*.txt" \
     --include="*.nii.gz" \
     --exclude="*" \
