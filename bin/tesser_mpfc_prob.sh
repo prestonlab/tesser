@@ -24,6 +24,10 @@ for subject in $subjects; do
     antsApplyTransforms -d 3 -e 0 \
         -i "${mpfc_1mm}" \
         -r "${anatdir}/${subject}_space-${space}_desc-brain_mask.nii.gz" \
-        -o "${anatdir}/${subject}_space-${space}_label-mpfc_probseg.nii.gz" \
+        -o "${anatdir}/${subject}_space-${space}_desc-mpfc_mask.nii.gz" \
         -n MultiLabel
+    fslmaths \
+        "${anatdir}/${subject}_space-${space}_desc-mpfc_mask.nii.gz" -mul \
+        "${anatdir}/${subject}_space-${space}_label-gray_probseg.nii.gz" -bin \
+        "${anatdir}/${subject}_space-${space}_label-mpfc_probseg.nii.gz"
 done
