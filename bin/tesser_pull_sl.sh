@@ -16,7 +16,10 @@ rsync -azvu "$src" "$dest" \
     --include="beta/smooth?mm/" \
     --include="beta/smooth?mm/*/" \
     --include="beta/smooth?mm/*/community*/" \
+    --include="beta/smooth?mm/*/community*/clusters/" \
     --include="*.txt" \
+    --include="*.npy" \
+    --include="*.tsv" \
     --include="*.nii.gz" \
     --exclude="*" \
     --prune-empty-dirs \
