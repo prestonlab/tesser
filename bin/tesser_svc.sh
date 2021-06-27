@@ -56,7 +56,7 @@ recalc=false
 if [[ $overwrite = true ]]; then
     recalc=true
 fi
-if [[ $(imtest zstat_vox_p_tstat1) = 1 && $(imtest stat_thresh) = 0 ]]; then
+if [[ $(imtest zstat_vox_p_tstat1) = 1 && $(imtest vox_mask) = 0 ]]; then
    recalc=true
 fi
 
