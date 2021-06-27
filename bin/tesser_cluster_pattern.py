@@ -17,6 +17,7 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
     else:
         stat_dir = os.path.join(beta_dir, f'community_{model_name}')
     cluster_mask = os.path.join(stat_dir, 'cluster_mask10.nii.gz')
+    mask = os.path.join(stat_dir, 'mask.nii.gz')
     cluster_dir = os.path.join(stat_dir, 'clusters')
     os.makedirs(cluster_dir, exist_ok=True)
 
@@ -43,7 +44,15 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
     print('Dilating cluster...')
     result = sub.run(
         [
-            'fslmaths', roi_mask, '-kernel', 'sphere', '1.75', '-dilD', dil_mask
+            'fslmaths',
+            roi_mask,
+            '-kernel',
+            'sphere',
+            '1.75',
+            '-dilD',
+            '-mas',
+            mask,
+            dil_mask
         ], capture_output=True, text=True
     )
     print("stdout:", result.stdout)
