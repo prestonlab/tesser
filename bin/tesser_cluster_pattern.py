@@ -40,7 +40,7 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
     print("stderr:", result.stderr)
 
     # dilate the mask by 1 voxel
-    dil_mask = os.path.join(cluster_dir, f'desc-{model_name}{cluster_name}dil1')
+    dil_mask = os.path.join(cluster_dir, f'desc-{model_name}{cluster_name}dil1.nii.gz')
     print('Dilating cluster...')
     result = sub.run(
         [
@@ -64,11 +64,8 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
         bold_file = os.path.join(
             beta_dir, f'sub-{subject}', f'sub-{subject}_beta.nii.gz'
         )
-        mask_file = os.path.join(
-            beta_dir, f'sub-{subject}', f'sub-{subject}_mask.nii.gz'
-        )
         bold_vol = nib.load(bold_file)
-        mask_vol = nib.load(mask_file)
+        mask_vol = nib.load(dil_mask)
         bold_img = bold_vol.get_fdata()
         mask_img = mask_vol.get_fdata().astype(bool)
         beta = bold_img[mask_img].T
