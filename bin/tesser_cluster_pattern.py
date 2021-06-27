@@ -11,7 +11,7 @@ from tesser import tasks
 from tesser import rsa
 
 
-def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
+def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name, dilate=1):
     if model_name == 'community':
         stat_dir = os.path.join(beta_dir, model_name)
     else:
@@ -41,8 +41,11 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
     print("stdout:", result.stdout)
     print("stderr:", result.stderr)
 
-    # dilate the mask by 1 voxel
-    dil_mask = os.path.join(cluster_dir, f'desc-{model_name}{cluster_name}dil1.nii.gz')
+    # dilate the mask
+    dil_mask = os.path.join(
+        cluster_dir, f'desc-{model_name}{cluster_name}dil{dilate}.nii.gz'
+    )
+    radius = dilate * 1.7 + 0.05
     print('Dilating cluster...')
     result = sub.run(
         [
@@ -50,7 +53,7 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
             roi_mask,
             '-kernel',
             'sphere',
-            '1.75',
+            str(radius),
             '-dilD',
             '-mas',
             mask,
@@ -75,7 +78,8 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
 
         # save to a numpy file
         mat_file = os.path.join(
-            cluster_dir, f'sub-{subject}_desc-{model_name}{cluster_name}dil1_beta.npy',
+            cluster_dir,
+            f'sub-{subject}_desc-{model_name}{cluster_name}dil{dilate}_beta.npy',
         )
         np.save(mat_file, beta)
 
@@ -97,6 +101,9 @@ if __name__ == '__main__':
     parser.add_argument('model_name', help='name of randomise model')
     parser.add_argument('cluster_ind', help='index of cluster in cluster_mask10.nii.gz')
     parser.add_argument('cluster_name', help='name to give cluster')
+    parser.add_argument(
+        '-d', '--dilate', default=1, help='number of voxels to dilate by'
+    )
     args = parser.parse_args()
     main(
         args.raw_dir,
@@ -104,4 +111,5 @@ if __name__ == '__main__':
         args.model_name,
         args.cluster_ind,
         args.cluster_name,
+        args.dilate,
     )
