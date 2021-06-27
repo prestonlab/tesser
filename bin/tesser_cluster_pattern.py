@@ -60,6 +60,7 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
 
     subjects = tasks.get_subj_list()
     for subject in subjects:
+        print(f'Saving cluster pattern for {subject}...')
         # load betaseries as a matrix
         bold_file = os.path.join(
             beta_dir, f'sub-{subject}', f'sub-{subject}_beta.nii.gz'
