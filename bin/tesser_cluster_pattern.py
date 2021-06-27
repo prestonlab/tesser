@@ -17,6 +17,8 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name):
     else:
         stat_dir = os.path.join(beta_dir, f'community_{model_name}')
     cluster_mask = os.path.join(stat_dir, 'cluster_mask10.nii.gz')
+    if not os.path.exists(cluster_mask):
+        raise IOError(f'Cluster mask not found: {cluster_mask}')
     mask = os.path.join(stat_dir, 'mask.nii.gz')
     cluster_dir = os.path.join(stat_dir, 'clusters')
     os.makedirs(cluster_dir, exist_ok=True)
