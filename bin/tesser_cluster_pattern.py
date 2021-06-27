@@ -102,7 +102,7 @@ if __name__ == '__main__':
     parser.add_argument('cluster_ind', help='index of cluster in cluster_mask10.nii.gz')
     parser.add_argument('cluster_name', help='name to give cluster')
     parser.add_argument(
-        '-d', '--dilate', default=1, help='number of voxels to dilate by'
+        '-d', '--dilate', default=1, type=float, help='number of voxels to dilate by'
     )
     args = parser.parse_args()
     main(
