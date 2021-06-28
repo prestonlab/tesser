@@ -384,6 +384,31 @@ def load_parse(data_dir, subjects=None):
     return df
 
 
+def score_parse(parse):
+    """Score parsing task data for one subject."""
+    # number walks within a community
+    parse = parse.copy()
+    parse['transition'] = parse.groupby(['subject', 'run'])['community'].transform(
+        lambda data: data.diff().fillna(0).abs().astype(bool)
+    )
+    parse['walk'] = parse.groupby(['subject', 'run'])['transition'].transform(
+        lambda data: data.astype('Int64').cumsum() + 1
+    )
+    walk_lengths = parse.groupby(['subject', 'run', 'walk'])['walk'].count()
+
+    # length of the previous walk
+    parse['prev_walk'] = np.nan
+    for (subject, run, walk), walk_length in walk_lengths.iteritems():
+        include = (
+            (parse['subject'] == subject) &
+            (parse['run'] == run) &
+            (parse['walk'] == (walk + 1))
+        )
+        if any(include):
+            parse.loc[include.to_numpy(), 'prev_walk'] = walk_length
+    return parse
+
+
 def parse_perf(parse):
     """Score parsing performance."""
     trans_parse = (
@@ -421,31 +446,6 @@ def load_bids_parse(bids_dir, subject):
         df_list.append(df_run)
     data = pd.concat(df_list, axis=0)
     return data
-
-
-def score_parse(parse):
-    """Score parsing task data for one subject."""
-    # number walks within a community
-    parse = parse.copy()
-    parse['transition'] = parse.groupby(['subject', 'run'])['community'].transform(
-        lambda data: data.diff().fillna(0).abs().astype(bool)
-    )
-    parse['walk'] = parse.groupby(['subject', 'run'])['transition'].transform(
-        lambda data: data.cumsum().astype('Int64') + 1
-    )
-    walk_lengths = parse.groupby(['subject', 'run', 'walk'])['walk'].count()
-
-    # length of the previous walk
-    parse['prev_walk'] = np.nan
-    for (subject, run, walk), walk_length in walk_lengths.iteritems():
-        include = (
-            (parse['subject'] == subject) &
-            (parse['run'] == run) &
-            (parse['walk'] == (walk + 1))
-        )
-        if any(include):
-            parse.loc[include.to_numpy(), 'prev_walk'] = walk_length
-    return parse
 
 
 def load_group_mat(data_dir, subject_num):
