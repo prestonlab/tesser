@@ -2,11 +2,9 @@
 #
 # Write out average parsing performance.
 
-import os
 import argparse
 import numpy as np
 from scipy import stats
-import pandas as pd
 from tesser import tasks
 
 
