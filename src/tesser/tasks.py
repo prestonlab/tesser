@@ -385,7 +385,7 @@ def load_parse(data_dir, subjects=None):
 
 
 def score_parse(parse):
-    """Score parsing task data for one subject."""
+    """Score parsing task data."""
     # number walks within a community
     parse = parse.copy()
     parse['transition'] = parse.groupby(['subject', 'run'])['community'].transform(
