@@ -437,6 +437,25 @@ def load_bids_parse(bids_dir, subject):
     return data
 
 
+def score_parse(parse):
+    """Score parsing task data for one subject."""
+    # number walks within a community (start of run counts as start of a walk)
+    parse = parse.copy()
+    parse['transition'] = parse.groupby('run')['community'].transform(
+        lambda data: data.diff().fillna(1).abs().astype(bool)
+    )
+    parse['walk'] = parse['transition'].cumsum().astype('Int64')
+    walk_lengths = parse.groupby(['run', 'walk'])['walk'].count()
+
+    # length of the previous walk
+    parse['prev_walk'] = np.nan
+    for (run, walk), walk_length in walk_lengths.iteritems():
+        include = (parse['run'] == run) & (parse['walk'] == (walk + 1))
+        if any(include):
+            parse.loc[include.to_numpy(), 'prev_walk'] = walk_length
+    return parse
+
+
 def load_group_mat(data_dir, subject_num):
     """Load matrix of grouping data."""
     # subject directory
