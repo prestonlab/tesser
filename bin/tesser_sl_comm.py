@@ -89,7 +89,7 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None, zscore=False)
                 beta[~run_exclude][:, include], axis=1)
             zero_list.append(run_exclude)
         # set non-varying voxels to zero
-        exclude = np.logical_or(*zero_list)
+        exclude = np.any(np.stack(zero_list, axis=3), 3)
         beta[exclude] = 0
 
     # run searchlight
