@@ -302,7 +302,7 @@ def load_induct(data_dir, subjects=None):
             'cue': raw['CueNum'],
             'opt1': raw['Opt1Num'],
             'opt2': raw['Opt2Num'],
-            'within': 0,
+            'within_opt': 0,
             'response': raw['Resp'],
             'response_time': raw['RT'],
             'correct': raw['Acc'],
@@ -320,7 +320,7 @@ def load_induct(data_dir, subjects=None):
     within = np.zeros(opt1_comm.shape, dtype=int)
     within[j[i == 0]] = 1
     within[j[i == 1]] = 2
-    df['within'] = within
+    df['within_opt'] = within
 
     df['trial_type'].cat.reorder_categories(
         ['central', 'boundary1', 'boundary2'], inplace=True

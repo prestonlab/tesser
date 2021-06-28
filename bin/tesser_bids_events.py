@@ -79,7 +79,6 @@ def main(study_dir, bids_dir):
     max_duration = 8
     fix_duration = 0.5
     induct = tasks.load_induct(data_dir, subjects).copy()
-    induct['within_opt'] = induct['within']
     induct['run'] = 1
     induct['response'] = induct['response'].astype('Int64')
     for subject in induct['subject'].unique():
