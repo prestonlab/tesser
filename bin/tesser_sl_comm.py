@@ -85,13 +85,12 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None, zscore=False)
             # z-score voxels unless they don't vary
             include = run == r
             run_exclude = np.std(beta[..., include], 3) == 0
-            beta[~run_exclude, include] = stats.zscore(
-                beta[~run_exclude, include], axis=3
-            )
+            beta[~run_exclude][:, include] = stats.zscore(
+                beta[~run_exclude][:, include], axis=1)
             zero_list.append(run_exclude)
         # set non-varying voxels to zero
         exclude = np.logical_or(*zero_list)
-        beta[exclude, :] = 0
+        beta[exclude] = 0
 
     # run searchlight
     sl = Searchlight(
