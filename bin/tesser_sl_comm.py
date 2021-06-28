@@ -31,6 +31,9 @@ def within_across(subj, mask, sl_rad, var):
     n_perm = len(ind)
 
     sim = 1 - sd.squareform(sd.pdist(data, 'correlation'))
+    if np.any(np.isnan(sim)):
+        return 0, 0, 0, 0
+
     stat = np.zeros((2, n_perm))
     for i, perm_ind in enumerate(ind):
         sim_perm = sim[np.ix_(perm_ind, perm_ind)]
