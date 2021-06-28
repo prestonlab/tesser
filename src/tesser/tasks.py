@@ -355,13 +355,10 @@ def load_parse(data_dir, subjects=None):
     # set block labels
     n_node = len(nodes)
     n_subject = len(subjects)
-    n_block = int((len(raw) / n_subject) / n_node)
-    block = np.tile(np.repeat(np.arange(1, n_block + 1), n_node), n_subject)
-
-    # label transitions between communities
-    raw['community'] = raw_nodes['community']
-    raw['transition'] = raw.groupby(['SubjNum', 'run'])['community'].transform(
-        lambda data: data.diff().fillna(0).abs().astype(bool)
+    n_run = raw['run'].nunique()
+    n_block = int(((len(raw) / n_subject) / n_run) / n_node)
+    block = np.tile(
+        np.tile(np.repeat(np.arange(1, n_block + 1), n_node), n_run), n_subject
     )
 
     # convert to BIDS format
