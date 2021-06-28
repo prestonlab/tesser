@@ -4,6 +4,7 @@
 import argparse
 import os
 import numpy as np
+from scipy import stats
 import scipy.spatial.distance as sd
 import pandas as pd
 import nibabel as nib
@@ -45,7 +46,7 @@ def within_across(subj, mask, sl_rad, var):
     return z
 
 
-def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
+def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None, zscore=False):
     beta_dir = os.path.join(model_dir, 'results', 'beta', beta, mask, f'sub-{subject}')
     beta_file = os.path.join(beta_dir, f'sub-{subject}_beta.nii.gz')
     mask_file = os.path.join(beta_dir, f'sub-{subject}_mask.nii.gz')
@@ -73,6 +74,21 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
     mask_img = nib.load(mask_file)
     beta = beta_img.get_fdata()
     mask = mask_img.get_fdata().astype(bool)
+
+    # z-score within run
+    if zscore:
+        zero_list = []
+        for r in np.unique(run):
+            # z-score voxels unless they don't vary
+            include = run == r
+            run_exclude = np.std(beta[..., include], 3) == 0
+            beta[~run_exclude, include] = stats.zscore(
+                beta[~run_exclude, include], axis=3
+            )
+            zero_list.append(run_exclude)
+        # set non-varying voxels to zero
+        exclude = np.logical_or(*zero_list)
+        beta[exclude, :] = 0
 
     # run searchlight
     sl = Searchlight(
@@ -106,8 +122,12 @@ def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None):
 
     # save searchlight results images
     for i, name in enumerate(names):
+        if zscore:
+            desc = f'{name}Z'
+        else:
+            desc = name
         new_img = nib.Nifti1Image(zstat[..., i], mask_img.affine, mask_img.header)
-        out_file = os.path.join(beta_dir, f'sub-{subject}_desc-{name}_zstat.nii.gz')
+        out_file = os.path.join(beta_dir, f'sub-{subject}_desc-{desc}_zstat.nii.gz')
         nib.save(new_img, out_file)
 
 
@@ -121,6 +141,7 @@ if __name__ == '__main__':
         '--n-perm', '-p', type=int, default=1000, help='number of permutations'
     )
     parser.add_argument('--n-proc', '-n', type=int, help='number of processes')
+    parser.add_argument('--zscore', '-z', action='store_true', help='z-score within run')
     args = parser.parse_args()
     main(
         args.model_dir,
@@ -129,4 +150,5 @@ if __name__ == '__main__':
         args.mask,
         n_perm=args.n_perm,
         n_proc=args.n_proc,
+        zscore=args.zscore,
     )
