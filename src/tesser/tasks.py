@@ -117,10 +117,13 @@ def fix_struct_switched(raw):
     data = raw.copy()
     for subject, part, run in switched:
         include = raw.eval(
-            f'subject == {subject} and part == {part} and run == {run}')
+            f'subject == {subject} and part == {part} and run == {run}'
+        )
         response = raw.loc[include, 'response']
-        data.loc[include & (response == 'canonical'), 'response'] = 'rotated'
-        data.loc[include & (response == 'rotated'), 'response'] = 'canonical'
+        fix = response.copy()
+        fix[response == 'canonical'] = 'rotated'
+        fix[response == 'rotated'] = 'canonical'
+        data.loc[include, 'response'] = fix
     return data
 
 
