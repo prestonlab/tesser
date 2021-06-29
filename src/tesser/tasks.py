@@ -207,6 +207,15 @@ def test_rotation_perf(data, n_perm):
     return res
 
 
+def score_induct(induct):
+    """Score induction task data."""
+    induct = induct.copy()
+    induct['correct'] = induct['within_opt'] == induct['response']
+    exclude = induct['response'].isna()
+    induct.loc[exclude, 'correct'] = np.nan
+    return induct
+
+
 def score_parse(parse):
     """Score parsing task data."""
     # number walks within a community
