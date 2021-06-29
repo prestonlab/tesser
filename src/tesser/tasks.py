@@ -253,24 +253,6 @@ def parse_perf(parse):
     return results
 
 
-def load_bids_parse(bids_dir, subject):
-    """Load parsing task data from BIDS files."""
-    runs = np.arange(1, 4)
-    df_list = []
-    for run in runs:
-        file = os.path.join(
-            bids_dir,
-            f'sub-{subject}',
-            'beh',
-            f'sub-{subject}_task-parse_run-{run}_events.tsv',
-        )
-        df_run = pd.read_table(file)
-        df_run['run'] = run
-        df_list.append(df_run)
-    data = pd.concat(df_list, axis=0)
-    return data
-
-
 def group_rdms(data):
     """Calculate dissimilarity matrices from grouping task data."""
     rdms = {}
