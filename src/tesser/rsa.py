@@ -197,6 +197,31 @@ def mean_corr_community(rdvs, subjects):
     return results
 
 
+def load_cluster_patterns(beta_dir, subject, roi, contrast, stat, cluster, dilate):
+    """Load cluster community similarity stats."""
+    # load pattern
+    mat_file = os.path.join(
+        beta_dir, roi, contrast, 'clusters',
+        f'sub-{subject}_desc-{stat}{cluster}dil{dilate}_beta.npy'
+    )
+    pattern = np.load(mat_file)
+
+    # load events
+    events_file = os.path.join(
+        beta_dir, roi, contrast, 'clusters', f'sub-{subject}_events.tsv'
+    )
+    events = pd.read_table(events_file)
+
+    # subtract run pattern
+    z_pattern = np.zeros(pattern.shape)
+    run = events['run'].to_numpy()
+    runs = events['run'].unique()
+    for r in runs:
+        samples = run == r
+        z_pattern[samples] = pattern[samples] - np.mean(pattern[samples], 0)
+    return z_pattern, events
+
+
 def beta_sr_rdm(struct, alpha, gamma, distance='correlation'):
     """Calculate an RDM for an SR model of each run."""
     if struct['subject'].nunique() > 1:
