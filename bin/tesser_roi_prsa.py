@@ -11,7 +11,7 @@ import pandas as pd
 
 from mindstorm import subjutil
 from mindstorm import prsa
-from tesser import tasks
+from tesser import raw
 from tesser import model
 
 warnings.simplefilter('ignore', FutureWarning)
@@ -58,7 +58,7 @@ def main(
 
     # load structure learning data
     logging.info(f'Loading behavioral data from {beh_dir}.')
-    struct = tasks.load_struct(beh_dir, [subject])
+    struct = raw.load_struct(beh_dir, [subject])
 
     # simple model: items in different communities are less similar
     comm = struct.groupby('object')['community'].first().to_numpy()

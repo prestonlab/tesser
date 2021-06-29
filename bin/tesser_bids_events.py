@@ -5,6 +5,8 @@
 import os
 import argparse
 import json
+
+from tesser import raw
 from pkg_resources import resource_filename
 import numpy as np
 
@@ -43,8 +45,8 @@ def main(study_dir, bids_dir):
     subjects = tasks.get_subj_list()
 
     # structure task
-    struct_onsets = tasks.load_struct_onsets(scan_dir, subjects)
-    struct = tasks.load_struct(data_dir, subjects, struct_onsets)
+    struct_onsets = raw.load_struct_onsets(scan_dir, subjects)
+    struct = raw.load_struct(data_dir, subjects, struct_onsets)
     struct_keys = [
         'onset',
         'duration',
@@ -78,7 +80,7 @@ def main(study_dir, bids_dir):
     # induct
     max_duration = 8
     fix_duration = 0.5
-    induct = tasks.load_induct(data_dir, subjects).copy()
+    induct = raw.load_induct(data_dir, subjects).copy()
     induct['run'] = 1
     induct['response'] = induct['response'].astype('Int64')
     for subject in induct['subject'].unique():
@@ -105,7 +107,7 @@ def main(study_dir, bids_dir):
     copy_json(json_file, os.path.join(bids_dir, 'task-induct_events.json'))
 
     # parse
-    parse = tasks.load_parse(data_dir, subjects).copy()
+    parse = raw.load_parse(data_dir, subjects).copy()
     parse_keys = [
         'onset',
         'duration',
@@ -127,7 +129,7 @@ def main(study_dir, bids_dir):
     copy_json(json_file, os.path.join(bids_dir, 'task-parse_events.json'))
 
     # group
-    group = tasks.load_group(data_dir, subjects).copy()
+    group = raw.load_group(data_dir, subjects).copy()
     group['run'] = 1
     group_keys = ['object', 'object_type', 'community', 'dim1', 'dim2']
     write_events(group, group_keys, bids_dir, 'group', 'beh', 'beh')
