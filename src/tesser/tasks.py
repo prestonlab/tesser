@@ -75,9 +75,11 @@ def load_struct(bids_dir, subjects=None):
         learn = _load_bids_events_subject(
             bids_dir, 'beh', 'events', 'learn', subject, runs=list(range(1, 6))
         )
+        learn['part'] = 1
         struct = _load_bids_events_subject(
             bids_dir, 'func', 'events', 'struct', subject, runs=list(range(1, 7))
         )
+        struct['part'] = 2
         subj_data = pd.concat([learn, struct], axis=0)
         data_list.append(subj_data)
     data = pd.concat(data_list, axis=0)
