@@ -180,6 +180,21 @@ def load_struct(data_dir, subjects=None, onsets=None):
     return df
 
 
+def fix_struct_switched(raw):
+    """Fix responses that appear to have been switched."""
+    # on these two scanning runs, d-prime is substantially negative,
+    # suggesting buttons were confused
+    switched = [[120, 2, 1], [122, 2, 3]]
+    data = raw.copy()
+    for subject, part, run in switched:
+        include = raw.eval(
+            f'subject == {subject} and part == {part} and run == {run}')
+        response = raw.loc[include, 'response']
+        data.loc[include & (response == 'canonical'), 'response'] = 'rotated'
+        data.loc[include & (response == 'rotated'), 'response'] = 'canonical'
+    return data
+
+
 def response_zscore(n, m):
     """Z-score of response rate."""
     rate = n / m
