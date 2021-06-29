@@ -222,6 +222,33 @@ def load_cluster_patterns(beta_dir, subject, roi, contrast, stat, cluster, dilat
     return z_pattern, events
 
 
+def beta_sim_stats(events, patterns):
+    """Calculate similarity statistics from betaseries patterns."""
+    # create matrices labeling event pairs
+    run = events['run'].to_numpy()
+    item = events['object'].to_numpy()
+    community = events['community'].to_numpy()
+    across_run = run != run[:, np.newaxis]
+    within_community = community == community[:, np.newaxis]
+    across_community = community != community[:, np.newaxis]
+    diff_object = item != item[:, np.newaxis]
+    lower = np.ones(across_run.shape, dtype=bool)
+    lower = np.tril(lower, -1)
+
+    # calculate an RDM for each pattern
+    rdms = [
+        sd.squareform(sd.pdist(pattern, 'correlation')) for pattern in patterns
+    ]
+
+    # calculate average similarity for each bin
+    include = across_run & within_community & diff_object & lower
+    sim_within = np.array([np.mean(1 - rdm[include]) for rdm in rdms])
+    include = across_run & across_community & diff_object & lower
+    sim_across = np.array([np.mean(1 - rdm[include]) for rdm in rdms])
+    sim = {'within': sim_within, 'across': sim_across}
+    return sim
+
+
 def beta_sr_rdm(struct, alpha, gamma, distance='correlation'):
     """Calculate an RDM for an SR model of each run."""
     if struct['subject'].nunique() > 1:
