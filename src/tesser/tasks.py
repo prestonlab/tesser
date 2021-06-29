@@ -87,6 +87,9 @@ def load_struct(bids_dir, subjects=None):
 def load_induct(bids_dir, subjects=None):
     """Load induction test events."""
     data = _load_bids_events(bids_dir, 'beh', 'events', 'induct', subjects)
+    data['trial_type'] = pd.Categorical(
+        data['trial_type'], categories=['central', 'boundary1', 'boundary2']
+    )
     return data
 
 
