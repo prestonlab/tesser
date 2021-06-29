@@ -26,6 +26,8 @@ def main(raw_dir, out_file, zscore, contrast=None):
             bias_trial = induct.groupby('trial_type')['correct'].mean()
             if contrast == 'b1b2':
                 bias[i] = bias_trial['boundary1'] - bias_trial['boundary2']
+            elif contrast == 'b2b1':
+                bias[i] = bias_trial['boundary2'] - bias_trial['boundary1']
             else:
                 raise ValueError(f'Invalid contrast: {contrast}')
         else:
