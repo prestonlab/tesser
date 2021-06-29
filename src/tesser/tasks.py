@@ -20,6 +20,90 @@ def get_subj_list():
     return participant_list
 
 
+def _load_bids_events_subject(bids_dir, phase, data_type, task, subject, runs=None):
+    """Load events for one subject from a BIDS directory."""
+    subj_dir = os.path.join(bids_dir, f'sub-{subject}', phase)
+    if not os.path.exists(subj_dir):
+        raise IOError(f'Subject directory does not exist: {subj_dir}')
+
+    if runs is not None:
+        df_list = []
+        for run in runs:
+            file = os.path.join(
+                subj_dir, f'sub-{subject}_task-{task}_run-{run}_{data_type}.tsv'
+            )
+            df_run = pd.read_table(file)
+            df_run['run'] = run
+            df_list.append(df_run)
+        data = pd.concat(df_list, axis=0)
+    else:
+        file = os.path.join(
+            subj_dir, f'sub-{subject}_task-{task}_{data_type}.tsv'
+        )
+        data = pd.read_table(file)
+        data['run'] = 1
+    data['subject'] = subject
+    return data
+
+
+def _load_bids_events(bids_dir, phase, data_type, task, subjects=None, runs=None):
+    """Load events for multiple subjects from a BIDS directory."""
+    if subjects is None:
+        subjects = get_subj_list()
+    elif not isinstance(subjects, list):
+        subjects = [subjects]
+
+    data = pd.concat(
+        [
+            _load_bids_events_subject(
+                bids_dir, phase, data_type, task, subject, runs
+            ) for subject in subjects
+        ], axis=0
+    )
+    return data
+
+
+def load_struct(bids_dir, subjects=None):
+    """Load structure learning events."""
+    if subjects is None:
+        subjects = get_subj_list()
+    elif not isinstance(subjects, list):
+        subjects = [subjects]
+
+    data_list = []
+    for subject in subjects:
+        learn = _load_bids_events_subject(
+            bids_dir, 'beh', 'events', 'learn', subject, runs=list(range(1, 6))
+        )
+        struct = _load_bids_events_subject(
+            bids_dir, 'func', 'events', 'struct', subject, runs=list(range(1, 7))
+        )
+        subj_data = pd.concat([learn, struct], axis=0)
+        data_list.append(subj_data)
+    data = pd.concat(data_list, axis=0)
+    return data
+
+
+def load_induct(bids_dir, subjects=None):
+    """Load induction test events."""
+    data = _load_bids_events(bids_dir, 'beh', 'events', 'induct', subjects)
+    return data
+
+
+def load_parse(bids_dir, subjects=None):
+    """Load parsing task events."""
+    data = _load_bids_events(
+        bids_dir, 'beh', 'events', 'parse', subjects, runs=list(range(1, 4))
+    )
+    return data
+
+
+def load_group(bids_dir, subjects=None):
+    """Load grouping task events."""
+    data = _load_bids_events(bids_dir, 'beh', 'beh', 'group', subjects)
+    return data
+
+
 def fix_struct_switched(raw):
     """Fix responses that appear to have been switched."""
     # on these two scanning runs, d-prime is substantially negative,
