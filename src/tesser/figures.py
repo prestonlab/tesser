@@ -33,7 +33,8 @@ def plot_group_mat(
         ax = plt.gca()
 
     data = data.copy()
-    data['label'] = data['community'] * 2 - 1 + data['node_type']
+    node_type = data['object_type'].map({'central': 1, 'boundary': 2})
+    data['label'] = (data['community'] - 1) * 2 + node_type
     mat_shape = (11, 19)
     mat = np.zeros(mat_shape, dtype=int)
     row = data[x].to_numpy()
