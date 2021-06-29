@@ -3,6 +3,8 @@
 case $USER in
     morton)
         STUDYDIR=$HOME/Dropbox/work/tesser
+        export TESSER_BIDS=$HOME/Dropbox/work/tesser/bids
+        export TESSER_FIGURES=$HOME/Dropbox/tesser_successor/Figures/v2
         conda activate tesser
         ;;
 
