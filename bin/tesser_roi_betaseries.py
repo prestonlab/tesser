@@ -19,6 +19,7 @@ def main(
     save_format='matrix',
     mask_dir='func',
     mask_thresh=0.001,
+    exclude_motion=False,
 ):
     # run betaseries estimation for each run
     high_pass = 1 / 128
@@ -36,6 +37,7 @@ def main(
             space,
             mask_dir,
             mask_thresh,
+            exclude_motion,
         )
         if beta is None:
             beta = run_beta
@@ -44,7 +46,10 @@ def main(
         resid[run] = run_resid
 
     # save a numpy array with the results
-    out_dir = os.path.join(post_dir, 'results', 'beta', bold, mask, f'sub-{subject}')
+    beta = 'beta'
+    if exclude_motion:
+        beta += 'MO'
+    out_dir = os.path.join(post_dir, 'results', beta, bold, mask, f'sub-{subject}')
     os.makedirs(out_dir, exist_ok=True)
     if save_format == 'matrix':
         np.save(os.path.join(out_dir, f'sub-{subject}_beta.npy'), beta)
@@ -110,6 +115,9 @@ if __name__ == "__main__":
     parser.add_argument(
         '--mask-thresh', '-t', type=float, help='threshold to apply to the mask'
     )
+    parser.add_argument(
+        '--exclude-motion', '-x', action='store_true', help='exclude motion outliers'
+    )
     args = parser.parse_args()
     main(
         args.raw_dir,
@@ -121,4 +129,5 @@ if __name__ == "__main__":
         args.format,
         args.mask_dir,
         args.mask_thresh,
+        args.exclude_motion,
     )

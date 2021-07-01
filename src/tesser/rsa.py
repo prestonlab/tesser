@@ -411,7 +411,9 @@ def create_betaseries_design(trials, n_vol, tr, high_pass=0):
     return design
 
 
-def prepare_betaseries_design(events_file, conf_file, tr, high_pass):
+def prepare_betaseries_design(
+    events_file, conf_file, tr, high_pass, exclude_motion=False
+):
     """Prepare betaseries design matrix and confounds."""
     # create nuisance regressor matrix
     conf = pd.read_csv(conf_file, sep='\t')
@@ -436,6 +438,12 @@ def prepare_betaseries_design(events_file, conf_file, tr, high_pass):
     raw = conf.filter(include).to_numpy()
     nuisance = raw - np.nanmean(raw, 0)
     nuisance[np.isnan(nuisance)] = 0
+
+    # exclude motion outliers
+    if exclude_motion:
+        outliers = conf.filter(like='motion_outlier')
+        if not outliers.empty:
+            nuisance = np.hstack([nuisance, outliers.to_numpy()])
 
     # create design matrix
     n_sample = len(conf)
@@ -534,6 +542,7 @@ def run_betaseries(
     space='T1w',
     mask_dir='func',
     mask_thresh=None,
+    exclude_motion=False,
 ):
     """Estimate betaseries for one run."""
     tr = 2
@@ -572,7 +581,9 @@ def run_betaseries(
         raise IOError(f'Confounds file does not exist: {conf_file}')
 
     # create nuisance regressor matrix
-    mat, confound = prepare_betaseries_design(events_file, conf_file, tr, high_pass)
+    mat, confound = prepare_betaseries_design(
+        events_file, conf_file, tr, high_pass, exclude_motion
+    )
 
     # load functional data
     bold_vol = nib.load(bold_file)
