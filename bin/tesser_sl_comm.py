@@ -49,8 +49,8 @@ def within_across(subj, mask, sl_rad, var):
     return z
 
 
-def main(model_dir, subject, beta, mask, n_perm=1000, n_proc=None, zscore=False):
-    beta_dir = os.path.join(model_dir, 'results', 'beta', beta, mask, f'sub-{subject}')
+def main(model_dir, subject, func, beta, mask, n_perm=1000, n_proc=None, zscore=False):
+    beta_dir = os.path.join(model_dir, 'results', beta, func, mask, f'sub-{subject}')
     beta_file = os.path.join(beta_dir, f'sub-{subject}_beta.nii.gz')
     mask_file = os.path.join(beta_dir, f'sub-{subject}_mask.nii.gz')
     events_file = os.path.join(beta_dir, f'sub-{subject}_events.tsv')
@@ -137,6 +137,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('model_dir', help='path to model director')
     parser.add_argument('subject', help='subject ID')
+    parser.add_argument('func', help='name of functional data')
     parser.add_argument('beta', help='name of betaseries')
     parser.add_argument('mask', help='name of mask')
     parser.add_argument(
@@ -148,6 +149,7 @@ if __name__ == '__main__':
     main(
         args.model_dir,
         args.subject,
+        args.func,
         args.beta,
         args.mask,
         n_perm=args.n_perm,
