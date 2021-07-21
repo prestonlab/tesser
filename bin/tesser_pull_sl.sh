@@ -12,11 +12,11 @@ dest=$2
 shift 2
 
 rsync -azvu "$src" "$dest" \
-    --include=beta/ \
-    --include="beta/smooth?mm/" \
-    --include="beta/smooth?mm/*/" \
-    --include="beta/smooth?mm/*/community*/" \
-    --include="beta/smooth?mm/*/community*/clusters/" \
+    --include="beta*"/ \
+    --include="beta*/smooth?mm/" \
+    --include="beta*/smooth?mm/*/" \
+    --include="beta*/smooth?mm/*/community*/" \
+    --include="beta*/smooth?mm/*/community*/clusters/" \
     --include="*.txt" \
     --include="*.npy" \
     --include="*.tsv" \
