@@ -127,6 +127,19 @@ def fix_struct_switched(raw):
     return data
 
 
+def exclude_struct_switched(raw):
+    """Remove responses that may have been incorrectly recorded."""
+    # on these two scanning runs, all responses were "rotated"
+    switched = [[120, 2, 1], [122, 2, 3]]
+    data = raw.copy()
+    for subject, part, run in switched:
+        include = raw.eval(
+            f'subject == {subject} and part == {part} and run == {run}'
+        )
+        data.loc[include, 'response'] = np.nan
+    return data
+
+
 def response_zscore(n, m):
     """Z-score of response rate."""
     rate = n / m
