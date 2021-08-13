@@ -167,11 +167,18 @@ def rotation_perf(data):
         (data['orientation'] == 'canonical') & (data['response'] == 'rotated')
     )
     rr = np.count_nonzero(response) / len(data)
-    hr = n_hit / n_rot
-    far = n_fa / n_can
-    zhr = response_zscore(n_hit, n_rot)
-    zfar = response_zscore(n_fa, n_can)
-    dprime = zhr - zfar
+    if rr == 0:
+        hr = np.nan
+        far = np.nan
+        zhr = np.nan
+        zfar = np.nan
+        dprime = np.nan
+    else:
+        hr = n_hit / n_rot
+        far = n_fa / n_can
+        zhr = response_zscore(n_hit, n_rot)
+        zfar = response_zscore(n_fa, n_can)
+        dprime = zhr - zfar
     res = pd.Series(
         {'rr': rr, 'hr': hr, 'far': far, 'zhr': zhr, 'zfar': zfar, 'dprime': dprime}
     )
@@ -204,16 +211,31 @@ def test_rotation_perf(data, n_perm):
         (orientation == 'canonical') & (response_perm == 'rotated'), axis=1
     )
     rr = np.count_nonzero(response) / len(data)
-    hr = n_hit / n_rot
-    far = n_fa / n_can
+    if rr == 0:
+        # if no responses, all rate measures are undefined
+        n_perm = n_hit.shape[0]
+        hr = np.empty(n_perm)
+        hr[:] = np.nan
+        far = np.empty(n_perm)
+        far[:] = np.nan
+        zhr = np.empty(n_perm)
+        zhr[:] = np.nan
+        zfar = np.empty(n_perm)
+        zfar[:] = np.nan
+        dprime = np.empty(n_perm)
+        dprime[:] = np.nan
+        p = np.nan
+    else:
+        hr = n_hit / n_rot
+        far = n_fa / n_can
 
-    # calculate dprime
-    zhr = response_zscore(n_hit, n_rot)
-    zfar = response_zscore(n_fa, n_can)
-    dprime = zhr - zfar
+        # calculate dprime
+        zhr = response_zscore(n_hit, n_rot)
+        zfar = response_zscore(n_fa, n_can)
+        dprime = zhr - zfar
 
-    # significance based on permutation test
-    p = np.mean(dprime >= dprime[0])
+        # significance based on permutation test
+        p = np.mean(dprime >= dprime[0])
     res = pd.Series(
         {
             'rr': rr,
