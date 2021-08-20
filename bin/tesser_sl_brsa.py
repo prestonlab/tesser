@@ -9,6 +9,7 @@ import argparse
 from brainiak.reprsimil import brsa
 
 from tesser import mvpa
+
 warnings.simplefilter('ignore', FutureWarning)
 from tesser import rsa
 
@@ -27,17 +28,19 @@ def main(
     mask_file = os.path.join(mask_dir, f'{mask}.nii.gz')
     feature_file = os.path.join(mask_dir, f'{feature_mask}.nii.gz')
     ds = mvpa.load_struct_timeseries(
-        study_dir, subject, mask_file, feature_mask=feature_file, verbose=1,
-        zscore_run=True
+        study_dir,
+        subject,
+        mask_file,
+        feature_mask=feature_file,
+        verbose=1,
+        zscore_run=True,
     )
 
     # load events data, split by object within structure learning block
     vols = rsa.load_vol_info(study_dir, subject)
     events = vols.query('sequence_type > 0').copy()
     n_item = events['trial_type'].nunique()
-    events['trial_type'] = (
-        events['trial_type'] + (events['sequence_type'] - 1) * n_item
-    )
+    events['trial_type'] = events['trial_type'] + (events['sequence_type'] - 1) * n_item
 
     # set up BRSA model
     minimize_options = {'disp': False, 'gtol': tol, 'maxiter': 6}
@@ -96,6 +99,12 @@ if __name__ == '__main__':
     else:
         env_study_dir = args.study_dir
     main(
-        args.subject, env_study_dir, args.mask, args.feature_mask, args.res_dir,
-        radius=args.radius, n_proc=args.n_proc, tol=args.tol
+        args.subject,
+        env_study_dir,
+        args.mask,
+        args.feature_mask,
+        args.res_dir,
+        radius=args.radius,
+        n_proc=args.n_proc,
+        tol=args.tol,
     )

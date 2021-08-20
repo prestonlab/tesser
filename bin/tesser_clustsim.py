@@ -31,9 +31,7 @@ def main(beta_dir, n_threads=None):
     os.makedirs(out_dir, exist_ok=True)
     acf_str = f'{acf[0]} {acf[1]} {acf[2]}'
     prefix = os.path.join(out_dir, 'clustsim')
-    command = (
-        f'3dClustSim -mask {mask_file} -acf {acf_str} -iter 2000 -nodec -prefix {prefix}'
-    )
+    command = f'3dClustSim -mask {mask_file} -acf {acf_str} -iter 2000 -nodec -prefix {prefix}'
     if n_threads is not None:
         command = f'export OMP_NUM_THREADS={n_threads}; ' + command
     print(command)

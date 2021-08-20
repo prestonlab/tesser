@@ -179,8 +179,12 @@ def mean_corr_community(rdvs, subjects):
     for roi, vectors in rdvs.items():
         m_within = np.mean(vectors[:, within_vec == 1], 1)
         m_across = np.mean(vectors[:, within_vec == 0], 1)
-        m_within_central = np.mean(vectors[:, (within_vec == 1) & (central_vec == 1)], 1)
-        m_across_central = np.mean(vectors[:, (within_vec == 0) & (central_vec == 1)], 1)
+        m_within_central = np.mean(
+            vectors[:, (within_vec == 1) & (central_vec == 1)], 1
+        )
+        m_across_central = np.mean(
+            vectors[:, (within_vec == 0) & (central_vec == 1)], 1
+        )
         df = pd.DataFrame(
             {
                 'within': m_within,
@@ -189,7 +193,8 @@ def mean_corr_community(rdvs, subjects):
                 'within_central': m_within_central,
                 'across_central': m_across_central,
                 'diff_central': m_within_central - m_across_central,
-            }, index=subjects
+            },
+            index=subjects,
         )
         df_list.append(df)
     results = pd.concat(df_list, keys=rdvs.keys())
@@ -201,8 +206,11 @@ def load_cluster_patterns(beta_dir, subject, roi, contrast, stat, cluster, dilat
     """Load cluster community similarity stats."""
     # load pattern
     mat_file = os.path.join(
-        beta_dir, roi, contrast, 'clusters',
-        f'sub-{subject}_desc-{stat}{cluster}dil{dilate}_beta.npy'
+        beta_dir,
+        roi,
+        contrast,
+        'clusters',
+        f'sub-{subject}_desc-{stat}{cluster}dil{dilate}_beta.npy',
     )
     pattern = np.load(mat_file)
 
@@ -236,9 +244,7 @@ def beta_sim_stats(events, patterns):
     lower = np.tril(lower, -1)
 
     # calculate an RDM for each pattern
-    rdms = [
-        sd.squareform(sd.pdist(pattern, 'correlation')) for pattern in patterns
-    ]
+    rdms = [sd.squareform(sd.pdist(pattern, 'correlation')) for pattern in patterns]
 
     # calculate average similarity for each bin
     include = across_run & within_community & diff_object & lower
@@ -495,7 +501,7 @@ def estimate_betaseries(data, design, confound=None):
         else:
             dm_full = np.hstack((dm_trial, dm_otherevs))
         s = dm_full.shape
-        dm_full = dm_full - np.kron(np.ones(s), np.mean(dm_full, 0))[:s[0], :s[1]]
+        dm_full = dm_full - np.kron(np.ones(s), np.mean(dm_full, 0))[: s[0], : s[1]]
         dm_full = np.hstack((dm_full, np.ones((n_sample, 1))))
 
         # calculate beta-forming vector

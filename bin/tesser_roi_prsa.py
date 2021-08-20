@@ -35,8 +35,10 @@ def main(
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
     logging.basicConfig(
-        filename=log_file, filemode='w', level=logging.INFO,
-        format='%(asctime)s %(levelname)s:%(name)s:%(message)s'
+        filename=log_file,
+        filemode='w',
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)s:%(name)s:%(message)s',
     )
     logging.info(f'Analyzing data from subject {subject} and ROI {roi}.')
 
@@ -67,7 +69,7 @@ def main(
     # learning model based on part 1
     # dissimilarity is inversely proportionate to association strength
     struct1 = struct.query('part == 1').copy()
-    gamma = .97424
+    gamma = 0.97424
     alpha = 0.1
     sr_mat = model.learn_struct_sr(struct1, gamma, alpha, n_state)
     sr_rdm = rsa.make_sym_matrix(1 - sr_mat / np.sum(sr_mat))
@@ -114,8 +116,11 @@ if __name__ == '__main__':
     parser.add_argument('res_name', help='name for results')
     parser.add_argument('--block', '-b', help='block to include (walk, random)')
     parser.add_argument(
-        '--n-perm', '-p', type=int, default=1000,
-        help="number of permutations to run (1000)"
+        '--n-perm',
+        '-p',
+        type=int,
+        default=1000,
+        help="number of permutations to run (1000)",
     )
     parser.add_argument(
         '--invert', '-i', action="store_true", help="use model similarity"

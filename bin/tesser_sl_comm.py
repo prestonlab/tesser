@@ -16,9 +16,8 @@ def perm_indices(n_perm, run, n_object):
     """Set indices to permute object."""
     n_run = len(np.unique(run))
     ind = [
-        np.tile(
-            np.random.permutation(n_object), n_run
-        ) + (run - 1) * n_object for _ in range(n_perm - 1)
+        np.tile(np.random.permutation(n_object), n_run) + (run - 1) * n_object
+        for _ in range(n_perm - 1)
     ]
     ind.insert(0, np.arange(n_run * n_object))
     return ind
@@ -86,7 +85,8 @@ def main(model_dir, subject, func, beta, mask, n_perm=1000, n_proc=None, zscore=
             include = run == r
             run_exclude = np.std(beta[..., include], 3) == 0
             beta[~run_exclude][:, include] = stats.zscore(
-                beta[~run_exclude][:, include], axis=1)
+                beta[~run_exclude][:, include], axis=1
+            )
             zero_list.append(run_exclude)
         # set non-varying voxels to zero
         exclude = np.any(np.stack(zero_list, axis=3), 3)
@@ -144,7 +144,9 @@ if __name__ == '__main__':
         '--n-perm', '-p', type=int, default=1000, help='number of permutations'
     )
     parser.add_argument('--n-proc', '-n', type=int, help='number of processes')
-    parser.add_argument('--zscore', '-z', action='store_true', help='z-score within run')
+    parser.add_argument(
+        '--zscore', '-z', action='store_true', help='z-score within run'
+    )
     args = parser.parse_args()
     main(
         args.model_dir,

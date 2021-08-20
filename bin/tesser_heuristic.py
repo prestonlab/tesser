@@ -33,8 +33,12 @@ def infotodict(seqinfo):
     key_T2w = create_key('sub-{subject}/anat/sub-{subject}_run-{item}_T2w')
     key_magnitude = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}_magnitude')
     key_phasediff = create_key('sub-{subject}/fmap/sub-{subject}_run-{item}_phasediff')
-    key_struct = create_key('sub-{subject}/func/sub-{subject}_task-struct_run-{item}_bold')
-    key_sbref = create_key('sub-{subject}/func/sub-{subject}_task-struct_run-{item}_sbref')
+    key_struct = create_key(
+        'sub-{subject}/func/sub-{subject}_task-struct_run-{item}_bold'
+    )
+    key_sbref = create_key(
+        'sub-{subject}/func/sub-{subject}_task-struct_run-{item}_sbref'
+    )
 
     # sort scans into file types
     info = {

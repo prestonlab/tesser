@@ -37,9 +37,7 @@ def _load_bids_events_subject(bids_dir, phase, data_type, task, subject, runs=No
             df_list.append(df_run)
         data = pd.concat(df_list, axis=0)
     else:
-        file = os.path.join(
-            subj_dir, f'sub-{subject}_task-{task}_{data_type}.tsv'
-        )
+        file = os.path.join(subj_dir, f'sub-{subject}_task-{task}_{data_type}.tsv')
         data = pd.read_table(file)
         data['run'] = 1
     data['subject'] = subject
@@ -55,10 +53,10 @@ def _load_bids_events(bids_dir, phase, data_type, task, subjects=None, runs=None
 
     data = pd.concat(
         [
-            _load_bids_events_subject(
-                bids_dir, phase, data_type, task, subject, runs
-            ) for subject in subjects
-        ], axis=0
+            _load_bids_events_subject(bids_dir, phase, data_type, task, subject, runs)
+            for subject in subjects
+        ],
+        axis=0,
     )
     return data
 
@@ -116,9 +114,7 @@ def fix_struct_switched(raw):
     switched = [[120, 2, 1], [122, 2, 3]]
     data = raw.copy()
     for subject, part, run in switched:
-        include = raw.eval(
-            f'subject == {subject} and part == {part} and run == {run}'
-        )
+        include = raw.eval(f'subject == {subject} and part == {part} and run == {run}')
         response = raw.loc[include, 'response']
         fix = response.copy()
         fix[response == 'canonical'] = 'rotated'
@@ -133,9 +129,7 @@ def exclude_struct_switched(raw):
     switched = [[120, 2, 1], [122, 2, 3]]
     data = raw.copy()
     for subject, part, run in switched:
-        include = raw.eval(
-            f'subject == {subject} and part == {part} and run == {run}'
-        )
+        include = raw.eval(f'subject == {subject} and part == {part} and run == {run}')
         data.loc[include, 'response'] = np.nan
     return data
 
@@ -275,9 +269,9 @@ def score_parse(parse):
     parse['prev_walk'] = np.nan
     for (subject, run, walk), walk_length in walk_lengths.iteritems():
         include = (
-            (parse['subject'] == subject) &
-            (parse['run'] == run) &
-            (parse['walk'] == (walk + 1))
+            (parse['subject'] == subject)
+            & (parse['run'] == run)
+            & (parse['walk'] == (walk + 1))
         )
         if any(include):
             parse.loc[include.to_numpy(), 'prev_walk'] = walk_length
@@ -288,13 +282,13 @@ def parse_perf(parse):
     """Score parsing performance."""
     trans_parse = (
         parse.query('transition and prev_walk >= 4')
-             .groupby(['subject', 'trial_type'])['response']
-             .mean()
+        .groupby(['subject', 'trial_type'])['response']
+        .mean()
     )
     other_parse = (
         parse.query('~(transition and prev_walk >= 4)')
-             .groupby(['subject', 'trial_type'])['response']
-             .mean()
+        .groupby(['subject', 'trial_type'])['response']
+        .mean()
     )
     results = pd.concat([trans_parse, other_parse], keys=['transition', 'other'])
     results.index.set_names('parse_type', level=0, inplace=True)

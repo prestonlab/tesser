@@ -174,7 +174,9 @@ def prob_struct_induct(
 
         if question_param is None:
             # parameters are the same for all induction trials
-            subj_prob = prob_induct(subj_induct, subj_param['tau'], sim1, subj_param['w'], sim2)
+            subj_prob = prob_induct(
+                subj_induct, subj_param['tau'], sim1, subj_param['w'], sim2
+            )
             include = induct.eval(f'subject == {subject}').to_numpy()
             prob[include] = subj_prob
         else:
@@ -402,14 +404,14 @@ def fit_induct(
             verbose=verbose,
             f_optim=f_optim,
             optim_kws=optim_kws,
-        ) for _ in range(n_rep)
+        )
+        for _ in range(n_rep)
     )
     n = len(induct)
     k = len(var_names)
     d = {
-        rep: {
-            'logl': logl, 'n': n, 'k': k, **param
-        } for rep, (logl, param) in zip(range(n_rep), full_results)
+        rep: {'logl': logl, 'n': n, 'k': k, **param}
+        for rep, (logl, param) in zip(range(n_rep), full_results)
     }
     results = pd.DataFrame(d).T
     results = results.astype({'n': int, 'k': int})
@@ -507,10 +509,13 @@ def fit_induct_indiv(
             verbose=verbose,
             f_optim=f_optim,
             optim_kws=optim_kws,
-        ) for subject in full_subjects
+        )
+        for subject in full_subjects
     )
-    d = {(subject, rep): res for subject, rep, res in
-         zip(full_subjects, full_reps, full_results)}
+    d = {
+        (subject, rep): res
+        for subject, rep, res in zip(full_subjects, full_reps, full_results)
+    }
     results = pd.DataFrame(d).T
     results.index.rename(['subject', 'rep'], inplace=True)
     results = results.astype({'n': int, 'k': int})

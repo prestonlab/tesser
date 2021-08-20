@@ -36,7 +36,9 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name, dilate=1):
             cluster_ind,
             '-bin',
             roi_mask,
-        ], capture_output=True, text=True
+        ],
+        capture_output=True,
+        text=True,
     )
     print("stdout:", result.stdout)
     print("stderr:", result.stderr)
@@ -57,8 +59,10 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name, dilate=1):
             '-dilD',
             '-mas',
             mask,
-            dil_mask
-        ], capture_output=True, text=True
+            dil_mask,
+        ],
+        capture_output=True,
+        text=True,
     )
     print("stdout:", result.stdout)
     print("stderr:", result.stderr)
@@ -89,7 +93,8 @@ def main(raw_dir, beta_dir, model_name, cluster_ind, cluster_name, dilate=1):
         events['onset'] = np.arange(len(events))
         events['duration'] = 1.0
         events.to_csv(
-            os.path.join(cluster_dir, f'sub-{subject}_events.tsv'), sep='\t',
+            os.path.join(cluster_dir, f'sub-{subject}_events.tsv'),
+            sep='\t',
             index=False,
         )
 

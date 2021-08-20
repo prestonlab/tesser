@@ -23,8 +23,10 @@ def main(
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f'log_sub-{subject}.txt')
     logging.basicConfig(
-        filename=log_file, filemode='w', level=logging.INFO,
-        format='%(asctime)s %(levelname)s:%(name)s:%(message)s'
+        filename=log_file,
+        filemode='w',
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)s:%(name)s:%(message)s',
     )
     logging.info(f'Analyzing data from subject {subject} and ROI {roi} using {method}.')
 
@@ -34,15 +36,19 @@ def main(
     # load events data, split by object within structure learning block
     events = vols.query('sequence_type > 0').copy()
     n_item = events['trial_type'].nunique()
-    events['trial_type'] = (
-        events['trial_type'] + (events['sequence_type'] - 1) * n_item
-    )
+    events['trial_type'] = events['trial_type'] + (events['sequence_type'] - 1) * n_item
 
     # get mask image
     subject_dir = os.path.join(study_dir, f'tesser_{subject}')
     mask_image = os.path.join(
-        subject_dir, 'anatomy', 'antsreg', 'data', 'funcunwarpspace',
-        'rois', roi_type, f'{roi}.nii.gz'
+        subject_dir,
+        'anatomy',
+        'antsreg',
+        'data',
+        'funcunwarpspace',
+        'rois',
+        roi_type,
+        f'{roi}.nii.gz',
     )
     logging.info(f'Masking with {mask_image}.')
 
@@ -56,10 +62,14 @@ def main(
     runs = list(range(1, 7))
     bold_images = [
         os.path.join(
-            subject_dir, 'BOLD', 'antsreg', 'data',
+            subject_dir,
+            'BOLD',
+            'antsreg',
+            'data',
             f'functional_run_{run}_bold_mcf_brain_corr_notemp.feat',
-            'filtered_func_data.nii.gz'
-        ) for run in runs
+            'filtered_func_data.nii.gz',
+        )
+        for run in runs
     ]
 
     # load functional data
@@ -130,8 +140,18 @@ def main(
 
     # save results
     var_names = [
-        'U', 'L', 'C', 'nSNR', 'sigma', 'rho', 'beta', 'beta0',
-        'X0', 'beta0_null', 'X0_null', 'n_nureg'
+        'U',
+        'L',
+        'C',
+        'nSNR',
+        'sigma',
+        'rho',
+        'beta',
+        'beta0',
+        'X0',
+        'beta0_null',
+        'X0_null',
+        'n_nureg',
     ]
     results = {var: getattr(model, var + '_') for var in var_names}
     out_file = os.path.join(res_dir, f'sub-{subject}_brsa.npz')
@@ -143,9 +163,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('subject', help="ID of subject to process.")
     parser.add_argument('roi', help="name of mask to use.")
-    parser.add_argument(
-        'blocks', help="blocks to include ('both','walk','random')",
-    )
+    parser.add_argument('blocks', help="blocks to include ('both','walk','random')")
     parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument(
         '--roi-type', '-r', default='mni', help="type of ROI ('freesurfer', ['mni'])"
@@ -155,8 +173,10 @@ if __name__ == '__main__':
         '--method', '-m', default='GBRSA', help="modeling method ('BRSA', ['GBRSA'])"
     )
     parser.add_argument(
-        '--gaussian-process', '-g', action='store_true',
-        help="use GP as a prior for SNR (BRSA only)"
+        '--gaussian-process',
+        '-g',
+        action='store_true',
+        help="use GP as a prior for SNR (BRSA only)",
     )
     args = parser.parse_args()
 
