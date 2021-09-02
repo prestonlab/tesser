@@ -59,6 +59,11 @@ pip install -e .[neural]
 If you have problems installing brainiak or mpi4py, see the 
 [brainiak website](https://brainiak.org/) for installation tips.
 
+## Reproducing analyses
+
+See the [analysis protocol](https://github.com/prestonlab/tesser/wiki/Analysis-protocol)
+for full instructions.
+
 ## Authors
 
 The modeling code was developed by Rodrigo Viveros Duran, 
