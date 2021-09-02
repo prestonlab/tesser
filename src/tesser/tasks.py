@@ -107,22 +107,6 @@ def load_group(bids_dir, subjects=None):
     return data
 
 
-def fix_struct_switched(raw):
-    """Fix responses that appear to have been switched."""
-    # on these two scanning runs, d-prime is substantially negative,
-    # suggesting buttons were confused
-    switched = [[120, 2, 1], [122, 2, 3]]
-    data = raw.copy()
-    for subject, part, run in switched:
-        include = raw.eval(f'subject == {subject} and part == {part} and run == {run}')
-        response = raw.loc[include, 'response']
-        fix = response.copy()
-        fix[response == 'canonical'] = 'rotated'
-        fix[response == 'rotated'] = 'canonical'
-        data.loc[include, 'response'] = fix
-    return data
-
-
 def exclude_struct_switched(raw):
     """Remove responses that may have been incorrectly recorded."""
     # on these two scanning runs, all responses were "rotated"

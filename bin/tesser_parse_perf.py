@@ -13,7 +13,7 @@ def main(raw_dir, out_file, zscore):
     perf = np.zeros(len(subjects))
     for i, subject in enumerate(subjects):
         # get transition labels and length of previous walk
-        parse = tasks.load_bids_parse(raw_dir, subject)
+        parse = tasks.load_parse(raw_dir, subject)
         parse = tasks.score_parse(parse)
 
         # exclude the first walk
