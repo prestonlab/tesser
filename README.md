@@ -48,12 +48,16 @@ tesser kernel is selected.
 
 ## Running neural analysis scripts
 
-You will also need brainiak and ezlaunch (if running using a TACC cluster):
+Running neural analysis scripts requires additional dependencies.
+If you have mpi (required for brainiak) installed, you should be 
+able to just run:
 
 ```bash
-pip install brainiak
-pip install ezlaunch
+pip install -e .[neural]
 ```
+
+If you have problems installing brainiak or mpi4py, see the 
+[brainiak website](https://brainiak.org/) for installation tips.
 
 ## Authors
 
