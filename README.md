@@ -32,19 +32,23 @@ python -m ipykernel install --user --name tesser
 ```
 
 To run the notebooks, before you run Jupyter Lab you must define the 
-path to a directory with the Tesser data.  For example:
+path to a directory with the Tesser BIDS format data, and the path to
+save figures to. For region of interest analyses, you must also give
+the path to the directory where neural results are saved. For example:
 
 ```bash
-export TESSER_DIR=$HOME/Dropbox/tesser_successor/
+export TESSER_BIDS=$HOME/Dropbox/work/tesser/bids
+export TESSER_FIGURES=$HOME/Dropbox/tesser_successor/Figures/v2
+export TESSER_RESULTS=$HOME/Dropbox/work/tesser/results
 jupyter lab &
 ```
 
 In Jupyter lab, load a notebook (in `tesser/jupyter`) and make sure the 
 tesser kernel is selected.
 
-## Running scripts on TACC
+## Running neural analysis scripts
 
-You will also need brainiak and ezlaunch:
+You will also need brainiak and ezlaunch (if running using a TACC cluster):
 
 ```bash
 pip install brainiak
