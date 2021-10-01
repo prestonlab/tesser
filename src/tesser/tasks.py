@@ -313,7 +313,15 @@ def group_distance(data):
     subject = data['subject'].unique()
     m_within = np.mean(rdv[:, within_vec == 1], axis=1)
     m_across = np.mean(rdv[:, within_vec == 0], axis=1)
-    res = pd.DataFrame({'subject': subject, 'within': m_within, 'across': m_across})
+    m_overall = np.mean(rdv, axis=1)
+    res = pd.DataFrame(
+        {
+            'subject': subject,
+            'within': m_within,
+            'across': m_across,
+            'overall': m_overall,
+        }
+    )
     return res
 
 
