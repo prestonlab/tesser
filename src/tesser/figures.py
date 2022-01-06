@@ -1,9 +1,17 @@
 """Tools for creating publication figures."""
 
+from pkg_resources import resource_filename
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import seaborn as sns
+
+
+def set_style(style_path=None):
+    """Set default plot style."""
+    if style_path is None:
+        style_path = resource_filename('tesser', 'data/figures.mplstyle')
+    plt.style.use(style_path)
 
 
 def get_induct_colors():
