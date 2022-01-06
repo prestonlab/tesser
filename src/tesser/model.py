@@ -710,6 +710,14 @@ def save_fit_results(
     return results
 
 
+def load_fit_params(fit_file):
+    """Load fitted parameters from a fit file."""
+    results = pd.read_csv(fit_file)
+    results.drop(columns=['rep', 'logl', 'n', 'k'], inplace=True)
+    param = results.iloc[0].to_dict()
+    return param
+
+
 def load_model_def(json_file, sim1=None, sim2=None):
     """Load model definition from file."""
     with open(json_file) as f:
