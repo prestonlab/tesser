@@ -714,9 +714,17 @@ def load_model_def(json_file, sim1=None, sim2=None):
     """Load model definition from file."""
     with open(json_file) as f:
         model_def = json.load(f)
-    if 'sim' in model_def['sim1_spec'] and sim1 is not None:
+    if (
+        model_def['sim1_spec'] is not None and
+        'sim' in model_def['sim1_spec'] and
+        sim1 is not None
+    ):
         model_def['sim1_spec']['sim'] = sim1
-    if 'sim' in model_def['sim2_spec'] and sim2 is not None:
+    if (
+        model_def['sim2_spec'] is not None and
+        'sim' in model_def['sim2_spec'] and
+        sim2 is not None
+    ):
         model_def['sim2_spec']['sim'] = sim2
     return model_def
 
