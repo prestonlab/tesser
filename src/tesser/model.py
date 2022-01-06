@@ -196,6 +196,20 @@ def prob_struct_induct(
     return prob
 
 
+def sweep_param(struct, induct, param, var_param, var_values, **kwargs):
+    """Evaluate a model while varying one parameter."""
+    eps = 0.000001
+    log_likelihood = np.zeros(len(var_values))
+    for i, value in enumerate(var_values):
+        sim_param = param.copy()
+        sim_param[var_param] = value
+        prob = prob_struct_induct(struct, induct, sim_param, **kwargs)
+        prob[np.isnan(prob)] = eps
+        prob[prob < eps] = eps
+        log_likelihood[i] = np.sum(np.log(prob))
+    return log_likelihood
+
+
 def param_bounds(var_bounds, var_names):
     """Pack group-level parameters."""
     group_lb = [var_bounds[k][0] for k in var_names]
