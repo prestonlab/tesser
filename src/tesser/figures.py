@@ -35,6 +35,28 @@ def get_induct_colors():
     return {'dark': dark, 'light': light}
 
 
+def plot_sim(sim, ax=None, **kwargs):
+    """Plot an object similarity matrix."""
+    if ax is None:
+        ax = plt.gca()
+
+    h = ax.matshow(sim, **kwargs)
+    ax.spines['right'].set_visible(True)
+    ax.spines['top'].set_visible(True)
+    ax.tick_params(
+        'both',
+        top=False,
+        bottom=False,
+        left=False,
+        labeltop=False,
+        labelbottom=False,
+        labelleft=False,
+    )
+    ax.set_xlabel('Inference object')
+    ax.set_ylabel('Cue object')
+    return h
+
+
 def plot_group_mat(
     data, x='dim1', y='dim2', hue=None, palette=None, color=None, ax=None
 ):
