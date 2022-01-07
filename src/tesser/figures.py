@@ -14,6 +14,20 @@ def set_style(style_path=None):
     plt.style.use(style_path)
 
 
+def get_node_colors():
+    """Network node colors."""
+    node_colors = {
+        "d_purple": np.array([159, 136, 194]) / 256,
+        "l_purple": np.array([214, 195, 232]) / 256,
+        "d_green": np.array([121, 176, 131]) / 256,
+        "l_green": np.array([200, 247, 213]) / 256,
+        "d_red": np.array([255, 141, 140]) / 256,
+        "l_red": np.array([245, 194, 195]) / 256,
+        "grey": (0.95, 0.95, 0.95),
+    }
+    return node_colors
+
+
 def get_induct_colors():
     """Induction task colors."""
     dark = sns.blend_palette(
@@ -73,15 +87,7 @@ def plot_group_mat(
     col = data[y].to_numpy()
     mat[row, col] = data['label'].to_numpy()
 
-    node_colors = {
-        "d_purple": '#7e1e9c',
-        "l_purple": '#bf77f6',
-        "d_green": '#15b01a',
-        "l_green": '#96f97b',
-        "d_red": '#e50000',
-        "l_red": '#ff474c',
-        "grey": (0.95, 0.95, 0.95),
-    }
+    node_colors = get_node_colors()
     color_order = [
         'grey',
         'd_purple',
