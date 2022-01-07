@@ -4,6 +4,7 @@ from pkg_resources import resource_filename
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
+from matplotlib import patches
 import seaborn as sns
 
 
@@ -49,7 +50,7 @@ def get_induct_colors():
     return {'dark': dark, 'light': light}
 
 
-def plot_sim(sim, ax=None, **kwargs):
+def plot_sim(sim, nodes=None, ax=None, **kwargs):
     """Plot an object similarity matrix."""
     if ax is None:
         ax = plt.gca()
@@ -68,6 +69,35 @@ def plot_sim(sim, ax=None, **kwargs):
     )
     ax.set_xlabel('Inference object')
     ax.set_ylabel('Cue object')
+
+    # add circles indicating node community
+    if nodes is not None:
+        c = get_node_colors()
+        node_colors = {
+            (1, 0): c['d_red'],
+            (1, 1): c['l_red'],
+            (2, 0): c['d_purple'],
+            (2, 1): c['l_purple'],
+            (3, 0): c['d_green'],
+            (3, 1): c['l_green'],
+        }
+        xoffset = -1.3
+        yoffset = 21.3
+        patch_kws = {
+            'radius': 0.4, 'edgecolor': 'k', 'linewidth': 0.5, 'clip_on': False
+        }
+        for i in range(sim.shape[0]):
+            node = nodes.iloc[i]
+            color = node_colors[node['community'], node['node_type']]
+            circle = patches.Circle((i, yoffset), facecolor=color, **patch_kws)
+            ax.add_patch(circle)
+        for j in range(sim.shape[1]):
+            node = nodes.iloc[j]
+            color = node_colors[node['community'], node['node_type']]
+            circle = patches.Circle((xoffset, j), facecolor=color, **patch_kws)
+            ax.add_patch(circle)
+        ax.xaxis.set_label_coords(0.5, -0.08)
+        ax.yaxis.set_label_coords(-0.08, 0.5)
     return h
 
 
