@@ -1,5 +1,6 @@
 # tesser
 
+[![preprint](https://img.shields.io/badge/preprint-bioRxiv-B31B1B.svg)](https://doi.org/10.1101/2021.10.12.462707)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4793426.svg)](https://doi.org/10.5281/zenodo.4793426)
 
 Analysis of learning and neural representations of temporal community structure.
