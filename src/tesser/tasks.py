@@ -251,34 +251,6 @@ def label_induct(induct, inplace=False):
     return output
 
 
-def _trial_strength_induct(induct, strength, option_keys):
-    """Get strength of the cue to option items."""
-    output = induct.copy()
-    cue = induct['cue'].to_numpy() - 1
-    for key in option_keys:
-        key_ind = induct[key].to_numpy() - 1
-        output[f'{key}_strength'] = strength[cue, key_ind]
-    return output
-
-
-def strength_induct(induct, strength, option_keys=None):
-    """Get average strength by induction question type."""
-    if option_keys is None:
-        option_keys = ['target', 'lure']
-    strength_keys = [f'{key}_strength' for key in option_keys]
-
-    trial_strength = _trial_strength_induct(induct, strength, option_keys)
-    results = pd.melt(
-        trial_strength,
-        value_vars=strength_keys,
-        var_name='item',
-        value_name='strength',
-        id_vars=['subject', 'trial_type'],
-    )
-    results['item'] = results['item'].map(dict(zip(strength_keys, option_keys)))
-    return results
-
-
 def score_parse(parse):
     """Score parsing task data."""
     # number walks within a community
