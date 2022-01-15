@@ -237,6 +237,20 @@ def score_induct(induct):
     return induct
 
 
+def label_induct(induct, inplace=False):
+    """Label induction task choices as target or lure."""
+    if inplace:
+        output = induct
+    else:
+        output = induct.copy()
+    target_ind = induct['within_opt'].to_numpy() - 1
+    opt1 = induct['opt1'].to_numpy()
+    opt2 = induct['opt2'].to_numpy()
+    output['target'] = np.choose(target_ind, [opt1, opt2])
+    output['lure'] = np.choose(target_ind, [opt2, opt1])
+    return output
+
+
 def score_parse(parse):
     """Score parsing task data."""
     # number walks within a community
