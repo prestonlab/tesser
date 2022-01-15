@@ -710,10 +710,11 @@ def save_fit_results(
     return results
 
 
-def load_fit_params(fit_file):
+def load_fit_params(fit_file, drop_stats=True):
     """Load fitted parameters from a fit file."""
     results = pd.read_csv(fit_file)
-    results.drop(columns=['rep', 'logl', 'n', 'k'], inplace=True)
+    if drop_stats:
+        results.drop(columns=['rep', 'logl', 'n', 'k'], inplace=True)
     param = results.iloc[0].to_dict()
     return param
 
