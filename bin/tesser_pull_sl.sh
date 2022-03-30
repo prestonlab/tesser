@@ -3,7 +3,7 @@
 # Pull searchlight results.
 
 if [[ $# -lt 2 ]]; then
-    echo "Usage: pull_tesser_sl.sh src dest [rsync flags]"
+    echo "Usage: tesser_pull_sl.sh src dest [rsync flags]"
     exit 1
 fi
 

@@ -3,7 +3,7 @@
 # Pull Tesser fMRIprep results.
 
 if [[ $# -lt 2 ]]; then
-    echo "Usage:   pull_tesser_fmriprep.sh src dest [rsync flags]"
+    echo "Usage:   tesser_pull_fmriprep.sh src dest [rsync flags]"
     exit 1
 fi
 
